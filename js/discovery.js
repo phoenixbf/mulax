@@ -1,10 +1,12 @@
 let DSC = {};
 
 DSC.init = ()=>{
-    DSC._layer     = undefined;
+    DSC._dlayer     = undefined;
     DSC._dirLayers = undefined;
     
     DSC._node  = undefined;
+
+    DSC._editTex = 0;
 };
 
 DSC.setNode = (N)=>{
@@ -15,8 +17,8 @@ DSC.setDirLayers = (dir)=>{
     DSC._dirLayers = dir;
 };
 
-DSC.setLayer = (layer)=>{
-    DSC._layer = layer;
+DSC.setDiscoveryLayer = (layer)=>{
+    DSC._dlayer = layer;
 
     DSC.visitor();
 };
@@ -27,6 +29,7 @@ DSC.setupMaterial = (mat)=>{
 
         uniforms: {
             tDiscov: { type:'t' },
+            tEMask: { type:'t' },
             vLens: { type:'vec4', value: new THREE.Vector4(0,0,0, 0.2) },
         },
 
@@ -59,9 +62,10 @@ DSC.setupMaterial = (mat)=>{
 
             //uniform float time;
             uniform sampler2D tDiscov;
+            uniform sampler2D tEMask;
 
             void main(){
-                float sedge = 20.0;
+                float sedge = 1000.0;
 
                 float d = distance(vPositionW, vLens.xyz);
                 float t = d / vLens.w;
@@ -71,7 +75,8 @@ DSC.setupMaterial = (mat)=>{
 
                 t = clamp(t, 0.0,1.0);
 
-                vec4 frag_d = texture2D(tDiscov, sUV);
+                vec4 frag_d   = texture2D(tDiscov, sUV);
+                vec4 emaskCol = texture2D(tEMask, sUV);
 
                 // Border
 /*
@@ -83,6 +88,8 @@ DSC.setupMaterial = (mat)=>{
                 csm_DiffuseColor = mix( frag_d, csm_DiffuseColor, t);
                 csm_Roughness    = mix( 1.0, csm_Roughness, t);
                 csm_Metalness    = mix( 0.0, csm_Metalness, t);
+
+                csm_DiffuseColor = mix(csm_DiffuseColor, vec4(0,1,0, 1), emaskCol.r * 0.5);
             }
         `
     });
@@ -101,19 +108,31 @@ DSC.visitor = ()=>{
 		if (o.material && o.material.map){
 			let tex   = o.material.map;
 			let name  = tex.name;
-            let dname = name + "_"+DSC._layer+".jpg";
+            let dname = name + "_"+DSC._dlayer+".jpg";
 
             // if first time, setup custom material
             if (!o.material.userData.mDiscovery) o.material = DSC.setupMaterial(o.material);
 
+            let layerpath = DSC._dirLayers + dname;
+            console.log(layerpath)
+
             ATON.Utils.textureLoader.load(DSC._dirLayers + dname, t => {
                 t.flipY = false;
+
                 o.material.uniforms.tDiscov.value = t;
+                //o.material.uniforms.tDiscov.value.needsUpdate = true;
+                o.material.needsUpdate = true;
             });
+
+            o.material.uniforms.tEMask.value = DSC._editTex;
 
             o.material.userData.mDiscovery = true;
         }
     });
 };
+
+DSC.setEditMaskTexture = (tex)=>{
+    DSC._editTex = tex;
+}
 
 export default DSC;
