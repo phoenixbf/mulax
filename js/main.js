@@ -23,7 +23,7 @@ APP.setup = ()=>{
 	
 	APP._currItem = undefined;
 
-	APP.initIMasks();
+	APP.initMasks();
 
 	APP.setupScene();
 	APP.setupEvents();
@@ -48,29 +48,29 @@ APP.loadConfig = ()=>{
 };
 
 // Sem Masks
-APP.initIMasks = ()=>{
-	APP._semCanvas = document.createElement('canvas');
-	APP._semCanvas.width  = 128;
-	APP._semCanvas.height = 128;
+APP.initMasks = ()=>{
+	APP._editCanvas = document.createElement('canvas');
+	APP._editCanvas.width  = 512;
+	APP._editCanvas.height = 512;
 
-	APP._semCTX = APP._semCanvas.getContext('2d', { willReadFrequently: true });
+	APP._editCTX = APP._editCanvas.getContext('2d', { willReadFrequently: true });
 
-	APP._semIC = APP._semCTX.createImageData(1,1);
-	APP._semIC.data[0] = 255;
-	APP._semIC.data[1] = 255;
-	APP._semIC.data[2] = 255;
-	APP._semIC.data[3] = 255;
+	APP._editC = APP._editCTX.createImageData(1,1);
+	APP._editC.data[0] = 255;
+	APP._editC.data[1] = 255;
+	APP._editC.data[2] = 255;
+	APP._editC.data[3] = 255;
 
 	let eTex = new THREE.Texture();
-	eTex.image = APP._semCanvas;
+	eTex.image = APP._editCanvas;
 
 	APP.DSC.setEditMaskTexture(eTex);
 };
 
 APP.writeEditMask = (i,j, C)=>{
-	APP._semCTX.putImageData( APP._semIC, i,j );
+	APP._editCTX.putImageData( APP._editC, i,j );
 	APP.DSC._editTex.needsUpdate = true;
-	//console.log(APP._semCTX)
+	//console.log(APP._editCTX)
 };
 
 APP.writeEditMaskFromQuery = (C)=>{
@@ -78,8 +78,8 @@ APP.writeEditMaskFromQuery = (C)=>{
 
 	let uv = ATON._queryDataScene.uv;
 
-	let i = parseInt( 128 * uv.x );
-	let j = parseInt( 128 * (1.0 - uv.y) );
+	let i = parseInt( 512 * uv.x );
+	let j = parseInt( 512 * (1.0 - uv.y) );
 
 	APP.writeEditMask(i,j, C);
 };
@@ -114,7 +114,7 @@ APP.setupEvents = ()=>{
 	ATON.on("AllNodeRequestsCompleted",()=>{
 		APP.DSC.setNode(APP.gItem);
 		APP.DSC.setDirLayers(APP.pathAssetsFolder + APP._currItem + "/");
-		APP.DSC.setDiscoveryLayer("VIL");
+		APP.DSC.setDiscoveryLayer("UVL");
 
 		ATON.SUI.setSelectorRadius(0.1);
 	});
@@ -153,10 +153,13 @@ APP.updateItem = ()=>{
 
 	APP.gItem.traverse( ( o ) => {
 		if (o.material && o.material.uniforms){
-            o.material.uniforms.vLens.value = loc;
+			let UU = o.material.uniforms;
 
-            if (ATON._queryDataScene) o.material.uniforms.vLens.value.w = rad;
-			else o.material.uniforms.vLens.value.w *= 0.9;
+            UU.vLens.value = loc;
+			UU.time.value  += ATON._dt;
+
+            if (ATON._queryDataScene) UU.vLens.value.w = rad;
+			else UU.vLens.value.w *= 0.9;
         }
     });
 };

@@ -28,8 +28,10 @@ DSC.setupMaterial = (mat)=>{
         baseMaterial: mat,
 
         uniforms: {
+            time: { type:'float', value: 0.0 },
             tDiscov: { type:'t' },
             tEMask: { type:'t' },
+            tSMask: { type:'t' },
             vLens: { type:'vec4', value: new THREE.Vector4(0,0,0, 0.2) },
         },
 
@@ -60,9 +62,10 @@ DSC.setupMaterial = (mat)=>{
 
             uniform vec4 vLens;
 
-            //uniform float time;
+            uniform float time;
             uniform sampler2D tDiscov;
             uniform sampler2D tEMask;
+            uniform sampler2D tSMask;
 
             void main(){
                 float sedge = 1000.0;
@@ -101,8 +104,6 @@ DSC.setupMaterial = (mat)=>{
 DSC.visitor = ()=>{
     if (!DSC._node) return;
     if (!DSC._dirLayers) return;
-
-    console.log(DSC._dirLayers)
 
     DSC._node.traverse( ( o ) => {
 		if (o.material && o.material.map){
