@@ -1,5 +1,5 @@
 /*
-	Main js entry for multi-layer front-end
+	Main js entry for multi-layer tool
 
 ===============================================*/
 import DSC from "./discovery.js";
