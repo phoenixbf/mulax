@@ -65,6 +65,16 @@ APP.initMasks = ()=>{
 	eTex.image = APP._editCanvas;
 
 	APP.DSC.setEditMaskTexture(eTex);
+
+	// Sem
+	APP._semCanvas = document.createElement('canvas');
+	APP._semCanvas.width  = 512;
+	APP._semCanvas.height = 512;
+
+	APP._semCTX = APP._semCanvas.getContext('2d', { willReadFrequently: true });
+
+	APP._semMasks = {};
+	APP._semCurrMask = undefined;
 };
 
 APP.writeEditMask = (i,j, C)=>{
@@ -82,6 +92,41 @@ APP.writeEditMaskFromQuery = (C)=>{
 	let j = parseInt( 512 * (1.0 - uv.y) );
 
 	APP.writeEditMask(i,j, C);
+};
+
+APP.querySemMasks = ()=>{
+	let ctx = APP._semCTX;
+    let uv  = ATON._queryDataScene.uv;
+
+	let smq = undefined;
+
+	for (let semid in APP._semMasks){
+        let img = APP._semMasks[semid];
+
+        let x = parseInt( img.width * uv.x );
+        let y = parseInt( img.height * (1.0 - uv.y) );
+        //console.log(x,y)
+
+        ctx.drawImage(img, 0,0);
+        let col = ctx.getImageData(x,y, 1, 1).data;
+		let k = col[0];
+
+		// do stuff
+		if (k > 1){
+			smq = semid;
+            break;
+		}
+	}
+
+    if (smq === undefined){
+        if (APP._semCurrMask !== undefined) ATON.fireEvent("APP_SemMaskLeave", APP._semCurrMask);
+        APP._semCurrMask = undefined;
+
+        // ._uniforms.tSMask.value = 0;
+        //._mat.needsUpdate = true;
+        return;
+    }
+
 };
 
 APP.loadItem = (item)=>{
