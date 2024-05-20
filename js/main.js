@@ -50,8 +50,8 @@ APP.loadConfig = ()=>{
 // Sem Masks
 APP.initMasks = ()=>{
 	APP._editCanvas = document.createElement('canvas');
-	APP._editCanvas.width  = 512;
-	APP._editCanvas.height = 512;
+	APP._editCanvas.width  = 128;
+	APP._editCanvas.height = 128;
 
 	APP._editCTX = APP._editCanvas.getContext('2d', { willReadFrequently: true });
 
@@ -88,8 +88,8 @@ APP.writeEditMaskFromQuery = (C)=>{
 
 	let uv = ATON._queryDataScene.uv;
 
-	let i = parseInt( 512 * uv.x );
-	let j = parseInt( 512 * (1.0 - uv.y) );
+	let i = parseInt( 128 * uv.x );
+	let j = parseInt( 128 * (1.0 - uv.y) );
 
 	APP.writeEditMask(i,j, C);
 };
@@ -140,6 +140,8 @@ APP.loadItem = (item)=>{
 
 	let path = APP.pathAssetsFolder + item + "/" + e.url
 	APP.gItem.load(path);
+
+	if (e.scale) APP.gItem.setScale(e.scale);
 
 	APP._currItem = item;
 };
@@ -203,7 +205,10 @@ APP.updateItem = ()=>{
             UU.vLens.value = loc;
 			UU.time.value  += ATON._dt;
 
-            if (ATON._queryDataScene) UU.vLens.value.w = rad;
+            if (ATON._queryDataScene){
+				UU.vLens.value.w = rad;
+				//console.log(ATON._queryDataScene.o.name)
+			}
 			else UU.vLens.value.w *= 0.9;
         }
     });
