@@ -23,6 +23,7 @@ APP.setup = ()=>{
 	
 	APP._currItem = undefined;
 
+	APP._wMasks = {};
 	APP.initMasks();
 
 	APP.setupScene();
@@ -47,8 +48,54 @@ APP.loadConfig = ()=>{
     });
 };
 
+APP.createWritableMask = (mid)=>{
+	APP._wMasks[mid] = {};
+
+	let wm = APP._wMasks[mid];
+
+	wm.canvas = document.createElement('canvas');
+	wm.canvas.width  = 128;
+	wm.canvas.height = 128;
+
+	wm.ctx = wm.canvas.getContext('2d', { willReadFrequently: true });
+
+	wm.texture = new THREE.Texture();
+	wm.texture.image = wm.canvas;
+
+	return wm;
+};
+
+APP.drawOnWritableMask = (mid, i,j,C)=>{
+	let wm = APP._wMasks[mid];
+	if (!wm) return;
+
+	if (!wm.brush){
+		wm.brush = wm.ctx.createImageData(1,1);
+		wm.brush.data[0] = 255;
+		wm.brush.data[1] = 255;
+		wm.brush.data[2] = 255;
+		wm.brush.data[3] = 255;
+	}
+
+	wm.ctx.putImageData( wm.brush, i,j );
+	wm.texture.needsUpdate = true;
+};
+
+APP.drawOnWritableMaskFromQuery = (C)=>{
+	if (!ATON._queryDataScene) return;
+
+	let uv  = ATON._queryDataScene.uv;
+	let mid = ATON._queryDataScene.o.name;
+
+	let i = parseInt( 128 * uv.x );
+	let j = parseInt( 128 * (1.0 - uv.y) );
+
+	APP.drawOnWritableMask(mid, i,j, C);
+};
+
 // Sem Masks
 APP.initMasks = ()=>{
+/*
 	APP._editCanvas = document.createElement('canvas');
 	APP._editCanvas.width  = 128;
 	APP._editCanvas.height = 128;
@@ -65,7 +112,7 @@ APP.initMasks = ()=>{
 	eTex.image = APP._editCanvas;
 
 	APP.DSC.setEditMaskTexture(eTex);
-
+*/
 	// Sem
 	APP._semCanvas = document.createElement('canvas');
 	APP._semCanvas.width  = 512;
@@ -168,7 +215,8 @@ APP.setupEvents = ()=>{
 
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
-			APP.writeEditMaskFromQuery();
+			//APP.writeEditMaskFromQuery();
+			APP.drawOnWritableMaskFromQuery();
 		}
 	});
 

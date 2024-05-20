@@ -75,7 +75,7 @@ DSC.createMaterial = (mat)=>{
 
         uniforms: {
             time: { type:'float', value: 0.0 },
-            tBase: { type:'t' },
+            //tBase: { type:'t' },
             tDiscov: { type:'t' },
             tEMask: { type:'t' },
             tSMask: { type:'t' },
@@ -127,7 +127,7 @@ DSC.createMaterial = (mat)=>{
 
                 t = clamp(t, 0.0,1.0);
 
-                vec4 base     = texture2D(tBase, uvCoords);
+                //vec4 base     = texture2D(tBase, uvCoords);
                 vec4 frag_d   = texture2D(tDiscov, uvCoords);
                 vec4 emaskCol = texture2D(tEMask, uvCoords);
 
@@ -136,13 +136,14 @@ DSC.createMaterial = (mat)=>{
                     ///bd *= 1000.0;
                     ///bd = clamp(bd, 0.1,1.0);
                     ///frag = mix( vec4(0.87,0.75,0.5, 1.0), frag, bd);
-/*
+
                 csm_DiffuseColor = mix( frag_d, csm_DiffuseColor, t);
                 //csm_DiffuseColor = frag_d;
+                
                 csm_Roughness    = mix( 1.0, csm_Roughness, t);
                 csm_Metalness    = mix( 0.0, csm_Metalness, t);
-*/
-                csm_DiffuseColor = base; //mix(csm_DiffuseColor, vec4(0,1,0, 1), emaskCol.r * 0.5);
+
+                csm_DiffuseColor = mix(csm_DiffuseColor, vec4(0,1,0, 1), emaskCol.r * 0.5);
             }
         `
     });
@@ -183,7 +184,7 @@ DSC.visitor = ()=>{
                 o.material.needsUpdate = true;
                 //console.log(tex)
             });
-
+/*
             ATON.Utils.textureLoader.load(DSC._dirLayers + base, t => {
                 t.flipY = false;
 
@@ -191,8 +192,11 @@ DSC.visitor = ()=>{
                 o.material.needsUpdate = true;
                 //console.log(t)
             });
+*/
+            let wm = APP.createWritableMask(o.name);
+            o.material.uniforms.tEMask.value = wm.texture;
 
-            o.material.uniforms.tEMask.value = DSC._editTex;
+            //o.material.uniforms.tEMask.value = DSC._editTex;
 
             o.material.userData.mDiscovery = true;
             
