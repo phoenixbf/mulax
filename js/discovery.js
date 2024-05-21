@@ -173,14 +173,18 @@ DSC.visitor = ()=>{
             // if first time, setup custom material
             if (!o.material.userData.mDiscovery) o.material = DSC.createMaterial(o.material);
 
+            let UU =  o.material.uniforms;
+
             let layerpath = DSC._dirLayers + dname;
             console.log(layerpath)
 
             ATON.Utils.textureLoader.load(DSC._dirLayers + dname, t => {
                 t.flipY = false;
+                t.wrapS = THREE.RepeatWrapping;
+                t.wrapT = THREE.RepeatWrapping;
 
-                o.material.uniforms.tDiscov.value = t;
-                //o.material.uniforms.tDiscov.value.needsUpdate = true;
+                if (UU) UU.tDiscov.value = t;
+                //UU.tDiscov.value.needsUpdate = true;
                 o.material.needsUpdate = true;
                 //console.log(tex)
             });
@@ -188,13 +192,13 @@ DSC.visitor = ()=>{
             ATON.Utils.textureLoader.load(DSC._dirLayers + base, t => {
                 t.flipY = false;
 
-                o.material.uniforms.tBase.value = t;
+                UU.tBase.value = t;
                 o.material.needsUpdate = true;
                 //console.log(t)
             });
 */
             let wm = APP.createWritableMask(o.name);
-            o.material.uniforms.tEMask.value = wm.texture;
+            if (UU) UU.tEMask.value = wm.texture;
 
             //o.material.uniforms.tEMask.value = DSC._editTex;
 

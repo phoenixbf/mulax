@@ -12,6 +12,8 @@ APP.DSC = DSC;
 APP.pathConfigFile   = APP.basePath + "config/config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
 
+APP.W_MASK_RES = 256;
+
 APP.cdata = undefined;
 
 // APP.setup() is required for web-app initialization
@@ -54,12 +56,15 @@ APP.createWritableMask = (mid)=>{
 	let wm = APP._wMasks[mid];
 
 	wm.canvas = document.createElement('canvas');
-	wm.canvas.width  = 128;
-	wm.canvas.height = 128;
+	wm.canvas.width  = APP.W_MASK_RES;
+	wm.canvas.height = APP.W_MASK_RES;
 
 	wm.ctx = wm.canvas.getContext('2d', { willReadFrequently: true });
 
 	wm.texture = new THREE.Texture();
+	wm.texture.wrapS = THREE.RepeatWrapping;
+	wm.texture.wrapT = THREE.RepeatWrapping;
+
 	wm.texture.image = wm.canvas;
 
 	return wm;
@@ -87,8 +92,11 @@ APP.drawOnWritableMaskFromQuery = (C)=>{
 	let uv  = ATON._queryDataScene.uv;
 	let mid = ATON._queryDataScene.o.name;
 
-	let i = parseInt( 128 * uv.x );
-	let j = parseInt( 128 * (1.0 - uv.y) );
+	uv.x = uv.x % 1;
+	uv.y = uv.y % 1;
+
+	let i = parseInt( APP.W_MASK_RES * uv.x );
+	let j = parseInt( APP.W_MASK_RES * (1.0 - uv.y) );
 
 	APP.drawOnWritableMask(mid, i,j, C);
 };
@@ -137,6 +145,8 @@ APP.writeEditMaskFromQuery = (C)=>{
 
 	let i = parseInt( 128 * uv.x );
 	let j = parseInt( 128 * (1.0 - uv.y) );
+
+	console.log(i,j)
 
 	APP.writeEditMask(i,j, C);
 };
