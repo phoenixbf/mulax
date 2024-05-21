@@ -22,6 +22,8 @@ APP.setup = ()=>{
 
     ATON.FE.realize(); // Realize the base front-end
 	ATON.FE.addBasicLoaderEvents(); // Add basic events handling
+
+	APP.DSC.init();
 	
 	APP._currItem = undefined;
 
@@ -228,6 +230,15 @@ APP.setupEvents = ()=>{
 			//APP.writeEditMaskFromQuery();
 			APP.drawOnWritableMaskFromQuery();
 		}
+		if (k==='0'){
+			ATON.SUI.setSelectorRadius(0.0);
+		}
+		if (k==='1'){
+			ATON.SUI.setSelectorRadius(0.05);
+		}
+		if (k==='2'){
+			ATON.SUI.setSelectorRadius(0.1);
+		}
 	});
 
 /*
@@ -250,21 +261,21 @@ APP.setupEvents = ()=>{
 
 // Layers
 APP.updateItem = ()=>{
-	let loc = ATON.SUI.mainSelector.position;
-	let rad = ATON.SUI._selectorRad;
 
-	//loc.y -= 5.0;
-	//rad = 5.0;
+	APP.DSC.shapeParams.loc = ATON.SUI.mainSelector.position;
+	APP.DSC.shapeParams.rad = ATON.SUI._selectorRad;
+
+	APP.DSC.applyShape();
 
 	APP.gItem.traverse( ( o ) => {
 		if (o.material && o.material.uniforms){
 			let UU = o.material.uniforms;
 
-            UU.vLens.value = loc;
+            UU.vLens.value = APP.DSC.shapeParams.loc;
 			UU.time.value  += ATON._dt;
 
             if (ATON._queryDataScene){
-				UU.vLens.value.w = rad;
+				UU.vLens.value.w = APP.DSC.shapeParams.rad;
 				//console.log(ATON._queryDataScene.o.name)
 			}
 			else UU.vLens.value.w *= 0.9;

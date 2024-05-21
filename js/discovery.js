@@ -1,12 +1,40 @@
 let DSC = {};
 
+DSC.TEX_EXT = ".ktx2";
+
+
 DSC.init = ()=>{
     DSC._dlayer     = undefined;
     DSC._dirLayers = undefined;
     
     DSC._node  = undefined;
 
-    DSC._editTex = 0;
+    DSC.shapeParams = {
+        loc: undefined,
+        rad: 0.1
+    };
+    DSC.shape = undefined;
+
+    DSC.bEnabled = true;
+
+    //DSC._editTex = 0;
+};
+
+DSC.applyShape = ()=>{
+    if (!DSC.shape) return;
+
+    if (DSC.shape==="bottom"){
+        DSC.shapeParams.loc.y -= 10.0;
+        DSC.shapeParams.rad = 10.0;
+        return;
+    }
+
+    if (DSC.shape==="x"){
+        DSC.shapeParams.loc.x -= 10.0;
+        DSC.shapeParams.rad = 10.0;
+        return;
+    }
+
 };
 
 DSC.setNode = (N)=>{
@@ -167,21 +195,25 @@ DSC.visitor = ()=>{
 		if (o.material && o.material.map){
 			let tex   = o.material.map;
 			let name  = tex.name;
-            let base  = name + ".jpg";
-            let dname = name + "_"+DSC._dlayer+".jpg";
+            //let base  = name + ".jpg";
+            let dname = name + "_"+DSC._dlayer + DSC.TEX_EXT;
 
             // if first time, setup custom material
             if (!o.material.userData.mDiscovery) o.material = DSC.createMaterial(o.material);
+
+            //o.material.map.generateMipmaps = false;
 
             let UU =  o.material.uniforms;
 
             let layerpath = DSC._dirLayers + dname;
             console.log(layerpath)
 
-            ATON.Utils.textureLoader.load(DSC._dirLayers + dname, t => {
+            //ATON.Utils.textureLoader.load(DSC._dirLayers + dname, t => {
+            ATON._ktx2Loader.load(DSC._dirLayers + dname, t => {
                 t.flipY = false;
                 t.wrapS = THREE.RepeatWrapping;
                 t.wrapT = THREE.RepeatWrapping;
+                t.colorSpace = ATON._stdEncoding;
 
                 if (UU) UU.tDiscov.value = t;
                 //UU.tDiscov.value.needsUpdate = true;
@@ -209,8 +241,9 @@ DSC.visitor = ()=>{
     });
 };
 
+/*
 DSC.setEditMaskTexture = (tex)=>{
     DSC._editTex = tex;
 }
-
+*/
 export default DSC;
