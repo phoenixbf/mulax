@@ -133,7 +133,7 @@ APP.initMasks = ()=>{
 	APP._semMasks = {};
 	APP._semCurrMask = undefined;
 };
-
+/*
 APP.writeEditMask = (i,j, C)=>{
 	APP._editCTX.putImageData( APP._editC, i,j );
 	APP.DSC._editTex.needsUpdate = true;
@@ -152,7 +152,7 @@ APP.writeEditMaskFromQuery = (C)=>{
 
 	APP.writeEditMask(i,j, C);
 };
-
+*/
 APP.querySemMasks = ()=>{
 	let ctx = APP._semCTX;
     let uv  = ATON._queryDataScene.uv;
