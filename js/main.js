@@ -28,6 +28,7 @@ APP.setup = ()=>{
 	APP._currItem = undefined;
 
 	APP._wMasks = {};
+	APP._semMasks = {};
 	APP.initMasks();
 
 	APP.setupScene();
@@ -238,6 +239,10 @@ APP.setupEvents = ()=>{
 		}
 		if (k==='2'){
 			ATON.SUI.setSelectorRadius(0.1);
+		}
+		if (k===' '){
+			if (!DSC.shape) DSC.shape = "bottom";
+			else DSC.shape = undefined;
 		}
 	});
 
