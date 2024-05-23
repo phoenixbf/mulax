@@ -162,8 +162,8 @@ DSC.createMaterial = (mat)=>{
                 float E = (1.0 * cos(time*2.0));
                 E = clamp(E, 0.0,1.0);
 
-                E *= 0.4;
-                E += 0.1;
+                E *= 0.3;
+                E += 0.15;
 
                 // Border
                     ///float bd = abs(vLens.w - d);
@@ -177,7 +177,7 @@ DSC.createMaterial = (mat)=>{
                 csm_Roughness    = mix( 1.0, csm_Roughness, t);
                 csm_Metalness    = mix( 0.0, csm_Metalness, t);
 
-                csm_DiffuseColor = mix(csm_DiffuseColor, vec4(0,1,0, 1), emaskCol.r * E);
+                csm_DiffuseColor = mix(csm_DiffuseColor, emaskCol, E * emaskCol.a);
             }
         `
     });

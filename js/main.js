@@ -12,7 +12,8 @@ APP.DSC = DSC;
 APP.pathConfigFile   = APP.basePath + "config/config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
 
-APP.W_MASK_RES = 256;
+APP.W_MASK_RES = 512;
+APP.W_MASK_COL = new THREE.Vector4(0,1,0, 1);
 
 APP.cdata = undefined;
 
@@ -79,10 +80,10 @@ APP.drawOnWritableMask = (mid, i,j,C)=>{
 
 	if (!wm.brush){
 		wm.brush = wm.ctx.createImageData(1,1);
-		wm.brush.data[0] = 255;
-		wm.brush.data[1] = 255;
-		wm.brush.data[2] = 255;
-		wm.brush.data[3] = 255;
+		wm.brush.data[0] = parseInt(C.x * 255);
+		wm.brush.data[1] = parseInt(C.y * 255);
+		wm.brush.data[2] = parseInt(C.z * 255);
+		wm.brush.data[3] = parseInt(C.w * 255);
 	}
 
 	wm.ctx.putImageData( wm.brush, i,j );
@@ -100,6 +101,9 @@ APP.drawOnWritableMaskFromQuery = (C)=>{
 
 	let i = parseInt( APP.W_MASK_RES * uv.x );
 	let j = parseInt( APP.W_MASK_RES * (1.0 - uv.y) );
+
+	let n = ATON._queryDataScene.n;
+	//let col = new THREE.Vector4((1.0+n.x)*0.5, (1.0+n.y)*0.5, (1.0+n.z)*0.5, 1);
 
 	APP.drawOnWritableMask(mid, i,j, C);
 };
@@ -213,6 +217,8 @@ APP.setupScene = ()=>{
 
 // Events
 APP.setupEvents = ()=>{
+	let zero = new THREE.Vector4(0,0,0,0);
+
     ATON.on("APP_ConfigLoaded", ()=>{
 		let item = APP.params.get("m");
         APP.loadItem(item);
@@ -229,7 +235,10 @@ APP.setupEvents = ()=>{
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
-			APP.drawOnWritableMaskFromQuery();
+			APP.drawOnWritableMaskFromQuery(APP.W_MASK_COL);
+		}
+		if (k === 'Delete'){
+			APP.drawOnWritableMaskFromQuery(zero);
 		}
 		if (k==='0'){
 			ATON.SUI.setSelectorRadius(0.0);
