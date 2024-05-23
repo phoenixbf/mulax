@@ -235,7 +235,7 @@ DSC.visitor = ()=>{
                 //console.log(t)
             });
 */
-            let wm = APP.createWritableMask(o.name);
+            let wm = APP.MH.createWritableMask(o.name);
             if (UU) UU.tEMask.value = wm.texture;
 
             //o.material.uniforms.tEMask.value = DSC._editTex;

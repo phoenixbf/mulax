@@ -3,17 +3,16 @@
 
 ===============================================*/
 import DSC from "./discovery.js";
+import MH from "./masksHandler.js";
 
 let APP = ATON.App.realize();
 window.APP = APP;
 
 APP.DSC = DSC;
+APP.MH  = MH;
 
 APP.pathConfigFile   = APP.basePath + "config/config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
-
-APP.W_MASK_RES = 512;
-APP.W_MASK_COL = new THREE.Vector4(0,1,0, 1);
 
 APP.cdata = undefined;
 
@@ -25,12 +24,13 @@ APP.setup = ()=>{
 	ATON.FE.addBasicLoaderEvents(); // Add basic events handling
 
 	APP.DSC.init();
+	APP.MH.init();
 	
 	APP._currItem = undefined;
 
 	APP._wMasks = {};
 	APP._semMasks = {};
-	APP.initMasks();
+	//APP.initMasks();
 
 	APP.setupScene();
 	APP.setupEvents();
@@ -52,60 +52,6 @@ APP.loadConfig = ()=>{
 
         ATON.fireEvent("APP_ConfigLoaded");
     });
-};
-
-APP.createWritableMask = (mid)=>{
-	APP._wMasks[mid] = {};
-
-	let wm = APP._wMasks[mid];
-
-	wm.canvas = document.createElement('canvas');
-	wm.canvas.width  = APP.W_MASK_RES;
-	wm.canvas.height = APP.W_MASK_RES;
-
-	wm.ctx = wm.canvas.getContext('2d', { willReadFrequently: true });
-
-	wm.texture = new THREE.Texture();
-	wm.texture.wrapS = THREE.RepeatWrapping;
-	wm.texture.wrapT = THREE.RepeatWrapping;
-
-	wm.texture.image = wm.canvas;
-
-	return wm;
-};
-
-APP.drawOnWritableMask = (mid, i,j,C)=>{
-	let wm = APP._wMasks[mid];
-	if (!wm) return;
-
-	if (!wm.brush){
-		wm.brush = wm.ctx.createImageData(1,1);
-		wm.brush.data[0] = parseInt(C.x * 255);
-		wm.brush.data[1] = parseInt(C.y * 255);
-		wm.brush.data[2] = parseInt(C.z * 255);
-		wm.brush.data[3] = parseInt(C.w * 255);
-	}
-
-	wm.ctx.putImageData( wm.brush, i,j );
-	wm.texture.needsUpdate = true;
-};
-
-APP.drawOnWritableMaskFromQuery = (C)=>{
-	if (!ATON._queryDataScene) return;
-
-	let uv  = ATON._queryDataScene.uv;
-	let mid = ATON._queryDataScene.o.name;
-
-	uv.x = uv.x % 1;
-	uv.y = uv.y % 1;
-
-	let i = parseInt( APP.W_MASK_RES * uv.x );
-	let j = parseInt( APP.W_MASK_RES * (1.0 - uv.y) );
-
-	let n = ATON._queryDataScene.n;
-	//let col = new THREE.Vector4((1.0+n.x)*0.5, (1.0+n.y)*0.5, (1.0+n.z)*0.5, 1);
-
-	APP.drawOnWritableMask(mid, i,j, C);
 };
 
 // Sem Masks
@@ -235,10 +181,10 @@ APP.setupEvents = ()=>{
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
-			APP.drawOnWritableMaskFromQuery(APP.W_MASK_COL);
+			APP.MH.drawOnWritableMaskFromQuery(APP.MH._stdCol);
 		}
 		if (k === 'Delete'){
-			APP.drawOnWritableMaskFromQuery(zero);
+			APP.MH.drawOnWritableMaskFromQuery(APP.MH._zeroCol);
 		}
 		if (k==='0'){
 			ATON.SUI.setSelectorRadius(0.0);
