@@ -158,6 +158,7 @@ DSC.createMaterial = (mat)=>{
                 //vec4 base     = texture2D(tBase, uvCoords);
                 vec4 frag_d   = texture2D(tDiscov, uvCoords);
                 vec4 emaskCol = texture2D(tEMask, uvCoords);
+                vec4 smaskCol = texture2D(tSMask, uvCoords);
 
                 float E = (1.0 * cos(time*2.0));
                 E = clamp(E, 0.0,1.0);
@@ -178,6 +179,8 @@ DSC.createMaterial = (mat)=>{
                 csm_Metalness    = mix( 0.0, csm_Metalness, t);
 
                 csm_DiffuseColor = mix(csm_DiffuseColor, emaskCol, E * emaskCol.a);
+
+                csm_DiffuseColor.g += (smaskCol.r * 3.0);
             }
         `
     });
@@ -203,6 +206,7 @@ DSC.visitor = ()=>{
 			let name  = tex.name;
             //let base  = name + ".jpg";
             let dname = name + "_"+DSC._dlayer + DSC.TEX_EXT;
+            let semname = name + "_SEM1" + DSC.TEX_EXT;
 
             // if first time, setup custom material
             if (!o.material.userData.mDiscovery) o.material = DSC.createMaterial(o.material);
@@ -237,6 +241,9 @@ DSC.visitor = ()=>{
 */
             let wm = APP.MH.createWritableMask(o.name);
             if (UU) UU.tEMask.value = wm.texture;
+
+            let sm = APP.MH.createSemanticMask(o.name, DSC._dirLayers + semname);
+            if (UU) UU.tSMask.value = sm.texture;
 
             //o.material.uniforms.tEMask.value = DSC._editTex;
 

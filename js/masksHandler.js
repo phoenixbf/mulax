@@ -5,8 +5,10 @@ MH.init = ()=>{
     MH._zeroCol = new THREE.Vector4(0,0,0, 0);
     
     MH._wmRes = 256;
+    MH._smRes = 256;
 
     MH._wMasks = {};
+    MH._sMasks = {};
 };
 
 MH.createWritableMask = (mid)=>{
@@ -61,6 +63,53 @@ MH.drawOnWritableMaskFromQuery = (C)=>{
 	//let col = new THREE.Vector4((1.0+n.x)*0.5, (1.0+n.y)*0.5, (1.0+n.z)*0.5, 1);
 
 	MH.drawOnWritableMask(mid, i,j, C);
+};
+
+MH.createSemanticMask = (mid, url)=>{
+	MH._sMasks[mid] = {};
+
+	let semask = MH._sMasks[mid];
+
+	semask.canvas = document.createElement('canvas');
+	semask.canvas.width  = MH._smRes;
+	semask.canvas.height = MH._smRes;
+
+    semask.img = new Image();
+    if (url) semask.img.src = url;
+
+	semask.ctx = semask.canvas.getContext('2d', { willReadFrequently: true });
+    semask.ctx.drawImage(semask.img, 0,0);
+
+	semask.texture = new THREE.Texture();
+	semask.texture.wrapS = THREE.RepeatWrapping;
+	semask.texture.wrapT = THREE.RepeatWrapping;
+
+	semask.texture.image = semask.img;
+
+	return semask;
+};
+
+MH.getSemanticMaskValue = (mid, i,j)=>{
+	let semask = MH._sMasks[mid];
+	if (!semask) return;
+
+    let C = semask.ctx.getImageData(x,y, 1, 1).data;
+    return C;
+};
+
+MH.getSemanticMaskValueFromQuery = ()=>{
+	if (!ATON._queryDataScene) return;
+
+	let uv  = ATON._queryDataScene.uv;
+	let mid = ATON._queryDataScene.o.name;
+
+	uv.x = uv.x % 1;
+	uv.y = uv.y % 1;
+
+	let i = parseInt( MH._smRes * uv.x );
+	let j = parseInt( MH._smRes * (1.0 - uv.y) );
+
+    return MH.getSemanticMaskValue(mid, i,j);
 };
 
 export default MH;
