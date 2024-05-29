@@ -241,6 +241,8 @@ APP.updateItem = ()=>{
 			else UU.vLens.value.w *= 0.9;
         }
     });
+
+	APP.MH.getSemanticMaskValueFromQuery();
 };
 
 // Update

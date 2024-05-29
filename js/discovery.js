@@ -1,6 +1,7 @@
 let DSC = {};
 
 DSC.TEX_EXT = ".ktx2";
+DSC.SEM_EXT = ".png";
 
 
 DSC.init = ()=>{
@@ -206,7 +207,7 @@ DSC.visitor = ()=>{
 			let name  = tex.name;
             //let base  = name + ".jpg";
             let dname = name + "_"+DSC._dlayer + DSC.TEX_EXT;
-            let semname = name + "_SEM1" + DSC.TEX_EXT;
+            let semname = name + "_SEM1" + DSC.SEM_EXT;
 
             // if first time, setup custom material
             if (!o.material.userData.mDiscovery) o.material = DSC.createMaterial(o.material);
@@ -243,7 +244,18 @@ DSC.visitor = ()=>{
             if (UU) UU.tEMask.value = wm.texture;
 
             let sm = APP.MH.createSemanticMask(o.name, DSC._dirLayers + semname);
-            if (UU) UU.tSMask.value = sm.texture;
+            ATON.Utils.textureLoader.load(DSC._dirLayers + semname, t => {
+                t.flipY = false;
+                t.wrapS = THREE.RepeatWrapping;
+                t.wrapT = THREE.RepeatWrapping;
+                t.colorSpace = ATON._stdEncoding;
+
+                if (UU) UU.tSMask.value = t;
+                //UU.tDiscov.value.needsUpdate = true;
+                o.material.needsUpdate = true;
+                
+                console.log(t)
+            });
 
             //o.material.uniforms.tEMask.value = DSC._editTex;
 
