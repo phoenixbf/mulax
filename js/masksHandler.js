@@ -65,6 +65,17 @@ MH.drawOnWritableMaskFromQuery = (C)=>{
 	MH.drawOnWritableMask(mid, i,j, C);
 };
 
+MH.downloadWritableMask = (mid)=>{
+	let wm = MH._wMasks[mid];
+	if (!wm) return;
+
+	let b64 = wm.canvas.toDataURL();
+
+	ATON.Utils._dlink.href = b64.replace("image/png", "image/octet-stream");
+	ATON.Utils._dlink.download = mid+".png";
+	ATON.Utils._dlink.click();
+};
+
 MH.createSemanticMask = (mid, url)=>{
 	if (!url) return undefined;
 
@@ -119,5 +130,7 @@ MH.getSemanticMaskValueFromQuery = ()=>{
 
     return MH.getSemanticMaskValue(mid, i,j);
 };
+
+
 
 export default MH;

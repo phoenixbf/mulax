@@ -181,7 +181,13 @@ DSC.createMaterial = (mat)=>{
 
                 csm_DiffuseColor = mix(csm_DiffuseColor, emaskCol, E * emaskCol.a);
 
-                csm_DiffuseColor.g += (smaskCol.r * 3.0);
+                // Semantic Masks
+                float s = smaskCol.r;
+                s *= cos((vPositionW.y * 1000.0) + (time*10.0));
+                s = clamp(s, 0.2,smaskCol.r);
+
+                csm_DiffuseColor.b += s;
+                csm_DiffuseColor.g += s;
             }
         `
     });
@@ -254,7 +260,7 @@ DSC.visitor = ()=>{
                 //UU.tDiscov.value.needsUpdate = true;
                 o.material.needsUpdate = true;
                 
-                console.log(t)
+                //console.log(t)
             });
 
             //o.material.uniforms.tEMask.value = DSC._editTex;

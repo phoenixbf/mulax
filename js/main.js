@@ -26,10 +26,9 @@ APP.setup = ()=>{
 	APP.DSC.init();
 	APP.MH.init();
 	
-	APP._currItem = undefined;
+	APP._currItem  = undefined;
+	APP._currAtlas = undefined;
 
-	APP._wMasks = {};
-	APP._semMasks = {};
 	//APP.initMasks();
 
 	APP.setupScene();
@@ -199,6 +198,10 @@ APP.setupEvents = ()=>{
 			if (!DSC.shape) DSC.shape = "bottom";
 			else DSC.shape = undefined;
 		}
+
+		if (k==='x'){
+			APP.MH.downloadWritableMask(APP._currAtlas);
+		}
 	});
 
 /*
@@ -235,10 +238,14 @@ APP.updateItem = ()=>{
 			UU.time.value  += ATON._dt;
 
             if (ATON._queryDataScene){
+				APP._currAtlas = ATON._queryDataScene.o.name;
 				UU.vLens.value.w = APP.DSC.shapeParams.rad;
 				//console.log(ATON._queryDataScene.o.name)
 			}
-			else UU.vLens.value.w *= 0.9;
+			else {
+				UU.vLens.value.w *= 0.9;
+				APP._currAtlas = undefined;
+			}
         }
     });
 
