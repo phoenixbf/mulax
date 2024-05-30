@@ -161,11 +161,11 @@ DSC.createMaterial = (mat)=>{
                 vec4 emaskCol = texture2D(tEMask, uvCoords);
                 vec4 smaskCol = texture2D(tSMask, uvCoords);
 
-                float E = (1.0 * cos(time*2.0));
+                float E = cos(time * 4.0);
                 E = clamp(E, 0.0,1.0);
 
                 E *= 0.3;
-                E += 0.15;
+                //E += 0.1;
 
                 // Border
                     ///float bd = abs(vLens.w - d);
@@ -179,15 +179,16 @@ DSC.createMaterial = (mat)=>{
                 csm_Roughness    = mix( 1.0, csm_Roughness, t);
                 csm_Metalness    = mix( 0.0, csm_Metalness, t);
 
-                csm_DiffuseColor = mix(csm_DiffuseColor, emaskCol, E * emaskCol.a);
-
                 // Semantic Masks
-                float s = smaskCol.r;
-                s *= cos((vPositionW.y * 1000.0) + (time*10.0));
-                s = clamp(s, 0.2,smaskCol.r);
+                csm_DiffuseColor = mix(csm_DiffuseColor, vec4(0,1,1, 1), E * smaskCol.r);
 
-                csm_DiffuseColor.b += s;
-                csm_DiffuseColor.g += s;
+                // Edit Mask
+                float s = emaskCol.g;
+                s *= cos((vPositionW.y * 2000.0) + (time*10.0));
+                s = clamp(s, 0.2,emaskCol.g);
+
+                csm_DiffuseColor.r += s;
+                csm_DiffuseColor.g += (s*0.5);
             }
         `
     });
@@ -246,7 +247,7 @@ DSC.visitor = ()=>{
                 //console.log(t)
             });
 */
-            let wm = APP.MH.createWritableMask(o.name);
+            let wm = APP.MH.createEditMask(o.name);
             if (UU) UU.tEMask.value = wm.texture;
 
             let sm = APP.MH.createSemanticMask(o.name, DSC._dirLayers + semname);

@@ -180,10 +180,10 @@ APP.setupEvents = ()=>{
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
-			APP.MH.drawOnWritableMaskFromQuery(APP.MH._stdCol);
+			APP.MH.drawOnEditMaskFromQuery(APP.MH._stdCol);
 		}
 		if (k === 'Delete'){
-			APP.MH.drawOnWritableMaskFromQuery(APP.MH._zeroCol);
+			APP.MH.drawOnEditMaskFromQuery(APP.MH._zeroCol);
 		}
 		if (k==='0'){
 			ATON.SUI.setSelectorRadius(0.0);
@@ -200,7 +200,7 @@ APP.setupEvents = ()=>{
 		}
 
 		if (k==='x'){
-			APP.MH.downloadWritableMask(APP._currAtlas);
+			APP.MH.downloadAllEditMasks();
 		}
 	});
 

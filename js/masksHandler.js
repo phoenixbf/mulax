@@ -1,7 +1,7 @@
 let MH = {};
 
 MH.init = ()=>{
-    MH._stdCol  = new THREE.Vector4(0,1,0, 1);
+    MH._stdCol  = new THREE.Vector4(1,1,1, 1);
     MH._zeroCol = new THREE.Vector4(0,0,0, 0);
     
     MH._wmRes = 256;
@@ -11,7 +11,7 @@ MH.init = ()=>{
     MH._sMasks = {};
 };
 
-MH.createWritableMask = (mid)=>{
+MH.createEditMask = (mid)=>{
 	MH._wMasks[mid] = {};
 
 	let wm = MH._wMasks[mid];
@@ -31,7 +31,7 @@ MH.createWritableMask = (mid)=>{
 	return wm;
 };
 
-MH.drawOnWritableMask = (mid, i,j,C)=>{
+MH.drawOnEditMask = (mid, i,j,C)=>{
 	let wm = MH._wMasks[mid];
 	if (!wm) return;
 
@@ -47,7 +47,7 @@ MH.drawOnWritableMask = (mid, i,j,C)=>{
 	wm.texture.needsUpdate = true;
 };
 
-MH.drawOnWritableMaskFromQuery = (C)=>{
+MH.drawOnEditMaskFromQuery = (C)=>{
 	if (!ATON._queryDataScene) return;
 
 	let uv  = ATON._queryDataScene.uv;
@@ -62,10 +62,10 @@ MH.drawOnWritableMaskFromQuery = (C)=>{
 	//let n = ATON._queryDataScene.n;
 	//let col = new THREE.Vector4((1.0+n.x)*0.5, (1.0+n.y)*0.5, (1.0+n.z)*0.5, 1);
 
-	MH.drawOnWritableMask(mid, i,j, C);
+	MH.drawOnEditMask(mid, i,j, C);
 };
 
-MH.downloadWritableMask = (mid)=>{
+MH.downloadEditMask = (mid)=>{
 	let wm = MH._wMasks[mid];
 	if (!wm) return;
 
@@ -74,6 +74,10 @@ MH.downloadWritableMask = (mid)=>{
 	ATON.Utils._dlink.href = b64.replace("image/png", "image/octet-stream");
 	ATON.Utils._dlink.download = mid+".png";
 	ATON.Utils._dlink.click();
+};
+
+MH.downloadAllEditMasks = ()=>{
+	for (let i in MH._wMasks) MH.downloadEditMask(i);
 };
 
 MH.createSemanticMask = (mid, url)=>{
