@@ -139,7 +139,7 @@ DSC.createMaterial = (mat)=>{
             uniform vec4 vLens;
 
             uniform float time;
-            uniform sampler2D tBase;
+            //uniform sampler2D tBase;
             uniform sampler2D tDiscov;
             uniform sampler2D tEMask;
             uniform sampler2D tSMask;
@@ -184,7 +184,7 @@ DSC.createMaterial = (mat)=>{
 
                 // Edit Mask
                 float s = emaskCol.g;
-                s *= cos((vPositionW.y * 2000.0) + (time*10.0));
+                s *= cos(((vPositionW.x + vPositionW.y + vPositionW.z) * 2000.0) + (time*10.0)); //
                 s = clamp(s, 0.2,emaskCol.g);
 
                 csm_DiffuseColor.r += s;

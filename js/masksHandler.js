@@ -4,7 +4,7 @@ MH.init = ()=>{
     MH._stdCol  = new THREE.Vector4(1,1,1, 1);
     MH._zeroCol = new THREE.Vector4(0,0,0, 0);
     
-    MH._wmRes = 256;
+    MH._wmRes = 512;
     MH._smRes = 512;
 
     MH._wMasks = {};
@@ -23,10 +23,12 @@ MH.createEditMask = (mid)=>{
 	wm.ctx = wm.canvas.getContext('2d', { willReadFrequently: true });
 
 	wm.texture = new THREE.Texture();
+	wm.texture.flipY = false;
 	wm.texture.wrapS = THREE.RepeatWrapping;
 	wm.texture.wrapT = THREE.RepeatWrapping;
 
 	wm.texture.image = wm.canvas;
+	wm.bData = false;
 
 	return wm;
 };
@@ -34,17 +36,24 @@ MH.createEditMask = (mid)=>{
 MH.drawOnEditMask = (mid, i,j,C)=>{
 	let wm = MH._wMasks[mid];
 	if (!wm) return;
-
-	if (!wm.brush){
-		wm.brush = wm.ctx.createImageData(1,1);
-		wm.brush.data[0] = parseInt(C.x * 255);
-		wm.brush.data[1] = parseInt(C.y * 255);
-		wm.brush.data[2] = parseInt(C.z * 255);
-		wm.brush.data[3] = parseInt(C.w * 255);
-	}
+	if (!wm.brush) wm.brush = wm.ctx.createImageData(1,1);
+		
+	wm.brush.data[0] = parseInt(C.x * 255);
+	wm.brush.data[1] = parseInt(C.y * 255);
+	wm.brush.data[2] = parseInt(C.z * 255);
+	wm.brush.data[3] = parseInt(C.w * 255);
 
 	wm.ctx.putImageData( wm.brush, i,j );
 	wm.texture.needsUpdate = true;
+	wm.bData = true;
+};
+
+MH.clearEditMask = (mid)=>{
+	let wm = MH._wMasks[mid];
+	if (!wm) return;
+
+	wm.ctx.clearRect(0,0, wm.canvas.width,wm.canvas.height);
+	wm.bData = false;
 };
 
 MH.drawOnEditMaskFromQuery = (C)=>{
@@ -57,7 +66,7 @@ MH.drawOnEditMaskFromQuery = (C)=>{
 	uv.y = uv.y % 1;
 
 	let i = parseInt( MH._wmRes * uv.x );
-	let j = parseInt( MH._wmRes * (1.0 - uv.y) );
+	let j = parseInt( MH._wmRes * uv.y );
 
 	//let n = ATON._queryDataScene.n;
 	//let col = new THREE.Vector4((1.0+n.x)*0.5, (1.0+n.y)*0.5, (1.0+n.z)*0.5, 1);
@@ -68,6 +77,7 @@ MH.drawOnEditMaskFromQuery = (C)=>{
 MH.downloadEditMask = (mid)=>{
 	let wm = MH._wMasks[mid];
 	if (!wm) return;
+	if (!wm.bData) return;
 
 	let b64 = wm.canvas.toDataURL();
 
@@ -101,13 +111,6 @@ MH.createSemanticMask = (mid, url)=>{
 		//console.log(semask.img.width)
 	};
 	
-/*
-	semask.texture = new THREE.Texture();
-	semask.texture.wrapS = THREE.RepeatWrapping;
-	semask.texture.wrapT = THREE.RepeatWrapping;
-
-	semask.texture.image = semask.img;
-*/
 	return semask;
 };
 
@@ -130,7 +133,7 @@ MH.getSemanticMaskValueFromQuery = ()=>{
 	uv.y = uv.y % 1;
 
 	let i = parseInt( MH._smRes * uv.x );
-	let j = parseInt( MH._smRes * (1.0 - uv.y) );
+	let j = parseInt( MH._smRes * uv.y );
 
     return MH.getSemanticMaskValue(mid, i,j);
 };
