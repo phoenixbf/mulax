@@ -23,6 +23,7 @@ DSC.init = ()=>{
 
 DSC.applyShape = ()=>{
     if (!DSC.shape) return;
+    if (DSC.shape==="sphere") return;
 
     if (DSC.shape==="bottom"){
         DSC.shapeParams.loc.y -= 10.0;

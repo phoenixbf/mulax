@@ -43,8 +43,7 @@
     <script type="text/javascript" src="/dist/THREE.bundle.js"></script>
     <script type="text/javascript" src="/dist/ATON.min.js"></script>
 
-	<!-- Main js entry -->
-	<script type="module" src="js/main.js"></script>
+	<script type="module" src="js/main.js" defer></script>
 </head>
 
 <body oncontextmenu="return false;">
@@ -60,5 +59,9 @@
     <!-- Powered by -->
     <div id='idPoweredBy' class="atonToolbar atonToolbar-bottom poweredBy" >
         Powered by <a href="https://osiris.itabc.cnr.it/aton/" target="_blank">ATON</a>
+    </div>
+
+    <div style="position:fixed; top:0px; right:0px;">
+        <video style="width: 150px; height: auto;" id="qr-video"></video>
     </div>
 </body>

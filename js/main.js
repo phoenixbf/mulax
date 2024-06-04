@@ -4,6 +4,7 @@
 ===============================================*/
 import DSC from "./discovery.js";
 import MH from "./masksHandler.js";
+import QRC from "./controller-QR.js";
 
 let APP = ATON.App.realize();
 window.APP = APP;
@@ -39,6 +40,8 @@ APP.setup = ()=>{
 	//TEST
 	ATON.FE.uiAddButtonVR("idTopToolbar");
 	ATON.FE.uiAddButtonAR("idTopToolbar");
+
+	if (APP.params.get("qr")) QRC.init();
 };
 
 // Config
