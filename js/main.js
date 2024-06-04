@@ -180,19 +180,24 @@ APP.setupEvents = ()=>{
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
-			APP.MH.drawOnEditMaskFromQuery(APP.MH._stdCol);
+			APP.MH.drawOnEditMaskFromQuery(APP.MH._stdCol, 0.0);
+			for (let h=0; h<50; h++) APP.MH.drawOnEditMaskFromQuery(APP.MH._stdCol, ATON.SUI._selectorRad);
 		}
 		if (k === 'Delete'){
-			APP.MH.drawOnEditMaskFromQuery(APP.MH._zeroCol);
+			APP.MH.drawOnEditMaskFromQuery(APP.MH._zeroCol, 0.0);
+			for (let h=0; h<50; h++) APP.MH.drawOnEditMaskFromQuery(APP.MH._zeroCol, ATON.SUI._selectorRad);
 		}
 		if (k==='0'){
 			ATON.SUI.setSelectorRadius(0.0);
 		}
 		if (k==='1'){
-			ATON.SUI.setSelectorRadius(0.05);
+			ATON.SUI.setSelectorRadius(0.01);
 		}
 		if (k==='2'){
-			ATON.SUI.setSelectorRadius(0.1);
+			ATON.SUI.setSelectorRadius(0.03);
+		}
+		if (k==='3'){
+			ATON.SUI.setSelectorRadius(0.07);
 		}
 		if (k===' '){
 			if (!DSC.shape) DSC.shape = "bottom";

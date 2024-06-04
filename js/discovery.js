@@ -5,7 +5,7 @@ DSC.SEM_EXT = ".png";
 
 
 DSC.init = ()=>{
-    DSC._dlayer     = undefined;
+    DSC._dlayer    = undefined;
     DSC._dirLayers = undefined;
     
     DSC._node  = undefined;

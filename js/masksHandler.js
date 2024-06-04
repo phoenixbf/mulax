@@ -1,4 +1,8 @@
+import Tracer from "./tracer.js";
+
 let MH = {};
+
+MH.TRACER_OFFS = 0.03;
 
 MH.init = ()=>{
     MH._stdCol  = new THREE.Vector4(1,1,1, 1);
@@ -9,6 +13,14 @@ MH.init = ()=>{
 
     MH._wMasks = {};
     MH._sMasks = {};
+
+    MH._tracer = Tracer;
+	MH._tracer.init();
+	MH._tracer.setMaxDistance(MH.TRACER_OFFS);
+
+	MH._tRanD  = new THREE.Vector3();
+	MH._tStart = new THREE.Vector3();
+	MH._tEnd   = new THREE.Vector3();
 };
 
 MH.createEditMask = (mid)=>{
@@ -56,11 +68,33 @@ MH.clearEditMask = (mid)=>{
 	wm.bData = false;
 };
 
-MH.drawOnEditMaskFromQuery = (C)=>{
+MH.drawOnEditMaskFromQuery = (C, brushSize)=>{
 	if (!ATON._queryDataScene) return;
 
 	let uv  = ATON._queryDataScene.uv;
 	let mid = ATON._queryDataScene.o.name;
+
+	if (brushSize !== undefined && brushSize > 0.0){
+
+		MH._tRanD.randomDirection();
+		MH._tRanD.multiplyScalar(brushSize * Math.random());
+
+		MH._tStart.copy(ATON._queryDataScene.p);
+
+		MH._tStart.x -= ATON.Nav._vDir.x * MH.TRACER_OFFS;
+		MH._tStart.y -= ATON.Nav._vDir.y * MH.TRACER_OFFS;
+		MH._tStart.z -= ATON.Nav._vDir.z * MH.TRACER_OFFS;
+
+		MH._tStart.x += MH._tRanD.x;
+		MH._tStart.y += MH._tRanD.y;
+		MH._tStart.z += MH._tRanD.z;
+
+		let h = MH._tracer.trace(MH._tStart, ATON.Nav._vDir);
+		if (!h) return;
+
+		uv  = h.uv;
+		mid = h.o.name;
+	}
 
 	uv.x = uv.x % 1;
 	uv.y = uv.y % 1;
