@@ -25,7 +25,7 @@ DSC.applyShape = ()=>{
     if (!DSC.shape) return;
     if (DSC.shape==="sphere") return;
 
-    if (DSC.shape==="bottom"){
+    if (DSC.shape==="y"){
         DSC.shapeParams.loc.y -= 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
