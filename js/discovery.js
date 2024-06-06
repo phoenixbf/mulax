@@ -1,3 +1,9 @@
+/*
+	Discovery module
+	bruno.fanini_AT_cnr.it
+
+===============================================*/
+
 let DSC = {};
 
 DSC.TEX_EXT = ".ktx2";

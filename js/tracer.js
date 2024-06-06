@@ -1,3 +1,9 @@
+/*
+	Tracer module
+	bruno.fanini_AT_cnr.it
+
+===============================================*/
+
 let Tracer = {};
 
 Tracer.init = ()=>{

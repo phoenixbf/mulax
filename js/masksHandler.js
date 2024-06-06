@@ -1,3 +1,9 @@
+/*
+	Masks handler module
+	bruno.fanini_AT_cnr.it
+
+===============================================*/
+
 import Tracer from "./tracer.js";
 
 let MH = {};

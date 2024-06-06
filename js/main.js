@@ -1,5 +1,6 @@
 /*
 	Main js entry for multi-layer tool
+	bruno.fanini_AT_cnr.it
 
 ===============================================*/
 import DSC from "./discovery.js";

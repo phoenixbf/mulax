@@ -1,3 +1,9 @@
+/*
+	QR Controller
+	bruno.fanini_AT_cnr.it
+
+===============================================*/
+
 import QRS from "./deps/qr-scanner.min.js";
 
 let QRController = {};
