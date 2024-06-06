@@ -186,6 +186,10 @@ APP.setupEvents = ()=>{
 			APP.MH.drawOnEditMaskFromQuery(APP.MH._stdCol, 0.0);
 			for (let h=0; h<50; h++) APP.MH.drawOnEditMaskFromQuery(APP.MH._stdCol, ATON.SUI._selectorRad);
 		}
+		if (k === 'l'){
+			if (DSC._dlayer === "UVL") APP.DSC.setDiscoveryLayer("VIL");
+			else APP.DSC.setDiscoveryLayer("UVL");
+		}
 		if (k === 'Delete'){
 			APP.MH.drawOnEditMaskFromQuery(APP.MH._zeroCol, 0.0);
 			for (let h=0; h<50; h++) APP.MH.drawOnEditMaskFromQuery(APP.MH._zeroCol, ATON.SUI._selectorRad);
@@ -203,7 +207,7 @@ APP.setupEvents = ()=>{
 			ATON.SUI.setSelectorRadius(0.07);
 		}
 		if (k===' '){
-			if (!DSC.shape) DSC.shape = "bottom";
+			if (!DSC.shape) DSC.shape = "y";
 			else DSC.shape = undefined;
 		}
 

@@ -37,6 +37,12 @@ DSC.applyShape = ()=>{
         return;
     }
 
+    if (DSC.shape==="z"){
+        DSC.shapeParams.loc.z -= 10.0;
+        DSC.shapeParams.rad = 10.0;
+        return;
+    }
+
 };
 
 DSC.setNode = (N)=>{

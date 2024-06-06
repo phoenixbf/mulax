@@ -113,11 +113,7 @@ MH.downloadEditMask = (mid)=>{
 	if (!wm) return;
 	if (!wm.bData) return;
 
-	let b64 = wm.canvas.toDataURL();
-
-	ATON.Utils._dlink.href = b64.replace("image/png", "image/octet-stream");
-	ATON.Utils._dlink.download = mid+".png";
-	ATON.Utils._dlink.click();
+	ATON.Utils.downloadImageFromCanvas( wm.canvas, mid+".png" );
 };
 
 MH.downloadAllEditMasks = ()=>{
