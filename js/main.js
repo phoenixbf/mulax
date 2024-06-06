@@ -215,6 +215,8 @@ APP.setupEvents = ()=>{
 		if (k==='x'){
 			APP.MH.downloadAllEditMasks();
 		}
+
+		if (k==='?') ATON.MediaFlow.downloadVideoSnapshot(document.getElementById("qr-video"), "vid.jpg");
 	});
 
 /*

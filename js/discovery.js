@@ -66,52 +66,7 @@ DSC.setDiscoveryLayer = (layer)=>{
 };
 
 DSC.createMaterial = (mat)=>{
-/*
-    let M = new THREE.ShaderMaterial({
-        uniforms: {
-            time: { type:'float', value: 0.0 },
-            tDiscov: { type:'t' },
-            tEMask: { type:'t' },
-            tSMask: { type:'t' },
-            vLens: { type:'vec4', value: new THREE.Vector4(0,0,0, 0.2) },
-        },
-        
-        vertexShader: ATON.MatHub.getDefVertexShader(),
 
-        fragmentShader:`
-            varying vec3 vPositionW;
-
-            varying vec3 vNormalW;
-            varying vec3 vNormalV;
-            varying vec2 vUv;
-
-            uniform vec4 vLens;
-
-            uniform float time;
-            uniform sampler2D tDiscov;
-            uniform sampler2D tEMask;
-            uniform sampler2D tSMask;
-
-            void main(){
-                float sedge = 1000.0;
-
-                float d = distance(vPositionW, vLens.xyz);
-                float t = d / vLens.w;
-
-                t -= (1.0 - (1.0/sedge));
-                t *= sedge;
-
-                t = clamp(t, 0.0,1.0);
-
-                vec4 frag_d   = texture2D(tDiscov, vUv);
-                vec4 emaskCol = texture2D(tEMask, vUv);
-
-                gl_FragColor = frag_d;
-  
-            }
-        `
-    });
-*/
     let M = new CustomShaderMaterial({
         baseMaterial: mat,
 
