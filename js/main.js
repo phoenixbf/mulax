@@ -156,12 +156,35 @@ APP.loadItem = (item)=>{
 
 	if (e.scale) APP.gItem.setScale(e.scale);
 
+	APP._matGround.map = ATON.Utils.textureLoader.load(APP.pathAssetsFolder + item + "/ground.jpg");
+	APP._matGround.needsUpdate = true;
+
 	APP._currItem = item;
 };
 
 APP.setupScene = ()=>{
 	APP.gItem = ATON.createSceneNode("item");
 	APP.gItem.attachToRoot();
+
+	// ground
+	let g = new THREE.PlaneGeometry( 1,1 );
+
+    APP._matGround = new THREE.MeshBasicMaterial({
+        color: ATON.MatHub.colors.white,
+        //transparent: true,
+        //depthWrite: false,
+        //opacity: 0.2
+		blending: THREE.MultiplyBlending
+    });
+
+    let N = ATON.createSceneNode("base").rotateX(-Math.PI * 0.5);
+	N.position.y -= 0.01;
+
+	let M = new THREE.Mesh(g, APP._matGround);
+	M.raycast = ATON.Utils.VOID_CAST;
+
+    N.add( M );
+	N.attachToRoot();
 };
 
 // Events
