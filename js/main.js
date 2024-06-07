@@ -171,6 +171,28 @@ APP.setupScene = ()=>{
 	APP.gItem = ATON.createSceneNode("item");
 	APP.gItem.attachToRoot();
 
+	// POI sem materials
+	APP._matPOI = ATON.MatHub.materials.defUI.clone();
+    APP._matPOI.uniforms.tint.value    = new THREE.Color(0,1,1);
+    APP._matPOI.uniforms.opacity.value = 0.0;
+
+	APP._matPOIHL = ATON.MatHub.materials.defUI.clone();
+    APP._matPOIHL.uniforms.tint.value    = APP._matPOI.uniforms.tint.value;
+    APP._matPOIHL.uniforms.opacity.value = 0.4;
+/*
+	APP._matPOI = new THREE.MeshBasicMaterial({ 
+        transparent: true,
+		color: new THREE.Color(0,0.5,1), 
+        opacity: 0.2,
+        depthWrite: false
+    });
+	APP._matPOIHL = new THREE.MeshBasicMaterial({ 
+        transparent: true,
+		color: new THREE.Color(0,0.5,1), 
+        opacity: 0.4,
+        depthWrite: false
+    });
+*/
 	// ground
 	let g = new THREE.PlaneGeometry( 1,1 );
 
@@ -209,6 +231,37 @@ APP.setupEvents = ()=>{
 		ATON.SUI.setSelectorRadius(0.1);
 	});
 
+	ATON.EventHub.clearEventHandlers("SemanticNodeHover");
+    ATON.on("SemanticNodeHover", (semid)=>{
+        let S = ATON.getSemanticNode(semid);
+        if (!S) return;
+
+		let C = S.userData.mulax;
+		if (!C) return;
+
+		ATON.FE.showSemLabel(C.title);
+		ATON.FE._bSem = true;
+
+		S.highlight();
+        
+		//$('canvas').css({ cursor: 'crosshair' });
+        //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.hide();
+    });
+
+	ATON.EventHub.clearEventHandlers("SemanticNodeLeave");
+    ATON.on("SemanticNodeLeave", (semid)=>{
+        let S = ATON.getSemanticNode(semid);
+        if (!S) return;
+
+        ATON.FE.hideSemLabel();
+        ATON.FE._bSem = false;
+
+        S.restoreDefaultMaterial();
+
+        //$('canvas').css({ cursor: 'grab' });
+        //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.show();
+    });
+
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
@@ -245,6 +298,8 @@ APP.setupEvents = ()=>{
 		}
 
 		if (k==='?') ATON.MediaFlow.downloadVideoSnapshot(document.getElementById("qr-video"), "vid.jpg");
+
+		if (k==='a') POIHandler.addFromCurrentQuery({ title: "test" });
 	});
 
 /*

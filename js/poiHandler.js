@@ -18,17 +18,34 @@ POIHandler.clearList = ()=>{
 	POIHandler._gPOIs.removeChildren();
 };
 
-POIHandler.add = (id, pos, rad, content)=>{
+POIHandler.add = (pos, rad, content)=>{
+
+	ATON.checkAuth(R => {
+		// TODO: move here
+	});
+
+	let id = ATON.Utils.generateID("poi");
+	console.log(id)
 
 	let A = ATON.SemFactory.createSphere(id, pos, rad);
 	A.attachTo(POIHandler._gPOIs);
 
-	//A.setDefaultAndHighlightMaterials(this._matSem, APP.recSemMatHL);
-    //A.restoreDefaultMaterial();
+	A.setDefaultAndHighlightMaterials(APP._matPOI, APP._matPOIHL);
+    A.restoreDefaultMaterial();
 
 	A.userData.mulax = content;
 
 	POIHandler._list[id] = A;
+	return A;
+};
+
+POIHandler.addFromCurrentQuery = (content)=>{
+	if (!ATON._queryDataScene) return undefined;
+
+	let p = ATON._queryDataScene.p;
+	let r = ATON.SUI._selectorRad;
+
+	return POIHandler.add(p,r, content);
 };
 
 POIHandler.remove = (id)=>{
