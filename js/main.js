@@ -5,6 +5,7 @@
 ===============================================*/
 import DSC from "./discovery.js";
 import MH from "./masksHandler.js";
+import POIHandler from "./poiHandler.js";
 import QRC from "./controller-QR.js";
 
 let APP = ATON.App.realize();
@@ -12,6 +13,9 @@ window.APP = APP;
 
 APP.DSC = DSC;
 APP.MH  = MH;
+APP.POIHandler = POIHandler;
+
+
 
 APP.pathConfigFile   = APP.basePath + "config/config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
@@ -27,6 +31,7 @@ APP.setup = ()=>{
 
 	APP.DSC.init();
 	APP.MH.init();
+	APP.POIHandler.init();
 	
 	APP._currItem  = undefined;
 	APP._currAtlas = undefined;
