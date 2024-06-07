@@ -156,7 +156,7 @@ APP.loadItem = (item)=>{
 
 	if (e.scale) APP.gItem.setScale(e.scale);
 
-	APP._matGround.map = ATON.Utils.textureLoader.load(APP.pathAssetsFolder + item + "/ground.jpg");
+	APP._matGround.map = ATON.Utils.textureLoader.load(APP.pathAssetsFolder + item + "/ground.png");
 	APP._matGround.needsUpdate = true;
 
 	APP._currItem = item;
@@ -171,10 +171,10 @@ APP.setupScene = ()=>{
 
     APP._matGround = new THREE.MeshBasicMaterial({
         color: ATON.MatHub.colors.white,
-        //transparent: true,
-        //depthWrite: false,
-        //opacity: 0.2
-		blending: THREE.MultiplyBlending
+        transparent: true,
+        depthWrite: false,
+        //opacity: 0.2,
+		//blending: THREE.MultiplyBlending
     });
 
     let N = ATON.createSceneNode("base").rotateX(-Math.PI * 0.5);
