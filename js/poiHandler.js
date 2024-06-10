@@ -62,4 +62,15 @@ POIHandler.getContent = (id)=>{
 	return A.userData.mulax;
 };
 
+POIHandler.filterByType = (t)=>{
+	for (let id in POIHandler._list){
+		let A = POIHandler._list[id];
+		let C = POIHandler.getContent(id);
+
+		if (C.type === t || t === undefined) A.show();
+		else A.hide();
+	}
+
+};
+
 export default POIHandler;

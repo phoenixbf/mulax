@@ -228,7 +228,7 @@ APP.setupEvents = ()=>{
 		APP.DSC.setDirLayers(APP.pathAssetsFolder + APP._currItem + "/");
 		APP.DSC.setDiscoveryLayer("UVL");
 
-		ATON.SUI.setSelectorRadius(0.1);
+		ATON.SUI.setSelectorRadius(0.02);
 	});
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeHover");
