@@ -299,7 +299,19 @@ APP.setupEvents = ()=>{
 
 		if (k==='?') ATON.MediaFlow.downloadVideoSnapshot(document.getElementById("qr-video"), "vid.jpg");
 
-		if (k==='a') POIHandler.addFromCurrentQuery({ title: "test" });
+		if (k==='a') POIHandler.addFromCurrentQuery({
+			title: "test A",
+			type: {
+				aaa : true
+				}
+			});
+		if (k==='b') POIHandler.addFromCurrentQuery({
+			title: "test B",
+			type: {
+				aaa: true,
+				bbb: true
+				}
+			});
 	});
 
 /*

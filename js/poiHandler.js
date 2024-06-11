@@ -12,6 +12,9 @@ POIHandler.init = ()=>{
 
 	POIHandler._gPOIs = ATON.createSemanticNode();
 	POIHandler._gPOIs.attachToRoot();
+
+	POIHandler._filteredAABB = new THREE.Box3();
+	POIHandler._filteredBS   = new THREE.Sphere();
 };
 
 POIHandler.clearList = ()=>{
@@ -63,14 +66,23 @@ POIHandler.getContent = (id)=>{
 };
 
 POIHandler.filterByType = (t)=>{
+	POIHandler._filteredAABB = new THREE.Box3();
+
 	for (let id in POIHandler._list){
 		let A = POIHandler._list[id];
 		let C = POIHandler.getContent(id);
 
-		if (C.type === t || t === undefined) A.show();
+		if (C.type[t] || t === undefined){
+			A.show();
+			POIHandler._filteredAABB.expandByObject(A);
+		}
 		else A.hide();
 	}
 
+	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
+	console.log(POIHandler._filteredBS);
+
+	ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
 };
 
 export default POIHandler;
