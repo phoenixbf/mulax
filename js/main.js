@@ -44,6 +44,7 @@ APP.setup = ()=>{
 	APP.loadConfig();
 
 	//TEST
+	ATON.FE.uiAddButtonUser("idTopToolbar");
 	ATON.FE.uiAddButtonVR("idTopToolbar");
 	ATON.FE.uiAddButtonAR("idTopToolbar");
 
@@ -165,6 +166,9 @@ APP.loadItem = (item)=>{
 	APP._matGround.needsUpdate = true;
 
 	APP._currItem = item;
+	POIHandler.loadAll(()=>{
+		//
+	});
 };
 
 APP.setupScene = ()=>{

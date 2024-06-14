@@ -81,6 +81,8 @@ DSC.createMaterial = (mat)=>{
 
         vertexShader:`
             varying vec3 vPositionW;
+            varying vec4 vPos;
+
             varying vec3 vNormalW;
             varying vec3 vNormalV;
 
@@ -88,10 +90,12 @@ DSC.createMaterial = (mat)=>{
 
             void main(){
                 vPositionW = ( modelMatrix * vec4( position, 1.0 )).xyz;
+                vPos       = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
                 vNormalV   = normalize( vec3( normalMatrix * normal ));
                 vNormalW   = (modelMatrix * vec4(normal, 0.0)).xyz;
 
-                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                gl_Position = vPos;
 
                 sUV = uv;
             }
@@ -99,6 +103,7 @@ DSC.createMaterial = (mat)=>{
 
         fragmentShader:`
             varying vec3 vPositionW;
+            varying vec4 vPos;
 
             varying vec3 vNormalW;
             varying vec3 vNormalV;
@@ -113,8 +118,12 @@ DSC.createMaterial = (mat)=>{
             uniform sampler2D tSMask;
 
             void main(){
-                vec2 uvCoords = sUV;
                 float sedge = 1000.0;
+                
+                vec2 uvCoords = sUV;
+
+                vec2 sCoords = vPos.xy;
+                sCoords /= vPos.w;
 
                 float d = distance(vPositionW, vLens.xyz);
                 float t = d / vLens.w;
