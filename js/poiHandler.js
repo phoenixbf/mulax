@@ -1,5 +1,5 @@
 /*
-	POI / punctual annotations handler module
+	POI / annotations handler module
 	bruno.fanini_AT_cnr.it
 
 ===============================================*/
@@ -21,9 +21,38 @@ POIHandler.clearList = ()=>{
 	POIHandler._gPOIs.removeChildren();
 };
 
-POIHandler.create = (id, pos, rad, content)=>{
-	let A = ATON.SemFactory.createSphere(id, pos, rad);
+POIHandler.realize = (id, pos, rad, content)=>{
+	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 1.0);
 	A.attachTo(POIHandler._gPOIs);
+
+	A.setPosition(pos);
+	A.setScale(rad);
+
+	let cat = content.cat;
+	let types = "";
+	for (let t in content.types) types += t;
+
+	console.log(cat, types)
+
+	if (!APP._matsIconCat[cat]){
+		APP._matsIconCat[cat] = APP._matBaseIcon.clone();
+		APP._matsIconCat[cat].map = ATON.Utils.textureLoader.load(APP.pathIcons + cat + ".png");
+	}
+
+	if (!APP._matsIconType[types]){
+		APP._matsIconType[types] = APP._matBaseIcon.clone();
+		APP._matsIconType[types].map = ATON.Utils.textureLoader.load(APP.pathIcons + types + ".png");
+	}
+
+	let iconCat = new THREE.Sprite(APP._matsIconCat[cat]);
+	iconCat.scale.setScalar(1.5);
+	iconCat.renderOrder = 10;
+	A.add(iconCat);
+
+	let iconTypes = new THREE.Sprite(APP._matsIconType[types]);
+	iconTypes.scale.setScalar(1.5);
+	iconTypes.renderOrder = 8;
+	A.add(iconTypes);
 
 	A.setDefaultAndHighlightMaterials(APP._matPOI, APP._matPOIHL);
     A.restoreDefaultMaterial();
@@ -43,7 +72,7 @@ POIHandler.add = (pos, rad, content)=>{
 	let id = ATON.Utils.generateID("poi");
 	//console.log(id)
 
-	let A = POIHandler.create(id, pos, rad, content);
+	let A = POIHandler.realize(id, pos, rad, content);
 
 	let O = {};
 	
@@ -77,11 +106,15 @@ POIHandler.remove = (id)=>{
 	POIHandler._list[id] = null;
 };
 
+POIHandler.getContentFromNode = (A)=>{
+	return A.userData.mulax;
+};
+
 POIHandler.getContent = (id)=>{
 	let A = POIHandler._list[id];
 	if (!A) return undefined;
 
-	return A.userData.mulax;
+	return POIHandler.getContentFromNode(A);
 };
 
 POIHandler.loadAll = ( onComplete )=>{
@@ -92,7 +125,7 @@ POIHandler.loadAll = ( onComplete )=>{
 		for (let a in D){
 			let A = D[a];
 
-			POIHandler.create(a, new THREE.Vector3(A.pos[0],A.pos[1],A.pos[2]), A.rad, A.content );
+			POIHandler.realize(a, new THREE.Vector3(A.pos[0],A.pos[1],A.pos[2]), A.rad, A.content );
 		}
 
 		console.log(D)
@@ -106,7 +139,7 @@ POIHandler.filterByType = (t)=>{
 		let A = POIHandler._list[id];
 		let C = POIHandler.getContent(id);
 
-		if (C.type[t] || t === undefined){
+		if (C.types[t] || t === undefined){
 			A.show();
 			POIHandler._filteredAABB.expandByObject(A);
 		}

@@ -6,7 +6,7 @@
 import DSC from "./discovery.js";
 import MH from "./masksHandler.js";
 import POIHandler from "./poiHandler.js";
-import QRC from "./controller-QR.js";
+//import QRC from "./controller-QR.js";
 
 let APP = ATON.App.realize();
 window.APP = APP;
@@ -19,6 +19,7 @@ APP.POIHandler = POIHandler;
 
 APP.pathConfigFile   = APP.basePath + "config/config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
+APP.pathIcons        = APP.basePath + "res/icons/"; 
 
 APP.cdata = undefined;
 
@@ -176,6 +177,7 @@ APP.setupScene = ()=>{
 	APP.gItem.attachToRoot();
 
 	// POI sem materials
+/*
 	APP._matPOI = ATON.MatHub.materials.defUI.clone();
     APP._matPOI.uniforms.tint.value    = new THREE.Color(0,1,1);
     APP._matPOI.uniforms.opacity.value = 0.0;
@@ -183,6 +185,14 @@ APP.setupScene = ()=>{
 	APP._matPOIHL = ATON.MatHub.materials.defUI.clone();
     APP._matPOIHL.uniforms.tint.value    = APP._matPOI.uniforms.tint.value;
     APP._matPOIHL.uniforms.opacity.value = 0.4;
+*/
+
+	APP._matPOI = ATON.MatHub.materials.fullyTransparent.clone();
+
+	APP._matPOIHL = ATON.MatHub.materials.defUI.clone();
+	APP._matPOIHL.uniforms.tint.value    = ATON.MatHub.colors.white;
+	APP._matPOIHL.uniforms.opacity.value = 0.0;
+
 /*
 	APP._matPOI = new THREE.MeshBasicMaterial({ 
         transparent: true,
@@ -197,6 +207,20 @@ APP.setupScene = ()=>{
         depthWrite: false
     });
 */
+
+	// Icons
+	APP._matBaseIcon = new THREE.SpriteMaterial({
+        //map: new THREE.TextureLoader().load( ... ),
+        transparent: true,
+        color: ATON.MatHub.colors.white,
+        depthWrite: false, 
+        depthTest: false
+        //blending: THREE.AdditiveBlending
+    });
+
+	APP._matsIconCat  = {};
+	APP._matsIconType = {};
+
 	// ground
 	let g = new THREE.PlaneGeometry( 1,1 );
 
@@ -240,11 +264,13 @@ APP.setupEvents = ()=>{
         let S = ATON.getSemanticNode(semid);
         if (!S) return;
 
-		let C = S.userData.mulax;
+		let C = POIHandler.getContentFromNode(S);
 		if (!C) return;
 
-		ATON.FE.showSemLabel(C.title);
-		ATON.FE._bSem = true;
+		if (ATON.XR._bPresenting){
+			ATON.FE.showSemLabel(C.title);
+			ATON.FE._bSem = true;
+		}
 
 		S.highlight();
         
@@ -257,8 +283,10 @@ APP.setupEvents = ()=>{
         let S = ATON.getSemanticNode(semid);
         if (!S) return;
 
-        ATON.FE.hideSemLabel();
-        ATON.FE._bSem = false;
+		if (ATON.XR._bPresenting){
+			ATON.FE.hideSemLabel();
+			ATON.FE._bSem = false;
+		}
 
         S.restoreDefaultMaterial();
 
@@ -304,18 +332,31 @@ APP.setupEvents = ()=>{
 		if (k==='?') ATON.MediaFlow.downloadVideoSnapshot(document.getElementById("qr-video"), "vid.jpg");
 
 		if (k==='a') POIHandler.addFromCurrentQuery({
-			title: "test A",
-			type: {
-				aaa : true
+			title: "test O",
+			description: "Description of test O",
+			cat: "imaging",
+			types: {
+				o : {
+					description: "lorem ipsum",
+					ref: "https://..."		
 				}
-			});
+			}
+		});
 		if (k==='b') POIHandler.addFromCurrentQuery({
-			title: "test B",
-			type: {
-				aaa: true,
-				bbb: true
+			title: "test OB",
+			description: "Description of test OB",
+			cat: "spot",
+			types: {
+				o: {
+					description: "lorem ipsum",
+					ref: "https://..."		
+				},
+				b: {
+					description: "lorem ipsum",
+					ref: "https://..."		
 				}
-			});
+			}
+		});
 	});
 
 /*
