@@ -214,8 +214,9 @@ APP.setupScene = ()=>{
         transparent: true,
         color: ATON.MatHub.colors.white,
         depthWrite: false, 
-        depthTest: false
+        depthTest: false,
         //blending: THREE.AdditiveBlending
+		//sizeAttenuation: false
     });
 
 	APP._matsIconCat  = {};
@@ -276,6 +277,7 @@ APP.setupEvents = ()=>{
         
 		//$('canvas').css({ cursor: 'crosshair' });
         //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.hide();
+		ATON.fireEvent("APP_POIHover",semid);
     });
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeLeave");
@@ -292,7 +294,15 @@ APP.setupEvents = ()=>{
 
         //$('canvas').css({ cursor: 'grab' });
         //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.show();
+		ATON.fireEvent("APP_POILeave",semid);
     });
+
+	ATON.on("Tap", (e)=>{
+		if (ATON._hoveredSemNode){
+			ATON.fireEvent("APP_POISelect",ATON._hoveredSemNode);
+			console.log("Selected POI "+ATON._hoveredSemNode);
+		}
+	});
 
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
