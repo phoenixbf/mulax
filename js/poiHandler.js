@@ -140,14 +140,14 @@ POIHandler.loadAll = ( onComplete )=>{
 	});
 };
 
-POIHandler.filterByType = (t)=>{
+POIHandler.filterByTechnique = (t)=>{
 	POIHandler._filteredAABB = new THREE.Box3();
 
 	for (let id in POIHandler._list){
 		let A = POIHandler._list[id];
 		let C = POIHandler.getContent(id);
 
-		if (C.types[t] || t === undefined){
+		if (C.tecs[t] || t === undefined){
 			A.show();
 			POIHandler._filteredAABB.expandByObject(A);
 		}
