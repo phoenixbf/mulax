@@ -57,6 +57,14 @@ POIHandler.realize = (id, pos, rad, content)=>{
 	A.setDefaultAndHighlightMaterials(APP._matPOI, APP._matPOIHL);
     A.restoreDefaultMaterial();
 
+	A.onHover = ()=>{
+		A.setScale(rad*1.5);
+	};
+
+	A.onLeave = ()=>{
+		A.setScale(rad);
+	};
+
 	A.userData.mulax = content;
 
 	POIHandler._list[id] = A;
@@ -140,6 +148,26 @@ POIHandler.filterByType = (t)=>{
 		let C = POIHandler.getContent(id);
 
 		if (C.types[t] || t === undefined){
+			A.show();
+			POIHandler._filteredAABB.expandByObject(A);
+		}
+		else A.hide();
+	}
+
+	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
+	console.log(POIHandler._filteredBS);
+
+	ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
+};
+
+POIHandler.filterByCategory = (c)=>{
+	POIHandler._filteredAABB = new THREE.Box3();
+
+	for (let id in POIHandler._list){
+		let A = POIHandler._list[id];
+		let C = POIHandler.getContent(id);
+
+		if (C.cat === c || c === undefined){
 			A.show();
 			POIHandler._filteredAABB.expandByObject(A);
 		}
