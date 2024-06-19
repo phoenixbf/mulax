@@ -29,19 +29,19 @@ POIHandler.realize = (id, pos, rad, content)=>{
 	A.setScale(rad);
 
 	let cat = content.cat;
-	let types = "";
-	for (let t in content.types) types += t;
+	let tecs = "";
+	for (let t in content.tecs) tecs += t;
 
-	console.log(cat, types)
+	console.log(cat, tecs)
 
 	if (!APP._matsIconCat[cat]){
 		APP._matsIconCat[cat] = APP._matBaseIcon.clone();
-		APP._matsIconCat[cat].map = ATON.Utils.textureLoader.load(APP.pathIcons + cat + ".png");
+		APP._matsIconCat[cat].map = ATON.Utils.textureLoader.load(APP.pathIcons + "categories/" + cat + ".png");
 	}
 
-	if (!APP._matsIconType[types]){
-		APP._matsIconType[types] = APP._matBaseIcon.clone();
-		APP._matsIconType[types].map = ATON.Utils.textureLoader.load(APP.pathIcons + types + ".png");
+	if (!APP._matsIconTechniques[tecs]){
+		APP._matsIconTechniques[tecs] = APP._matBaseIcon.clone();
+		APP._matsIconTechniques[tecs].map = ATON.Utils.textureLoader.load(APP.pathIcons + "techniques/" + tecs + ".png");
 	}
 
 	let iconCat = new THREE.Sprite(APP._matsIconCat[cat]);
@@ -49,10 +49,10 @@ POIHandler.realize = (id, pos, rad, content)=>{
 	iconCat.renderOrder = 10;
 	A.add(iconCat);
 
-	let iconTypes = new THREE.Sprite(APP._matsIconType[types]);
-	iconTypes.scale.setScalar(1.5);
-	iconTypes.renderOrder = 8;
-	A.add(iconTypes);
+	let iconTecs = new THREE.Sprite(APP._matsIconTechniques[tecs]);
+	iconTecs.scale.setScalar(1.5);
+	iconTecs.renderOrder = 8;
+	A.add(iconTecs);
 
 	A.setDefaultAndHighlightMaterials(APP._matPOI, APP._matPOIHL);
     A.restoreDefaultMaterial();

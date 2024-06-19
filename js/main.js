@@ -219,8 +219,8 @@ APP.setupScene = ()=>{
 		//sizeAttenuation: false
     });
 
-	APP._matsIconCat  = {};
-	APP._matsIconType = {};
+	APP._matsIconCat = {};
+	APP._matsIconTechniques = {};
 
 	// ground
 	let g = new THREE.PlaneGeometry( 1,1 );
@@ -345,7 +345,7 @@ APP.setupEvents = ()=>{
 			title: "test O",
 			description: "Description of test O",
 			cat: "imaging",
-			types: {
+			tecs: {
 				o : {
 					description: "lorem ipsum",
 					ref: "https://..."		
@@ -356,7 +356,7 @@ APP.setupEvents = ()=>{
 			title: "test OB",
 			description: "Description of test OB",
 			cat: "spot",
-			types: {
+			tecs: {
 				o: {
 					description: "lorem ipsum",
 					ref: "https://..."		
