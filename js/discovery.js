@@ -31,6 +31,11 @@ DSC.applyShape = ()=>{
     if (!DSC.shape) return;
     if (DSC.shape==="sphere") return;
 
+    if (ATON.XR._bPresenting && ATON.XR._sessionType === "immersive-ar"){
+        DSC.shapeParams.loc.copy(ATON.Nav._currPOV.pos);
+        return;
+    }
+
     if (DSC.shape==="y"){
         DSC.shapeParams.loc.y -= 10.0;
         DSC.shapeParams.rad = 10.0;
