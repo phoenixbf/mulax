@@ -162,6 +162,7 @@ APP.loadItem = (item)=>{
 	APP.gItem.load(path);
 
 	if (e.scale) APP.gItem.setScale(e.scale);
+	if (e.rotation) APP.gItem.setRotation( e.rotation[0], e.rotation[1], e.rotation[2]);
 
 	APP._matGround.map = ATON.Utils.textureLoader.load(APP.pathAssetsFolder + item + "/ground.png");
 	APP._matGround.needsUpdate = true;
@@ -387,6 +388,12 @@ APP.setupEvents = ()=>{
 */
 };
 
+APP.isARActive = ()=>{
+	if (!ATON.XR._bPresenting) return false;
+	if (ATON.XR._sessionType !== "immersive-ar") return false;
+	return true;
+};
+
 // Layers
 APP.updateItem = ()=>{
 
@@ -415,6 +422,26 @@ APP.updateItem = ()=>{
     });
 
 	APP.MH.getSemanticMaskValueFromQuery();
+};
+
+// SUI
+//========================================================
+APP.setupSUI = ()=>{
+	let buttons = [];
+
+	let btnUVL = new ATON.SUI.Button("sui_layerUVL");
+	btnUVL.setIcon(APP.pathIcons+"uvl.png");
+	btnUVL.onSelect = ()=>{
+		APP.DSC.setDiscoveryLayer("UVL");
+	};
+
+	let btnVIL = new ATON.SUI.Button("sui_layerVIL");
+	btnVIL.setIcon(APP.pathIcons+"vil.png");
+	btnVIL.onSelect = ()=>{
+		APP.DSC.setDiscoveryLayer("VIL");
+	};
+
+	APP.suiToolbar = ATON.SUI.createToolbar( buttons );
 };
 
 // Update

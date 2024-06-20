@@ -28,7 +28,7 @@ DSC.init = ()=>{
 };
 
 DSC.applyShape = ()=>{
-    if (ATON.XR._bPresenting && ATON.XR._sessionType === "immersive-ar"){
+    if (APP.isARActive()){
         DSC.shapeParams.loc.copy(ATON.Nav._currPOV.pos);
         return;
     }
