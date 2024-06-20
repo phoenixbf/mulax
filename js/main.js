@@ -242,6 +242,8 @@ APP.setupScene = ()=>{
 
     N.add( M );
 	N.attachToRoot();
+
+	//APP.setupSUI();
 };
 
 // Events
@@ -427,21 +429,27 @@ APP.updateItem = ()=>{
 // SUI
 //========================================================
 APP.setupSUI = ()=>{
-	let buttons = [];
 
 	let btnUVL = new ATON.SUI.Button("sui_layerUVL");
-	btnUVL.setIcon(APP.pathIcons+"uvl.png");
+	btnUVL.setIcon(APP.pathIcons+"uvl.png", true);
+	btnUVL.setSwitchColor(ATON.MatHub.colors.white);
 	btnUVL.onSelect = ()=>{
 		APP.DSC.setDiscoveryLayer("UVL");
 	};
+	btnUVL.onHover = ()=>{ btnUVL.setScale(1.2) };
+	btnUVL.onLeave = ()=>{ btnUVL.setScale(1) };
 
 	let btnVIL = new ATON.SUI.Button("sui_layerVIL");
-	btnVIL.setIcon(APP.pathIcons+"vil.png");
+	btnVIL.setIcon(APP.pathIcons+"vil.png", true);
+	btnVIL.setSwitchColor(ATON.MatHub.colors.white);
 	btnVIL.onSelect = ()=>{
 		APP.DSC.setDiscoveryLayer("VIL");
 	};
+	btnVIL.onHover = ()=>{ btnVIL.setScale(1.2) };
+	btnVIL.onLeave = ()=>{ btnVIL.setScale(1) };
 
-	APP.suiToolbar = ATON.SUI.createToolbar( buttons );
+	APP.suiToolbar = ATON.SUI.createToolbar([ btnUVL, btnVIL ]);
+	APP.suiToolbar.setPosition(0.0,0.0,-0.3).setRotation(1.0,3.14,0).setScale(0.5).attachToRoot();
 };
 
 // Update
