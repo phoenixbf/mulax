@@ -21,7 +21,7 @@ DSC.init = ()=>{
         rad: 0.1
     };
     DSC.shape = undefined;
-    DSC._splitVal = 0.0;
+    DSC._splitVal = 0.5;
 
     DSC._bDiscovery = true;
 
@@ -37,20 +37,28 @@ DSC.applyShape = ()=>{
     if (!DSC.shape) return;
     if (DSC.shape==="sphere") return;
 
+    APP._aabb.getCenter(DSC.shapeParams.loc);
+
     if (DSC.shape==="y"){
-        DSC.shapeParams.loc.y = DSC._splitVal - 10.0;
+        let dy = APP._aabb.max.y - APP._aabb.min.y;
+
+        DSC.shapeParams.loc.y = (APP._aabb.min.y + (DSC._splitVal * dy)) - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
 
     if (DSC.shape==="x"){
-        DSC.shapeParams.loc.x = DSC._splitVal - 10.0;
+        let dx = APP._aabb.max.x - APP._aabb.min.x;
+
+        DSC.shapeParams.loc.x = (APP._aabb.min.x + (DSC._splitVal * dx)) - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
 
     if (DSC.shape==="z"){
-        DSC.shapeParams.loc.z = DSC._splitVal - 10.0;
+        let dz = APP._aabb.max.z - APP._aabb.min.z;
+
+        DSC.shapeParams.loc.z = (APP._aabb.min.z + (DSC._splitVal * dz)) - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
@@ -58,6 +66,8 @@ DSC.applyShape = ()=>{
 
 DSC.setSplitValue = (v)=>{
     DSC._splitVal = v;
+    if (v > 1.0) DSC._splitVal = 1.0;
+    if (v < 0.0) DSC._splitVal = 0.0;
 };
 
 DSC.setNode = (N)=>{
@@ -145,12 +155,12 @@ DSC.createMaterial = (mat)=>{
             uniform sampler2D tSMask;
 
             void main(){
-                float sedge = 1000.0;
+                float sedge = 500.0 * vLens.w;
                 
                 vec2 uvCoords = sUV;
 
-                vec2 sCoords = vPos.xy;
-                sCoords /= vPos.w;
+                //vec2 sCoords = vPos.xy;
+                //sCoords /= vPos.w;
 
                 float d = distance(vPositionW, vLens.xyz);
                 float t = d / vLens.w;

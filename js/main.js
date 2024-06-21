@@ -40,6 +40,8 @@ APP.setup = ()=>{
 	APP._currItem  = undefined;
 	APP._currAtlas = undefined;
 
+	APP._aabb = new THREE.Box3();
+
 	//APP.initMasks();
 
 	APP.setupScene();
@@ -264,6 +266,7 @@ APP.setupEvents = ()=>{
 		APP.DSC.setDiscoveryLayer("UVL");
 
 		ATON.SUI.setSelectorRadius(0.02);
+		ATON.bounds.getBoundingBox( APP._aabb );
 
 		APP.UI.init();
 	});
@@ -337,7 +340,7 @@ APP.setupEvents = ()=>{
 				return;
 			}
 			else {
-				APP.DSC._splitVal += 0.003;
+				APP.DSC.setSplitValue( APP.DSC._splitVal + 0.003);
 			}
 		}
 
@@ -349,7 +352,7 @@ APP.setupEvents = ()=>{
 				return;
 			}
 			else {
-				APP.DSC._splitVal -= 0.003;
+				APP.DSC.setSplitValue( APP.DSC._splitVal - 0.003);
 			}
 		}
 
