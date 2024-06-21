@@ -327,17 +327,32 @@ APP.setupEvents = ()=>{
 			for (let h=0; h<50; h++) APP.MH.drawOnEditMaskFromQuery(APP.MH._zeroCol, ATON.SUI._selectorRad);
 		}
 		if (k==='0'){
-			ATON.SUI.setSelectorRadius(0.0);
+			APP.DSC.toggleDiscoveryLayer();
 		}
-		if (k==='1'){
-			ATON.SUI.setSelectorRadius(0.01);
+		if (k==='ArrowUp'){
+			if (APP.DSC.shape==="sphere" || !APP.DSC.shape){
+				let r = ATON.SUI.mainSelector.scale.x;
+				r += 0.003;
+				ATON.SUI.setSelectorRadius(r);
+				return;
+			}
+			else {
+				APP.DSC._splitVal += 0.003;
+			}
 		}
-		if (k==='2'){
-			ATON.SUI.setSelectorRadius(0.03);
+
+		if (k==='ArrowDown'){
+			if (APP.DSC.shape==="sphere" || !APP.DSC.shape){
+				let r = ATON.SUI.mainSelector.scale.x;
+				r -= 0.003;
+				ATON.SUI.setSelectorRadius(r);
+				return;
+			}
+			else {
+				APP.DSC._splitVal -= 0.003;
+			}
 		}
-		if (k==='3'){
-			ATON.SUI.setSelectorRadius(0.07);
-		}
+
 		if (k===' '){
 			if (!DSC.shape) DSC.shape = "y";
 			else DSC.shape = undefined;
@@ -404,7 +419,12 @@ APP.isARActive = ()=>{
 // Layers
 APP.updateItem = ()=>{
 
-	APP.DSC.shapeParams.loc = ATON.SUI.mainSelector.position;
+	APP._currAtlas = undefined;
+	let bSphere = (DSC.shape==="sphere" || !DSC.shape)? true : false;
+
+	if (bSphere) APP.DSC.shapeParams.loc = ATON.SUI.mainSelector.position;
+	else APP.DSC.shapeParams.loc.set(0,0,0);
+
 	APP.DSC.shapeParams.rad = ATON.SUI._selectorRad;
 
 	APP.DSC.applyShape();
@@ -418,12 +438,12 @@ APP.updateItem = ()=>{
 
             if (ATON._queryDataScene){
 				APP._currAtlas = ATON._queryDataScene.o.name;
+				
 				UU.vLens.value.w = APP.DSC.shapeParams.rad;
 				//console.log(ATON._queryDataScene.o.name)
 			}
 			else {
-				UU.vLens.value.w *= 0.9;
-				APP._currAtlas = undefined;
+				if (bSphere) UU.vLens.value.w *= 0.9;
 			}
         }
     });

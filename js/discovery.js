@@ -17,10 +17,11 @@ DSC.init = ()=>{
     DSC._node  = undefined;
 
     DSC.shapeParams = {
-        loc: undefined,
+        loc: new THREE.Vector3(0,0,0),
         rad: 0.1
     };
     DSC.shape = undefined;
+    DSC._splitVal = 0.0;
 
     DSC._bDiscovery = true;
 
@@ -37,23 +38,26 @@ DSC.applyShape = ()=>{
     if (DSC.shape==="sphere") return;
 
     if (DSC.shape==="y"){
-        DSC.shapeParams.loc.y -= 10.0;
+        DSC.shapeParams.loc.y = DSC._splitVal - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
 
     if (DSC.shape==="x"){
-        DSC.shapeParams.loc.x -= 10.0;
+        DSC.shapeParams.loc.x = DSC._splitVal - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
 
     if (DSC.shape==="z"){
-        DSC.shapeParams.loc.z -= 10.0;
+        DSC.shapeParams.loc.z = DSC._splitVal - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
+};
 
+DSC.setSplitValue = (v)=>{
+    DSC._splitVal = v;
 };
 
 DSC.setNode = (N)=>{
@@ -78,6 +82,11 @@ DSC.disableDiscoveryLayer = ()=>{
 DSC.enableDiscoveryLayer = ()=>{
     DSC._bDiscovery = true;
     DSC.visitor();
+};
+
+DSC.toggleDiscoveryLayer = ()=>{
+    if (DSC._bDiscovery) DSC.disableDiscoveryLayer();
+    else DSC.enableDiscoveryLayer();
 };
 
 DSC.createMaterial = (mat)=>{
