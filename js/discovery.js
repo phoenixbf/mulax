@@ -22,7 +22,7 @@ DSC.init = ()=>{
     };
     DSC.shape = undefined;
 
-    DSC.bEnabled = true;
+    DSC._bDiscovery = true;
 
     //DSC._editTex = 0;
 };
@@ -70,6 +70,16 @@ DSC.setDiscoveryLayer = (layer)=>{
     DSC.visitor();
 };
 
+DSC.disableDiscoveryLayer = ()=>{
+    DSC._bDiscovery = false;
+    DSC.visitor();
+};
+
+DSC.enableDiscoveryLayer = ()=>{
+    DSC._bDiscovery = true;
+    DSC.visitor();
+};
+
 DSC.createMaterial = (mat)=>{
 
     let M = new CustomShaderMaterial({
@@ -82,6 +92,7 @@ DSC.createMaterial = (mat)=>{
             tEMask: { type:'t' },
             tSMask: { type:'t' },
             vLens: { type:'vec4', value: new THREE.Vector4(0,0,0, 0.2) },
+            wDiscovery: { type:'float', value: 1.0 }
         },
 
         vertexShader:`
@@ -117,6 +128,8 @@ DSC.createMaterial = (mat)=>{
             uniform vec4 vLens;
 
             uniform float time;
+            uniform float wDiscovery;
+
             //uniform sampler2D tBase;
             uniform sampler2D tDiscov;
             uniform sampler2D tEMask;
@@ -155,7 +168,7 @@ DSC.createMaterial = (mat)=>{
                     ///bd = clamp(bd, 0.1,1.0);
                     ///frag = mix( vec4(0.87,0.75,0.5, 1.0), frag, bd);
 
-                csm_DiffuseColor = mix( frag_d, csm_DiffuseColor, t);
+                csm_DiffuseColor = mix( csm_DiffuseColor, frag_d, (1.0 - t) * wDiscovery);
                 //csm_DiffuseColor = frag_d;
                 
                 csm_Roughness    = mix( 1.0, csm_Roughness, t);
@@ -203,7 +216,10 @@ DSC.visitor = ()=>{
 
             //o.material.map.generateMipmaps = false;
 
-            let UU =  o.material.uniforms;
+            let UU = o.material.uniforms;
+
+            if (DSC._bDiscovery) UU.wDiscovery.value = 1.0;
+            else UU.wDiscovery.value = 0.0;
 
             let layerpath = DSC._dirLayers + dname;
             console.log(layerpath)
