@@ -15,6 +15,7 @@ POIHandler.init = ()=>{
 
 	POIHandler._filteredAABB = new THREE.Box3();
 	POIHandler._filteredBS   = new THREE.Sphere();
+	POIHandler._filteredList = {};
 };
 
 POIHandler.clearList = ()=>{
@@ -142,6 +143,8 @@ POIHandler.loadAll = ( onComplete )=>{
 
 POIHandler.filterByTechnique = (t)=>{
 	POIHandler._filteredAABB = new THREE.Box3();
+	POIHandler._filteredList = {};
+	let matches = 0;
 
 	for (let id in POIHandler._list){
 		let A = POIHandler._list[id];
@@ -150,6 +153,8 @@ POIHandler.filterByTechnique = (t)=>{
 		if (C.tecs[t] || t === undefined){
 			A.show();
 			POIHandler._filteredAABB.expandByObject(A);
+			POIHandler._filteredList[id] = C;
+			matches++;
 		}
 		else A.hide();
 	}
@@ -157,11 +162,13 @@ POIHandler.filterByTechnique = (t)=>{
 	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
 	console.log(POIHandler._filteredBS);
 
-	ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
+	if (matches>0) ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
 };
 
 POIHandler.filterByCategory = (c)=>{
 	POIHandler._filteredAABB = new THREE.Box3();
+	POIHandler._filteredList = {};
+	let matches = 0;
 
 	for (let id in POIHandler._list){
 		let A = POIHandler._list[id];
@@ -170,6 +177,8 @@ POIHandler.filterByCategory = (c)=>{
 		if (C.cat === c || c === undefined){
 			A.show();
 			POIHandler._filteredAABB.expandByObject(A);
+			POIHandler._filteredList[id] = C;
+			matches++;
 		}
 		else A.hide();
 	}
@@ -177,7 +186,15 @@ POIHandler.filterByCategory = (c)=>{
 	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
 	console.log(POIHandler._filteredBS);
 
-	ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
+	if (matches>0) ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
+};
+
+POIHandler.filterReset = ()=>{
+	POIHandler.filterByCategory();
+};
+
+POIHandler.getFilteredList = ()=>{
+	return POIHandler._filteredList;
 };
 
 export default POIHandler;

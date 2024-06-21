@@ -6,6 +6,8 @@
 import DSC from "./discovery.js";
 import MH from "./masksHandler.js";
 import POIHandler from "./poiHandler.js";
+import UI from "./ui.js";
+
 //import QRC from "./controller-QR.js";
 
 let APP = ATON.App.realize();
@@ -14,6 +16,7 @@ window.APP = APP;
 APP.DSC = DSC;
 APP.MH  = MH;
 APP.POIHandler = POIHandler;
+APP.UI = UI;
 
 
 
@@ -261,6 +264,8 @@ APP.setupEvents = ()=>{
 		APP.DSC.setDiscoveryLayer("UVL");
 
 		ATON.SUI.setSelectorRadius(0.02);
+
+		APP.UI.init();
 	});
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeHover");
