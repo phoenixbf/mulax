@@ -1,15 +1,37 @@
+/*OVERRIDE radio style*/
+input[type="radio"]:checked, input[type="checkbox"]:checked
+{
+    background-color: #00ffd8;
+}
+input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
+{
+    background-color: transparent;
+}
+
 /*Sidebar*/
 
 .sidebar {
-    width: 400px;
-    height: 90vh;
+    
     position: fixed;
-    top: 10vh;
-    left: 0;
+    top: 0;
     background-color: #333;
     color: white;
     overflow-y: auto;
     padding: 15px;
+}
+
+.left
+{
+    left: 0;
+    width: 450px;
+    height: 100vh;
+}
+.right
+{
+    top: 20px!important;
+    right: 20px;
+    width: 300px;
+    border-radius: 20px;
 }
 
 .sidebar h2 {
@@ -55,6 +77,7 @@
 }
 
 .columnFlexContainer {
+    margin-top: 5px;
     display: flex;
     width: 100%;
    
@@ -150,6 +173,32 @@
     justify-content: space-between;
     align-items: center;
 }
+.radiosTechinquesContainer
+{
+    display: flex;
+}
+
+.radioTechniqueItem
+{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 3px;
+}
+.underlineTechnique
+{
+    height: 8px;
+    width: 30px;
+    border-radius: 5px;
+}
+/*
+.bulletTechnique
+{
+    height: 15px;
+    width: 15px;
+    border-radius: 8px;
+}
+*/
 
 #POI_FilterPanel
 {
@@ -161,23 +210,46 @@
 {
     display: block;
 }
-
 .poiListItem
 {
     display: flex;
     align-items: center;
     justify-content: left;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    /*border: 1px solid #ccc;*/
+    border-radius: 20px;
     padding: 5px;
-    background-color: gray;
+    padding-left:15px;
+    background-color: #2a2a2a;
     margin-top: 5px;
     margin-bottom: 5px;
+    min-height: 30px;
+
 }
+.poiListItem .tecsContainer
+{
+    flex-direction: column;
+    display: flex;
+    gap: 2px;
+}
+
 .POI_itemTitle
 {
     margin-right: 10px;
 }
+
+.poiListItem_hovered
+{
+ background-color: rgb(178, 178, 178);
+ color: black;
+ cursor: pointer;
+}
+
+.poiListItem_clicked
+{
+ background-color: white;
+ color: black;
+}
+
 .customDetails {
     padding: 10px;
 }
@@ -205,3 +277,64 @@ p {
     margin-top: 10px;
     padding: 10px;
 }
+
+
+
+/*TABS TECHNIQUES*/
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    
+  }
+  
+  /* Style the buttons inside the tab */
+  .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+    color: white;
+  }
+  
+  /* Change background color of buttons on hover */
+  .tab button:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  /* Create an active/current tablink class */
+  .tab button.active {
+    background-color: #ccc;
+    color: black;
+  }
+  
+  /* Style the tab content */
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+
+  .imgTech
+  {
+    width: 100%;
+    margin-top: 7px;
+  }
+
+  .closeBtn
+  {
+    background-image: url(./res/icons/close-button.svg);
+    width: 35px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 35px;
+    cursor: pointer;
+  }

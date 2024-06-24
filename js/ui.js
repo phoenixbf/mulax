@@ -2,6 +2,8 @@ let UI = {}
 
 UI.init=()=>
     {
+
+        ATON.on("APP_POISelect", (id)=>{APP.UI.onClick_POIListsItem(document.getElementById(id))});
         console.log("UI  init")
         UI.createPanel();
         return UI;
@@ -18,7 +20,7 @@ UI.createPanel=()=>
      <h2>Discovery Diagnostic 3D Layers</h2>
      <div class="sideBlockMainContainer">
      
-         Select the discovery method:<br><br>
+         Select the discovery method:<br>
         <div class="columnFlexContainer">
         
             <div class="box" id="boxA">
@@ -61,7 +63,7 @@ UI.createPanel=()=>
 
     var sidebar = 
     `
-     <div class="sidebar">
+     <div class="sidebar left">
      ${DiscoveryPanel}
      ${POIsPanel}
      </div>
@@ -93,8 +95,6 @@ UI.lens_options = ()=> {
 
 `
 }
-
-
 
 UI.full_options= ()=>{
 
@@ -137,12 +137,12 @@ UI.discoveryLayersSelectInput = ()=>{
     var uvSelected = APP.DSC._dlayer =="UVL" ? "selected" : "";
     var vilSelected = APP.DSC._dlayer =="VIL" ? "selected" : "";
 
-    return `
-Select Diagnostic 3DLayers to compare simultaneously:
+    return `<br>
+Select Diagnostic 3DLayers to compare simultaneously:<br>
  <div class="columnFlexContainer noborder">
 
             <div class="box" id="boxA">
-              <label for="discoveryLayer">LAYER 1<br></label>
+              <label for="discoveryLayer"><b>LAYER 1 (base)</b><br></label>
               <div class="selectWrapper">
                 <select name="discoveryLayer" value="VISIBLE" id="discoveryLayerSelectInput" onchange="APP.UI.onChangeDiscoveryLayer(this)" class="selectBox">
                 <option value="VISIBLE">Visible</option>
@@ -151,7 +151,7 @@ Select Diagnostic 3DLayers to compare simultaneously:
 
             </div>
             <div class="box" id="boxB">
-               <label for="discoveryLayer"> LAYER 2<br></label>
+               <label for="discoveryLayer"><b> LAYER 2 (discovery)</b><br></label>
                 <div class="selectWrapper">
                     <select name="discoveryLayer" id="discoveryLayerSelectInput" onchange="APP.UI.onChangeDiscoveryLayer(this)" class="selectBox">
                         <option value="UVL" ${uvSelected}>UV</option>
@@ -166,6 +166,31 @@ Select Diagnostic 3DLayers to compare simultaneously:
 
 //IMAGING ANALYSIS POIs:
 
+UI.techniqueInfos =
+{
+         "r":{technique:"Microscope",color:"#a80101"},
+         "o":{technique:"FORS",color:"#c05702"},
+         "b":{technique:"XRF",color:"#006172"},
+         "y":{technique:"VIL",color:"#e2c055"},
+         "p":{technique:"UV",color:"#6d23cf"}
+}
+
+
+UI.underlineTechniqueItem=(t,bStampTechnique=true)=>{   
+    var _name = bStampTechnique? UI.techniqueInfos[t].technique : "";
+    return `
+    <div>
+       ${_name}
+       <div class="underlineTechnique" style="background-color: ${UI.techniqueInfos[t].color};"></div>
+    </div>`
+}
+
+/*
+UI.bulletTechniqueItem=(t)=>
+    {
+      return `<div class="bulletTechnique" style="background-color: ${UI.techniqueInfos[t].color};"></div>`
+    }
+*/
 
 UI.spot_techniquesFilters = ()=> //POIs SPOT techniques: MICRO FORS XRF
     {       
@@ -182,27 +207,27 @@ UI.spot_techniquesFilters = ()=> //POIs SPOT techniques: MICRO FORS XRF
         Filter by techniques<br>
     
             <div class="flex_between">
-                    <span> 
-                        <label> 
-                            <input type="radio" name="technique" value="r" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
-                            Microscope
+                    <span class="radiosTechinquesContainer"> 
+                        <label class="radioTechniqueItem">
+                           <input type="radio" name="technique" value="r" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
+                           ${UI.underlineTechniqueItem("r")} 
+                           
                         </label>
                         
-                        <label>
+                        <label class="radioTechniqueItem"> 
                             <input type="radio" name="technique" value="b" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
-                            XRF
-                        </label>
-                        
-                        <label>
+                            ${UI.underlineTechniqueItem("b")} 
+                        </label>                        
+                        <label class="radioTechniqueItem"> 
                             <input type="radio" name="technique" value="o" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
-                            FORS
+                            ${UI.underlineTechniqueItem("o")}
                         </label>
                     </span>
                 
                 <label>Visualize all <input type="radio" name="technique" value="all" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
             </div>
      </div>
-`
+    `
 }
 
 
@@ -218,14 +243,14 @@ return `
     <br>
         Filter by techniques<br>
         <div class="flex_between">
-            <span>
-                <label>
+            <span class="radiosTechinquesContainer"> 
+                 <label class="radioTechniqueItem">
                     <input type="radio" name="technique" value="p" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
-                    UV
+                    ${UI.underlineTechniqueItem("p")}
                 </label>
-                <label>
+                 <label class="radioTechniqueItem">
                     <input type="radio" name="technique" value="y" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
-                    VIL
+                    ${UI.underlineTechniqueItem("y")}
                 </label>
             </span>
             <label> Visualize all  <input type="radio" name="technique" value="all" checked></label>
@@ -257,6 +282,7 @@ UI.POI_filterPanel= //categories SPOT / IMAGING
     <div id="ausiliaryPOIsFiltersPanel">${UI.spot_techniquesFilters()}</div>
 </div>
 `
+
 
 UI.POI_ListContainer=
 `
@@ -351,16 +377,19 @@ UI.onChangeVisualizeAllAnalysis=(e)=>
         console.log(e.checked);
         var _display = e.checked? "none" : "block";
         $("#POI_FilterPanel").css("display",_display);
-        //call previews or default filter settings:
-        if(UI.selectedTechnique!=null){ APP.POIHandler.filterByTechnique(UI.selectedTechnique, true)}
-        else{APP.POIHandler.filterByCategory(UI.selectedCat)}
-        
-
+           
         if(e.checked)
         {
             APP.POIHandler.filterReset();
-            UI.updatePOIlist(APP.POIHandler.getFilteredList())
+            UI.updatePOIlist(APP.POIHandler.getFilteredList());
+            return;
         }
+
+        //call previews or default filter settings:
+        if(UI.selectedTechnique!=null){ APP.POIHandler.filterByTechnique(UI.selectedTechnique, true)}
+        else{APP.POIHandler.filterByCategory(UI.selectedCat)}
+        UI.updatePOIlist(APP.POIHandler.getFilteredList())
+     
     }
 
 
@@ -382,14 +411,7 @@ UI.onClickCategoryFilter=(e)=>
 
 UI.onchangeTechniqueFilteredBtn=(e)=>
     {
-        const techniques =
-        {
-         "r":"microscope",
-         "o":"fors",
-         "b":"xrf",
-         "y":"vil",
-         "p":"uv"
-        }
+     
         UI.selectedTechnique = e.value;
         if(e.value=="all"){UI.selectedTechnique=null; APP.POIHandler.filterByCategory(UI.selectedCat); return;}
 
@@ -421,7 +443,7 @@ UI.updatePOIlist=(pois)=>
         `
        
         var summarizedList = `
-        <details class="customDetails">
+        <details class="customDetails" open>
         <summary class="customSummary">${summaryHead}</summary>
         ${list}
         </details>
@@ -432,14 +454,148 @@ UI.updatePOIlist=(pois)=>
 
 UI.createPOI_ListItem=(key,poi)=>
     {
-        var techniques=` 1 2 3`;
+        var techniques= UI.returnBulletsFromPOI(poi);
         
         return `
-        <div id=${key} class="poiListItem">
+        <div id=${key} class="poiListItem"
+        onmouseover="APP.UI.onHover_POIListItem(this)"
+        onmouseout="APP.UI.onOut_POIListItem(this)"
+        onclick="APP.UI.onClick_POIListsItem(this)"
+        >
         <b class="POI_itemTitle">POI: ${poi.title}</b>
         ${techniques}
+       
         </div>
         `
+}
+
+
+UI.returnBulletsFromPOI=(poi)=>
+{
+    var _t = `<div class="tecsContainer">`;
+    for (const [key, p] of Object.entries(poi.tecs)) {
+       _t+=UI.underlineTechniqueItem(key,false);
+        }
+        _t+="</div>";
+        return _t;
+}
+
+    UI.onHover_POIListItem=(e)=>
+    {
+        $(e).addClass( "poiListItem_hovered");
+        APP.POIHandler.highlight(e.id,false);
     }
+
+    UI.onOut_POIListItem=(e)=>
+    {
+        $(e).removeClass( "poiListItem_hovered");
+    }
+
+    UI.id_POIListItemFocused=null;
+
+    UI.onClick_POIListsItem=(e)=>
+    {
+        APP.POIHandler.highlight(e.id,true);
+        UI.composeDetail_POI(e.id);
+
+        //Styles:
+        if($(`#${APP.UI.id_POIListItemFocused}`)){
+            $(`#${APP.UI.id_POIListItemFocused}`).removeClass("poiListItem_clicked");
+        }
+        $(e).addClass("poiListItem_clicked");
+        UI.id_POIListItemFocused = e.id;
+        
+        UI.hidePOIs();
+    }
+
+    UI.hidePOIs=()=>{APP.POIHandler.filterByCategory("impossibleCategory")}
+
+    UI.resumePOIs=()=>
+        {
+            if(UI.selectedTechnique){APP.POIHandler.filterByTechnique(UI.selectedTechnique); return;}
+            APP.POIHandler.filterByCategory(UI.selectedCat);
+        }
+        
+UI.composeDetail_POI=(id)=>
+{
+    //get content of POI
+    const p = APP.POIHandler.getContent(id);
+
+    //Compose POI infos
+    var cat = "";
+    if(p.cat=="spot") cat ="Spot Analysis: ";
+    if(p.cat=="imaging") cat ="Imaging Analysis: ";
+    var content = `
+    <div class="flex_between">
+    <h2>${cat} ${p.title}</h2>
+    <div class="closeBtn" onClick="APP.UI.onClick_CloseRightSidebar()"></div>
+    </div>`
+    if(p.description) content+= `<p>${p.description}</p>`;
+    //Compose Techniques Tabs:
+    var tabs = UI.composeTecniqueTabs(p);
+    var sidebar = 
+    `
+     <div id="rightSideBar" class="sidebar right">
+     ${content}
+     ${tabs}
+     </div>
+    `
+
+    if($("#rightSideBar")) $("#rightSideBar").remove()
+    $("body").append(sidebar);
+
+}
+
+UI.onClick_CloseRightSidebar=()=>
+    {
+        $("#rightSideBar").remove();
+        //style of poi item:
+        if($(`#${APP.UI.id_POIListItemFocused}`)){
+            $(`#${APP.UI.id_POIListItemFocused}`).removeClass("poiListItem_clicked");
+        }
+        UI.id_POIListItemFocused = null;
+        UI.resumePOIs();
+    }
+
+UI.composeTecniqueTabs=(poi)=>
+{
+    var tabLinks =  `<div class="tab">`;
+    var tabContents = ``;
+   
+    for (const [key, t] of Object.entries(poi.tecs))
+        {
+            const idTab = key + "_tab";
+            const urlImg = `${APP.basePath}res/pois/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
+            console.log(urlImg);
+            tabLinks+=`<button class="tablinks" onclick="APP.UI.openTab(event, '${idTab}')">
+            <div>
+            ${UI.techniqueInfos[key].technique}
+            ${UI.underlineTechniqueItem(key,false)}
+            </div>
+            </button>`;
+            tabContents += `
+            <div id=${idTab} class="tabcontent">
+            <img src=${urlImg} class="imgTech"/>
+            </div>`
+        }
+    tabLinks+="</div>";
+    var tabs = tabLinks+tabContents;
+    return  tabs;
+}
+
+UI.openTab=(evt, idTab)=> {
+    console.log("id is: "+ idTab)
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(idTab).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
     
 export default UI;
