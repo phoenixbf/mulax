@@ -3,7 +3,7 @@
 	bruno.fanini_AT_cnr.it
 
 ===============================================*/
-
+import Tracer from "./tracer.js";
 
 let POIHandler = {};
 
@@ -16,6 +16,12 @@ POIHandler.init = ()=>{
 	POIHandler._filteredAABB = new THREE.Box3();
 	POIHandler._filteredBS   = new THREE.Sphere();
 	POIHandler._filteredList = {};
+
+	POIHandler._tracer = Tracer;
+	POIHandler._tracer.init();
+	POIHandler._tracer.setMaxDistance(1.0);
+	POIHandler._occDir = new THREE.Vector3();
+	POIHandler._occPos = new THREE.Vector3();
 };
 
 POIHandler.clearList = ()=>{
@@ -104,6 +110,9 @@ POIHandler.addFromCurrentQuery = (content)=>{
 
 	let p = ATON._queryDataScene.p;
 	let r = ATON.SUI._selectorRad;
+	let n = ATON._queryDataScene.n;
+
+	content.nor = [n.x,n.y,n.z];
 
 	return POIHandler.add(p,r, content);
 };
@@ -212,6 +221,40 @@ POIHandler.highlight = (id, bPOV)=>{
 	}
 
 	if (A && bPOV) ATON.Nav.requestPOVbyNode(A, 0.5 );
+};
+
+POIHandler.update = ()=>{
+	POIHandler._occDir.copy(ATON.Nav._vDir);
+	POIHandler._occDir.negate();
+
+	for (let s in POIHandler._list){
+		let S = POIHandler._list[s];
+		let C = POIHandler.getContent(s);
+
+		POIHandler._occPos.x = S.position.x + (POIHandler._occDir.x * 0.02);
+		POIHandler._occPos.y = S.position.y + (POIHandler._occDir.y * 0.02);
+		POIHandler._occPos.z = S.position.z + (POIHandler._occDir.z * 0.02);
+
+		let h = POIHandler._tracer.trace(POIHandler._occPos, POIHandler._occDir);
+
+		if (h !== undefined) S.hide();
+		else S.show();
+	}
+
+/*
+	let vDir = ATON.Nav._vDir;
+
+	for (let s in POIHandler._list){
+		let S = POIHandler._list[s];
+		let C = POIHandler.getContent(s);
+
+		if (C.nor){
+			let a = vDir.dot(new THREE.Vector3(C.nor[0],C.nor[1],C.nor[2]));
+			if (a < 0.0) S.setScale(0.01);
+			else S.setScale(C.rad);
+		}
+	}
+*/
 };
 
 export default POIHandler;

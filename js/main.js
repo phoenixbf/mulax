@@ -311,6 +311,10 @@ APP.setupEvents = ()=>{
     });
 
 	ATON.on("Tap", (e)=>{
+		if (ATON._queryDataScene){
+			console.log([ATON._queryDataScene.n.x,ATON._queryDataScene.n.y,ATON._queryDataScene.n.z]);
+		}
+
 		if (ATON._hoveredSemNode){
 			ATON.fireEvent("APP_POISelect",ATON._hoveredSemNode);
 			console.log("Selected POI "+ATON._hoveredSemNode);
@@ -448,7 +452,7 @@ APP.updateItem = ()=>{
 				//console.log(ATON._queryDataScene.o.name)
 			}
 			else {
-				if (bSphere) UU.vLens.value.w *= 0.9;
+				if (bSphere && UU.vLens.value.w > 0.0001) UU.vLens.value.w *= 0.9;
 			}
         }
     });
@@ -486,6 +490,7 @@ APP.setupSUI = ()=>{
 //========================================================
 APP.update = ()=>{
 	APP.updateItem();
+	//APP.POIHandler.update();
 };
 
 

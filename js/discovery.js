@@ -94,6 +94,10 @@ DSC.enableDiscoveryLayer = ()=>{
     DSC.visitor();
 };
 
+DSC.isDiscoveryLayerEnabled = ()=>{
+    return DSC._bDiscovery;
+};
+
 DSC.toggleDiscoveryLayer = ()=>{
     if (DSC._bDiscovery) DSC.disableDiscoveryLayer();
     else DSC.enableDiscoveryLayer();
