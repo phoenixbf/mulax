@@ -197,4 +197,21 @@ POIHandler.getFilteredList = ()=>{
 	return POIHandler._filteredList;
 };
 
+POIHandler.highlight = (id, bPOV)=>{
+	let A = undefined;
+
+	for (let s in POIHandler._list){
+		let S = POIHandler._list[s];
+		if (s === id){
+			A = S;
+			S.highlight();
+		}
+		else {
+			S.restoreDefaultMaterial();
+		}
+	}
+
+	if (A && bPOV) ATON.Nav.requestPOVbyNode(A, 0.5 );
+};
+
 export default POIHandler;
