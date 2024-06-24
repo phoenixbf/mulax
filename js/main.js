@@ -50,10 +50,12 @@ APP.setup = ()=>{
 	APP.loadConfig();
 
 	//TEST
-	ATON.FE.uiAddButtonUser("idTopToolbar");
-	ATON.FE.uiAddButtonVR("idTopToolbar");
-	ATON.FE.uiAddButtonAR("idTopToolbar");
-
+	if (APP.params.get("xr")){
+		ATON.FE.uiAddButtonUser("idTopToolbar");
+		ATON.FE.uiAddButtonVR("idTopToolbar");
+		ATON.FE.uiAddButtonAR("idTopToolbar");
+	}
+	
 	if (APP.params.get("qr")) QRC.init();
 };
 
