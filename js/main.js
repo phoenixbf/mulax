@@ -55,7 +55,7 @@ APP.setup = ()=>{
 		ATON.FE.uiAddButtonVR("idTopToolbar");
 		ATON.FE.uiAddButtonAR("idTopToolbar");
 	}
-	
+
 	if (APP.params.get("qr")) QRC.init();
 };
 
@@ -334,7 +334,7 @@ APP.setupEvents = ()=>{
 		if (k==='0'){
 			APP.DSC.toggleDiscoveryLayer();
 		}
-		if (k==='ArrowUp'){
+		if (k==='PageUp'){
 			if (APP.DSC.shape==="sphere" || !APP.DSC.shape){
 				let r = ATON.SUI.mainSelector.scale.x;
 				r += 0.003;
@@ -346,7 +346,7 @@ APP.setupEvents = ()=>{
 			}
 		}
 
-		if (k==='ArrowDown'){
+		if (k==='PageDown'){
 			if (APP.DSC.shape==="sphere" || !APP.DSC.shape){
 				let r = ATON.SUI.mainSelector.scale.x;
 				r -= 0.003;
