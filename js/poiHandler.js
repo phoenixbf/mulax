@@ -141,7 +141,7 @@ POIHandler.loadAll = ( onComplete )=>{
 	});
 };
 
-POIHandler.filterByTechnique = (t)=>{
+POIHandler.filterByTechnique = (t, bPOV)=>{
 	POIHandler._filteredAABB = new THREE.Box3();
 	POIHandler._filteredList = {};
 	let matches = 0;
@@ -162,10 +162,10 @@ POIHandler.filterByTechnique = (t)=>{
 	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
 	console.log(POIHandler._filteredBS);
 
-	if (matches>0) ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
+	if (matches>0 && bPOV) ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
 };
 
-POIHandler.filterByCategory = (c)=>{
+POIHandler.filterByCategory = (c, bPOV)=>{
 	POIHandler._filteredAABB = new THREE.Box3();
 	POIHandler._filteredList = {};
 	let matches = 0;
@@ -186,11 +186,11 @@ POIHandler.filterByCategory = (c)=>{
 	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
 	console.log(POIHandler._filteredBS);
 
-	if (matches>0) ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
+	if (matches>0 && bPOV) ATON.Nav.requestPOVbyBound( POIHandler._filteredBS, 0.5 );
 };
 
 POIHandler.filterReset = ()=>{
-	POIHandler.filterByCategory();
+	POIHandler.filterByCategory(undefined, false);
 };
 
 POIHandler.getFilteredList = ()=>{
