@@ -24,7 +24,7 @@ UI.createPanel=()=>
             <div class="box" id="boxA">
                 <label>
                     <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
-                      <b>Masking Lens</b>
+                      <b>Lens Mode</b>
                 </label>
                 <p>This option allows you to apply a masking lens effect to your images.</p>
             </div>
@@ -32,9 +32,9 @@ UI.createPanel=()=>
                
                 <label>
                     <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
-                   <b>Fullbody Visualizer</b>
+                   <b>Split Mode</b>
                 </label>
-                <p>This option enables a fullbody visualizer for comprehensive image analysis.</p>
+                <p>This option enables a split visualizer for comprehensive image analysis.</p>
             </div>
         </div>
 
@@ -71,8 +71,9 @@ UI.createPanel=()=>
 
     //APP Initializations:
     //See all Pois:
-    //APP.POIHandler.filterReset();
-    //UI.updatePOIlist(APP.POIHandler.getFilteredList())
+    APP.POIHandler.filterReset();
+    UI.updatePOIlist(APP.POIHandler.getFilteredList());
+  //  ATON.Nav.requestHome();
     
     //Disable discovery:
     APP.DSC.disableDiscoveryLayer()
@@ -166,49 +167,64 @@ Select Diagnostic 3DLayers to compare simultaneously:
 //IMAGING ANALYSIS POIs:
 
 
-UI.spot_techniquesFilters = //POIs SPOT techniques: MICRO FORS XRF 
-`
+UI.spot_techniquesFilters = ()=> //POIs SPOT techniques: MICRO FORS XRF
+    {       
+        /*
+        let rSelected =  UI.selectedTechnique=="r"? "checked" : "";
+        let bSelected =  UI.selectedTechnique=="b"? "checked" : "";
+        let oSelected =  UI.selectedTechnique=="o"? "checked" : "";
+        let allSelected = UI.selectedTechnique==null? "checked" : "";
+        */
+        
+    return `
     <div id="spot_TechinquesFilters">
         <br>
         Filter by techniques<br>
     
             <div class="flex_between">
-                    <span>
-                        <label>
-                            <input type="radio" name="technique" value="microscope">
+                    <span> 
+                        <label> 
+                            <input type="radio" name="technique" value="r" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
                             Microscope
                         </label>
                         
                         <label>
-                            <input type="radio" name="technique" value="xrf">
+                            <input type="radio" name="technique" value="b" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
                             XRF
                         </label>
                         
                         <label>
-                            <input type="radio" name="technique" value="fors">
+                            <input type="radio" name="technique" value="o" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
                             FORS
                         </label>
                     </span>
                 
-                <label>Visualize all <input type="radio" name="technique" value="all" checked></label>
+                <label>Visualize all <input type="radio" name="technique" value="all" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
             </div>
      </div>
 `
+}
 
 
-UI.imaging_techniquesFilters = //POIs imaging techniques: UV VIL
-`
+UI.imaging_techniquesFilters = ()=> //POIs imaging techniques: UV VIL
+{ 
+    /*
+    let pSelected =  UI.selectedTechnique=="p"? "checked" : "";
+    let ySelected =  UI.selectedTechnique=="y"? "checked" : "";
+    let allSelected = UI.selectedTechnique==null? "checked" : "";
+    */
+return `
     <div id="spot_TechinquesFilters">
     <br>
         Filter by techniques<br>
         <div class="flex_between">
             <span>
                 <label>
-                    <input type="radio" name="technique" value="uv">
+                    <input type="radio" name="technique" value="p" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
                     UV
                 </label>
                 <label>
-                    <input type="radio" name="technique" value="vil">
+                    <input type="radio" name="technique" value="y" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
                     VIL
                 </label>
             </span>
@@ -216,6 +232,7 @@ UI.imaging_techniquesFilters = //POIs imaging techniques: UV VIL
         </div>
     </div>
 `
+} 
 
 UI.POI_filterPanel= //categories SPOT / IMAGING
 `
@@ -237,7 +254,7 @@ UI.POI_filterPanel= //categories SPOT / IMAGING
         </div>
     </div>
 
-    <div id="ausiliaryPOIsFiltersPanel">${UI.spot_techniquesFilters}</div>
+    <div id="ausiliaryPOIsFiltersPanel">${UI.spot_techniquesFilters()}</div>
 </div>
 `
 
@@ -326,28 +343,58 @@ UI.selectedAXIS = "x";
             }
 
 //POIs functions:
+UI.selectedCat = "spot" //default SPOT.
+UI.selectedTechnique = null;
 UI.onChangeVisualizeAllAnalysis=(e)=>
     {
         console.log("Changing visualize all: ");
         console.log(e.checked);
         var _display = e.checked? "none" : "block";
         $("#POI_FilterPanel").css("display",_display);
+        //call previews or default filter settings:
+        if(UI.selectedTechnique!=null){ APP.POIHandler.filterByTechnique(UI.selectedTechnique, true)}
+        else{APP.POIHandler.filterByCategory(UI.selectedCat)}
+        
 
         if(e.checked)
-            {
-                APP.POIHandler.filterReset();
-                UI.updatePOIlist(APP.POIHandler.getFilteredList())
-            }
+        {
+            APP.POIHandler.filterReset();
+            UI.updatePOIlist(APP.POIHandler.getFilteredList())
+        }
     }
+
 
 UI.onClickCategoryFilter=(e)=>
     {
         console.log("CATEGORY FILTER CLICKED")
         console.log(e.value);
-        let ausiliaryContent =  UI[e.value+"_techniquesFilters"];
+        let ausiliaryContent =  UI[e.value+"_techniquesFilters"]();
 
         $("#ausiliaryPOIsFiltersPanel").html(ausiliaryContent);
-        $("#ausiliaryPOIsFiltersPanel").css("display","block")
+        $("#ausiliaryPOIsFiltersPanel").css("display","block");
+
+        UI.selectedCat = e.value;
+
+        //MAIN:
+        APP.POIHandler.filterByCategory(e.value);
+        UI.updatePOIlist(APP.POIHandler.getFilteredList())
+    }
+
+UI.onchangeTechniqueFilteredBtn=(e)=>
+    {
+        const techniques =
+        {
+         "r":"microscope",
+         "o":"fors",
+         "b":"xrf",
+         "y":"vil",
+         "p":"uv"
+        }
+        UI.selectedTechnique = e.value;
+        if(e.value=="all"){UI.selectedTechnique=null; APP.POIHandler.filterByCategory(UI.selectedCat); return;}
+
+        APP.POIHandler.filterByTechnique(e.value, true);
+        UI.updatePOIlist(APP.POIHandler.getFilteredList())
     }
 
 UI.updatePOIlist=(pois)=>
