@@ -242,8 +242,11 @@ POIHandler.update = ()=>{
 
 	let h = POIHandler._tracer.trace(POIHandler._occPos, POIHandler._occDir);
 
-	if (h !== undefined && S.scale.x >0.0001) S.scale.multiplyScalar(0.8);
-	else if (S.scale.x < rad) S.scale.multiplyScalar(1.2);
+	//if (h !== undefined && S.scale.x >0.0001) S.scale.multiplyScalar(0.5);
+	//else if (S.scale.x < rad) S.scale.multiplyScalar(1.5);
+
+	if (h !== undefined) S.scale.setScalar(0.001);
+	else S.scale.setScalar(rad);
 
 	POIHandler._occInd = (POIHandler._occInd + 1) % POIHandler._L.length;
 

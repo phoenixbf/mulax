@@ -338,6 +338,7 @@ APP.setupEvents = ()=>{
 		if (k==='0'){
 			APP.DSC.toggleDiscoveryLayer();
 		}
+/*
 		if (k==='PageUp'){
 			if (APP.DSC.shape==="sphere" || !APP.DSC.shape){
 				let r = ATON.SUI.mainSelector.scale.x;
@@ -361,7 +362,7 @@ APP.setupEvents = ()=>{
 				APP.DSC.setSplitValue( APP.DSC._splitVal - 0.003);
 			}
 		}
-
+*/
 		if (k===' '){
 			if (!DSC.shape) DSC.shape = "y";
 			else DSC.shape = undefined;
@@ -436,6 +437,14 @@ APP.updateItem = ()=>{
 
 	APP.DSC.shapeParams.rad = ATON.SUI._selectorRad;
 
+	if (ATON._queryDataScene){
+		if (DSC.shape==="x") APP.DSC._splitVal = ATON._queryDataScene.p.x;
+		if (DSC.shape==="y") APP.DSC._splitVal = ATON._queryDataScene.p.y;
+		if (DSC.shape==="z") APP.DSC._splitVal = ATON._queryDataScene.p.z;
+
+		//console.log(APP.DSC._splitVal)
+	}
+
 	APP.DSC.applyShape();
 
 	APP.gItem.traverse( ( o ) => {
@@ -449,6 +458,7 @@ APP.updateItem = ()=>{
 				APP._currAtlas = ATON._queryDataScene.o.name;
 				
 				UU.vLens.value.w = APP.DSC.shapeParams.rad;
+
 				//console.log(ATON._queryDataScene.o.name)
 			}
 			else {

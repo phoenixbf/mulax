@@ -42,7 +42,7 @@ DSC.applyShape = ()=>{
     if (DSC.shape==="y"){
         let dy = APP._aabb.max.y - APP._aabb.min.y;
 
-        DSC.shapeParams.loc.y = (APP._aabb.min.y + (DSC._splitVal * dy)) - 10.0;
+        DSC.shapeParams.loc.y = DSC._splitVal - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
@@ -50,7 +50,7 @@ DSC.applyShape = ()=>{
     if (DSC.shape==="x"){
         let dx = APP._aabb.max.x - APP._aabb.min.x;
 
-        DSC.shapeParams.loc.x = (APP._aabb.min.x + (DSC._splitVal * dx)) - 10.0;
+        DSC.shapeParams.loc.x = DSC._splitVal - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
@@ -58,16 +58,26 @@ DSC.applyShape = ()=>{
     if (DSC.shape==="z"){
         let dz = APP._aabb.max.z - APP._aabb.min.z;
 
-        DSC.shapeParams.loc.z = (APP._aabb.min.z + (DSC._splitVal * dz)) - 10.0;
+        DSC.shapeParams.loc.z = DSC._splitVal - 10.0;
         DSC.shapeParams.rad = 10.0;
         return;
     }
 };
 
-DSC.setSplitValue = (v)=>{
-    DSC._splitVal = v;
-    if (v > 1.0) DSC._splitVal = 1.0;
-    if (v < 0.0) DSC._splitVal = 0.0;
+DSC.setSplitPer = (p)=>{
+
+    //DSC._splitVal = v;
+    //if (v > 1.0) DSC._splitVal = 1.0;
+    //if (v < 0.0) DSC._splitVal = 0.0;
+
+    if (p > 1.0) p = 1.0;
+    if (p < 0.0) p = 0.0;
+
+    let axis = DSC.shape;
+    let d = APP._aabb.max[axis] - APP._aabb.min[axis];
+
+    DSC._splitVal = (APP._aabb.min[axis] + (p * d));
+    console.log(DSC._splitVal)
 };
 
 DSC.setNode = (N)=>{
