@@ -490,7 +490,7 @@ APP.setupSUI = ()=>{
 //========================================================
 APP.update = ()=>{
 	APP.updateItem();
-	//APP.POIHandler.update();
+	APP.POIHandler.update();
 };
 
 

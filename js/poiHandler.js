@@ -19,9 +19,10 @@ POIHandler.init = ()=>{
 
 	POIHandler._tracer = Tracer;
 	POIHandler._tracer.init();
-	POIHandler._tracer.setMaxDistance(1.0);
+	POIHandler._tracer.setMaxDistance(0.5);
 	POIHandler._occDir = new THREE.Vector3();
 	POIHandler._occPos = new THREE.Vector3();
+	POIHandler._occInd = 0;
 };
 
 POIHandler.clearList = ()=>{
@@ -224,23 +225,43 @@ POIHandler.highlight = (id, bPOV)=>{
 };
 
 POIHandler.update = ()=>{
+	POIHandler._L = Object.values(POIHandler._list);
+	if (POIHandler._L.length < 1) return;
+
 	POIHandler._occDir.copy(ATON.Nav._vDir);
 	POIHandler._occDir.negate();
 
+	//console.log(POIHandler._L)
+
+	let S = POIHandler._L[POIHandler._occInd];
+	let rad = 0.02;
+
+	POIHandler._occPos.x = S.position.x + (POIHandler._occDir.x * 0.01);
+	POIHandler._occPos.y = S.position.y + (POIHandler._occDir.y * 0.01);
+	POIHandler._occPos.z = S.position.z + (POIHandler._occDir.z * 0.01);
+
+	let h = POIHandler._tracer.trace(POIHandler._occPos, POIHandler._occDir);
+
+	if (h !== undefined && S.scale.x >0.0001) S.scale.multiplyScalar(0.8);
+	else if (S.scale.x < rad) S.scale.multiplyScalar(1.2);
+
+	POIHandler._occInd = (POIHandler._occInd + 1) % POIHandler._L.length;
+
+/*
 	for (let s in POIHandler._list){
 		let S = POIHandler._list[s];
 		let C = POIHandler.getContent(s);
 
-		POIHandler._occPos.x = S.position.x + (POIHandler._occDir.x * 0.02);
-		POIHandler._occPos.y = S.position.y + (POIHandler._occDir.y * 0.02);
-		POIHandler._occPos.z = S.position.z + (POIHandler._occDir.z * 0.02);
+		POIHandler._occPos.x = S.position.x + (POIHandler._occDir.x * 0.01);
+		POIHandler._occPos.y = S.position.y + (POIHandler._occDir.y * 0.01);
+		POIHandler._occPos.z = S.position.z + (POIHandler._occDir.z * 0.01);
 
 		let h = POIHandler._tracer.trace(POIHandler._occPos, POIHandler._occDir);
 
 		if (h !== undefined) S.hide();
 		else S.show();
 	}
-
+*/
 /*
 	let vDir = ATON.Nav._vDir;
 
