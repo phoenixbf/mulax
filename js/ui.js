@@ -168,11 +168,11 @@ Select Diagnostic 3DLayers to compare simultaneously:<br>
 
 UI.techniqueInfos =
 {
-         "r":{technique:"Microscope",color:"#a80101"},
-         "o":{technique:"FORS",color:"#c05702"},
-         "b":{technique:"XRF",color:"#006172"},
-         "y":{technique:"VIL",color:"#e2c055"},
-         "p":{technique:"UV",color:"#6d23cf"}
+         "r":{technique:"Microscope",color:"#a80101",cat:"spot"},
+         "o":{technique:"FORS",color:"#c05702",cat:"spot"},
+         "b":{technique:"XRF",color:"#006172",cat:"spot"},
+         "y":{technique:"VIL",color:"#e2c055",cat:"imaging"},
+         "p":{technique:"UV",color:"#6d23cf",cat:"imaging"}
 }
 
 
@@ -224,7 +224,7 @@ UI.spot_techniquesFilters = ()=> //POIs SPOT techniques: MICRO FORS XRF
                         </label>
                     </span>
                 
-                <label>Visualize all <input type="radio" name="technique" value="all" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
+                <label>Visualize all <input type="radio" name="technique" value="all" data-cat="spot" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
             </div>
      </div>
     `
@@ -253,7 +253,7 @@ return `
                     ${UI.underlineTechniqueItem("y")}
                 </label>
             </span>
-            <label> Visualize all  <input type="radio" name="technique" value="all" checked></label>
+            <label> Visualize all  <input type="radio" name="technique" value="all" data-cat="imaging" checked onclick="APP.UI.onchangeTechniqueFilteredBtn(this)"></label>
         </div>
     </div>
 `
@@ -354,13 +354,13 @@ UI.selectedAXIS = "x";
             console.log("Discovery layer Select: " + e.value);
             APP.DSC.setDiscoveryLayer(e.value)
         }
-//Lens:
+//Lens Mode:
         UI.onChangeSliderDiscoveryLensRadius=(value)=>
             {
                 console.log("Daje")
                 if(UI.discoveryMode=="lens") ATON.SUI.setSelectorRadius(value*0.01)
             }
-//FullVisualizer:
+//Split Mode:
         UI.onSelectDiscoveryFullbodyAxis=(e)=>
             {
                 console.log("Discovery Fullbody axis changing ins: " + e.value);
@@ -369,8 +369,11 @@ UI.selectedAXIS = "x";
             }
 
 //POIs functions:
-UI.selectedCat = "spot" //default SPOT.
+UI.selectedCat = null; 
 UI.selectedTechnique = null;
+UI.lastSelectedCat = "spot"; //default first category filtered SPOT
+UI.lastSelectedTechnique = null;
+
 UI.onChangeVisualizeAllAnalysis=(e)=>
     {
         console.log("Changing visualize all: ");
@@ -380,15 +383,38 @@ UI.onChangeVisualizeAllAnalysis=(e)=>
            
         if(e.checked)
         {
-            APP.POIHandler.filterReset();
+            UI.lastSelectedCat =  UI.selectedCat
+            UI.lastSelectedTechnique = UI.selectedTechnique
+            
+            APP.POIHandler.filterByCategory(undefined, true);
             UI.updatePOIlist(APP.POIHandler.getFilteredList());
+         
+            UI.selectedTechnique = null;
+            UI.selectedCat = null;
+            
             return;
         }
 
         //call previews or default filter settings:
-        if(UI.selectedTechnique!=null){ APP.POIHandler.filterByTechnique(UI.selectedTechnique, true)}
-        else{APP.POIHandler.filterByCategory(UI.selectedCat)}
-        UI.updatePOIlist(APP.POIHandler.getFilteredList())
+        if(UI.lastSelectedTechnique!=null)
+        {
+            APP.POIHandler.filterByTechnique(UI.lastSelectedTechnique, true); UI.selectedTechnique = UI.lastSelectedTechnique;
+        }
+        if(UI.lastSelectedCat!=null && UI.lastSelectedTechnique==null)
+        {
+            APP.POIHandler.filterByCategory(UI.lastSelectedCat,true); UI.selectedCat = UI.lastSelectedCat
+        }
+        else if(UI.lastSelectedCat==null && UI.lastSelectedTechnique==null)
+        {
+            APP.POIHandler.filterReset();
+        }
+        
+        UI.updatePOIlist(APP.POIHandler.getFilteredList());
+
+        console.log("FILTERING:");
+        console.log("selected Cat: " + UI.selectedCat);
+        console.log("selected Technique: " + UI.selectedTechnique);
+        
      
     }
 
@@ -405,15 +431,23 @@ UI.onClickCategoryFilter=(e)=>
         UI.selectedCat = e.value;
 
         //MAIN:
-        APP.POIHandler.filterByCategory(e.value);
+        APP.POIHandler.filterByCategory(e.value,true);
         UI.updatePOIlist(APP.POIHandler.getFilteredList())
     }
 
 UI.onchangeTechniqueFilteredBtn=(e)=>
     {
-     
+        console.log('%c is clicked:'+ e.value, 'background: #222; color: #bada55');
+
         UI.selectedTechnique = e.value;
-        if(e.value=="all"){UI.selectedTechnique=null; APP.POIHandler.filterByCategory(UI.selectedCat); return;}
+        if(e.value=="all")
+            {
+                UI.selectedTechnique=null;
+                if(UI.selectedCat==null){UI.selectedCat = e.datasets.cat}
+                APP.POIHandler.filterByCategory(UI.selectedCat,true);
+                UI.updatePOIlist(APP.POIHandler.getFilteredList());
+                return;
+            }
 
         APP.POIHandler.filterByTechnique(e.value, true);
         UI.updatePOIlist(APP.POIHandler.getFilteredList())
@@ -512,10 +546,22 @@ UI.returnBulletsFromPOI=(poi)=>
 
     UI.resumePOIs=()=>
         {
+            //Technique
             if(UI.selectedTechnique){APP.POIHandler.filterByTechnique(UI.selectedTechnique); return;}
+            //Category
+            if(UI.selectedCat==null){APP.POIHandler.filterReset(); return;}
+            //Visualize all
             APP.POIHandler.filterByCategory(UI.selectedCat);
         }
         
+UI.debugCat=()=>
+    {
+        console.log("Selected Cat is: " + UI.selectedCat);
+        console.log("Selected Tecnhique is: " + UI.selectedTechnique);
+        console.log("LAST Selected Cat is: " + UI.lastSelectedCat);
+        console.log("LAST Selected Tecnhique is: " + UI.lastSelectedTechnique);
+    }
+
 UI.composeDetail_POI=(id)=>
 {
     //get content of POI
