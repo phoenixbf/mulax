@@ -162,8 +162,8 @@ MH.getSemanticMaskValue = (mid, i,j)=>{
 MH.getSemanticMaskValueFromQuery = ()=>{
 	if (!ATON._queryDataScene) return;
 
-	let uv  = ATON._queryDataScene.uv;
-	let mid = ATON._queryDataScene.o.name;
+	let uv  = ATON.getSceneQueriedUV();
+	let mid = ATON.getSceneQueriedObjectName();
 
 	uv.x = uv.x % 1;
 	uv.y = uv.y % 1;
