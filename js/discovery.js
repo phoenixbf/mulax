@@ -257,8 +257,7 @@ DSC.visitor = ()=>{
             let layerpath = DSC._dirLayers + dname;
             console.log(layerpath)
 
-            //ATON.Utils.textureLoader.load(DSC._dirLayers + dname, t => {
-            ATON._ktx2Loader.load(DSC._dirLayers + dname, t => {
+            ATON.Utils.loadTexture(DSC._dirLayers + dname, t => {
                 t.flipY = false;
                 t.wrapS = THREE.RepeatWrapping;
                 t.wrapT = THREE.RepeatWrapping;
