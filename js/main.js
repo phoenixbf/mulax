@@ -321,10 +321,19 @@ APP.setupEvents = ()=>{
 		}
 	});
 
+	ATON.on("XRmode",()=>{
+		window.setTimeout(()=>{
+			APP.DSC.enableDiscoveryLayer();
+			console.log("XR mode");
+		}, 3000);
+
+	});
+
     ATON.on("XRselectStart", (c)=>{
         if (c === ATON.XR.HAND_L){
 			if (APP.DSC._dlayer === "UVL") APP.DSC.setDiscoveryLayer("VIL");
-			else APP.DSC.setDiscoveryLayer("UVL");		
+			else APP.DSC.setDiscoveryLayer("UVL");
+			console.log(APP.DSC._dlayer)	
 		}
     });
 
