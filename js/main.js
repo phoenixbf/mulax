@@ -321,6 +321,13 @@ APP.setupEvents = ()=>{
 		}
 	});
 
+    ATON.on("XRselectStart", (c)=>{
+        if (c === ATON.XR.HAND_L){
+			if (APP.DSC._dlayer === "UVL") APP.DSC.setDiscoveryLayer("VIL");
+			else APP.DSC.setDiscoveryLayer("UVL");		
+		}
+    });
+
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
