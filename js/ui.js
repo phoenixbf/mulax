@@ -1,3 +1,9 @@
+/*
+	UI multi-layer tool
+	marcello.massidda_AT_cnr.it
+
+===============================================*/
+
 let UI = {}
 
 UI.init=()=>

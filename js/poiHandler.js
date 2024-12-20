@@ -1,5 +1,5 @@
 /*
-	POI / annotations handler module
+	POI / Annotations handler module
 	bruno.fanini_AT_cnr.it
 
 ===============================================*/

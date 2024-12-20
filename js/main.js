@@ -67,6 +67,8 @@ APP.loadConfig = ()=>{
 
         APP.cdata = data;
 
+		if (APP.cdata.assetsFolder) APP.pathAssetsFolder = ATON.PATH_COLLECTION + APP.cdata.assetsFolder;
+
         ATON.fireEvent("APP_ConfigLoaded");
     });
 };
@@ -165,7 +167,7 @@ APP.loadItem = (item)=>{
 
 	console.log(e)
 
-	let path = APP.pathAssetsFolder + item + "/" + e.url
+	let path = APP.cdata.assetsFolder + item + "/" + e.url
 	APP.gItem.load(path);
 
 	if (e.scale) APP.gItem.setScale(e.scale);
