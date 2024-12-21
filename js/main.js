@@ -172,6 +172,11 @@ APP.loadItem = (item)=>{
 	// 2D item
 	if (ATON.Utils.isImage(path)){
         let panel = new THREE.Mesh( new THREE.PlaneGeometry(1,1));
+		panel.material = new THREE.MeshStandardMaterial({
+			side: THREE.DoubleSide
+		});
+		//panel.rotateX( Math.PI );
+
         APP.gItem.add(panel);
 
 		let yratio = 1.0;
@@ -184,17 +189,22 @@ APP.loadItem = (item)=>{
 				else size = tex.image.width;
 			}
 
-			panel.scale.y = yratio;
+			tex.flipY = false;
+			//tex.wrapS = THREE.RepeatWrapping;
+			//tex.wrapT = THREE.RepeatWrapping;
+			tex.colorSpace = ATON._stdEncoding;
+
+			panel.scale.y = -yratio;
 			panel.scale.z = 1.0/size;
 
 			tex.name = ATON.Utils.removeFileExtension(e.url);
+			console.log(tex)
 
-			panel.material = new THREE.MeshStandardMaterial({
-				map: tex
-			});
-
+			panel.material.map = tex;
 			panel.material.needsUpdate = true;
+			
 			ATON._onAllReqsCompleted();
+			ATON._bqScene = true;
 		});
 	}
 

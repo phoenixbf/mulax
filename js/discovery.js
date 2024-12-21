@@ -242,7 +242,8 @@ DSC.visitor = ()=>{
 			let name  = tex.name;
             //let base  = name + ".jpg";
             let dname = name + "_"+DSC._dlayer + DSC.TEX_EXT;
-            let semname = name + "_SEM1" + DSC.SEM_EXT;
+            
+            //let semname = name + "_SEM1" + DSC.SEM_EXT;
 
             // if first time, setup custom material
             if (!o.material.userData.mDiscovery) o.material = DSC.createMaterial(o.material);
@@ -279,7 +280,7 @@ DSC.visitor = ()=>{
 */
             let wm = APP.MH.createEditMask(o.name);
             if (UU) UU.tEMask.value = wm.texture;
-
+/*
             let sm = APP.MH.createSemanticMask(o.name, DSC._dirLayers + semname);
             ATON.Utils.textureLoader.load(DSC._dirLayers + semname, t => {
                 t.flipY = false;
@@ -293,7 +294,7 @@ DSC.visitor = ()=>{
                 
                 //console.log(t)
             });
-
+*/
             //o.material.uniforms.tEMask.value = DSC._editTex;
 
             o.material.userData.mDiscovery = true;
