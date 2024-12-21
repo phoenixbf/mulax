@@ -158,6 +158,50 @@ APP.querySemMasks = ()=>{
 
 };
 
+APP.realizeItemFromImage = (path)=>{
+	if (!path) return;
+
+	let basename = ATON.Utils.removeFileExtension(ATON.Utils.getFilename(path));
+
+	let panel = new THREE.Mesh( new THREE.PlaneGeometry(1,1));
+	panel.material = new THREE.MeshStandardMaterial({
+		side: THREE.DoubleSide
+	});
+	//panel.rotateX( Math.PI );
+
+	APP.gItem.add(panel);
+
+	let yratio = 1.0;
+	let size   = 1.0;
+
+	ATON.Utils.loadTexture(path, (tex) => {
+		if (tex.image){
+			yratio = tex.image.height / tex.image.width;
+			
+			if (tex.image.height > tex.image.width) size = tex.image.height;
+			else size = tex.image.width;
+		}
+
+		tex.flipY = false;
+		//tex.wrapS = THREE.RepeatWrapping;
+		//tex.wrapT = THREE.RepeatWrapping;
+		tex.colorSpace = ATON._stdEncoding;
+
+		panel.scale.y = -yratio;
+		panel.scale.z = 1.0/size;
+
+		tex.name = basename;
+
+		panel.material.map = tex;
+		panel.material.needsUpdate = true;
+		
+		ATON._onAllReqsCompleted();
+		ATON._bqScene = true;
+	});
+
+	ATON.Nav.setHomePOV( new ATON.POV().setPosition(0,0,-2) );
+};
+
 APP.loadItem = (item)=>{
 	if (!item) return;
 
@@ -170,44 +214,7 @@ APP.loadItem = (item)=>{
 	let path = APP.pathAssetsFolder + item + "/" + e.url;
 
 	// 2D item
-	if (ATON.Utils.isImage(path)){
-        let panel = new THREE.Mesh( new THREE.PlaneGeometry(1,1));
-		panel.material = new THREE.MeshStandardMaterial({
-			side: THREE.DoubleSide
-		});
-		//panel.rotateX( Math.PI );
-
-        APP.gItem.add(panel);
-
-		let yratio = 1.0;
-		let size   = 1.0;
-
-		ATON.Utils.loadTexture(path, (tex) => {
-			if (tex.image){
-				yratio = tex.image.height / tex.image.width;
-				if (tex.image.height > tex.image.width) size = tex.image.height;
-				else size = tex.image.width;
-			}
-
-			tex.flipY = false;
-			//tex.wrapS = THREE.RepeatWrapping;
-			//tex.wrapT = THREE.RepeatWrapping;
-			tex.colorSpace = ATON._stdEncoding;
-
-			panel.scale.y = -yratio;
-			panel.scale.z = 1.0/size;
-
-			tex.name = ATON.Utils.removeFileExtension(e.url);
-			console.log(tex)
-
-			panel.material.map = tex;
-			panel.material.needsUpdate = true;
-			
-			ATON._onAllReqsCompleted();
-			ATON._bqScene = true;
-		});
-	}
-
+	if (ATON.Utils.isImage(path)) APP.realizeItemFromImage(path);
 	// 3D item
 	else APP.gItem.load(path);
 
