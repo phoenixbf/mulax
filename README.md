@@ -22,4 +22,4 @@ In order to inspect and access items (with associated layers, masks and POIs), y
 
 ```
 
-URLs refer to ATON data collections, thus MuLaX for will resolve `sampleitem` (parameter) in `data/collections/<user>/items/sample.gltf`
+URLs refer to ATON data collections, thus MuLaX for will resolve `sampleitem` (parameter) in `data/collections/<user>/items/sampleitem/sample.gltf`

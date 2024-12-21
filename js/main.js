@@ -167,8 +167,39 @@ APP.loadItem = (item)=>{
 
 	console.log(e)
 
-	let path = APP.cdata.assetsFolder + item + "/" + e.url
-	APP.gItem.load(path);
+	let path = APP.pathAssetsFolder + item + "/" + e.url;
+
+	// 2D item
+	if (ATON.Utils.isImage(path)){
+        let panel = new THREE.Mesh( new THREE.PlaneGeometry(1,1));
+        APP.gItem.add(panel);
+
+		let yratio = 1.0;
+		let size   = 1.0;
+
+		ATON.Utils.loadTexture(path, (tex) => {
+			if (tex.image){
+				yratio = tex.image.height / tex.image.width;
+				if (tex.image.height > tex.image.width) size = tex.image.height;
+				else size = tex.image.width;
+			}
+
+			panel.scale.y = yratio;
+			panel.scale.z = 1.0/size;
+
+			tex.name = ATON.Utils.removeFileExtension(e.url);
+
+			panel.material = new THREE.MeshStandardMaterial({
+				map: tex
+			});
+
+			panel.material.needsUpdate = true;
+			ATON._onAllReqsCompleted();
+		});
+	}
+
+	// 3D item
+	else APP.gItem.load(path);
 
 	if (e.scale) APP.gItem.setScale(e.scale);
 	if (e.rotation) APP.gItem.setRotation( e.rotation[0], e.rotation[1], e.rotation[2]);
