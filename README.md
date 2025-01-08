@@ -14,12 +14,12 @@ In order to inspect and access items (with associated layers, masks and POIs), y
     "assetsFolder": "<user>/items/",
 
     "items":{
-        "sampleitem":{
-            "url":"sample.gltf"
+        "sample":{
+            "url":"statue.gltf"
         }
     }
 }
 
 ```
 
-URLs refer to ATON data collections, thus MuLaX for will resolve `sampleitem` (parameter) in `data/collections/<user>/items/sampleitem/sample.gltf`
+URLs refer to ATON data collections, thus MuLaX for will resolve `sample` entry in `data/collections/<user>/items/sample/statue.gltf`
