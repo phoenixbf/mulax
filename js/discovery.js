@@ -13,6 +13,8 @@ DSC.SEM_EXT = ".png";
 DSC.init = ()=>{
     DSC._dlayer    = undefined;
     DSC._dirLayers = undefined;
+
+    DSC._dLayerList = [];
     
     DSC._node  = undefined;
 
@@ -88,6 +90,11 @@ DSC.setDirLayers = (dir)=>{
     DSC._dirLayers = dir;
 };
 
+DSC.getLayersList = ()=>{
+    return DSC._dLayerList;
+};
+
+// TODO: check valid in DSC._dLayerList
 DSC.setDiscoveryLayer = (layer)=>{
     DSC._dlayer = layer;
 
@@ -256,7 +263,7 @@ DSC.visitor = ()=>{
             else UU.wDiscovery.value = 0.0;
 
             let layerpath = DSC._dirLayers + dname;
-            console.log(layerpath)
+            //console.log(layerpath)
 
             ATON.Utils.loadTexture(DSC._dirLayers + dname, t => {
                 t.flipY = false;

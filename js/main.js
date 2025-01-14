@@ -39,6 +39,8 @@ APP.setup = ()=>{
 	
 	APP._currItem  = undefined;
 	APP._currAtlas = undefined;
+	
+	APP._b3D = false;
 
 	APP._aabb = new THREE.Box3();
 
@@ -211,12 +213,20 @@ APP.loadItem = (item)=>{
 
 	console.log(e)
 
+	if (e.layers) APP.DSC._dLayerList = e.layers;
+
 	let path = APP.pathAssetsFolder + item + "/" + e.url;
 
 	// 2D item
-	if (ATON.Utils.isImage(path)) APP.realizeItemFromImage(path);
+	if (ATON.Utils.isImage(path)){
+		APP.realizeItemFromImage(path);
+		APP._b3D = true;
+	}
 	// 3D item
-	else APP.gItem.load(path);
+	else {
+		APP.gItem.load(path);
+		APP._b3D = false;
+	}
 
 	if (e.scale) APP.gItem.setScale(e.scale);
 	if (e.rotation) APP.gItem.setRotation( e.rotation[0], e.rotation[1], e.rotation[2]);
