@@ -240,6 +240,11 @@ APP.loadItem = (item)=>{
 	});
 };
 
+APP.getCurrentItemFolder = ()=>{
+	if (!APP._currItem) return undefined;
+	return APP.pathAssetsFolder + APP._currItem + "/";
+};
+
 APP.setupScene = ()=>{
 	APP.gItem = ATON.createSceneNode("item");
 	APP.gItem.attachToRoot();

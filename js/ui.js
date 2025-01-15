@@ -617,7 +617,7 @@ UI.composeTecniqueTabs=(poi)=>
     for (const [key, t] of Object.entries(poi.tecs))
         {
             const idTab = key + "_tab";
-            const urlImg = `${APP.basePath}res/pois/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
+            const urlImg = `${APP.getCurrentItemFolder()}pois/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
             console.log(urlImg);
             tabLinks+=`<button class="tablinks" onclick="APP.UI.openTab(event, '${idTab}')">
             <div>
