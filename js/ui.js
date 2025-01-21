@@ -4,89 +4,108 @@
 
 ===============================================*/
 
+
+
 let UI = {}
 
 UI.init=()=>
     {
-
+        UI.Custom_ATON_UI_Init();
         ATON.on("APP_POISelect", (id)=>{APP.UI.onClick_POIListsItem(document.getElementById(id))});
         console.log("UI  init")
         UI.createPanel();
         return UI;
     }
 
+
+UI.Custom_ATON_UI_Init=()=>{
+    UI.idOffCanvas = "mainOffCanvas";
+    ATON.UI.init();
+    ATON.UI.elSidePanel.classList.remove("offcanvas-end")
+    ATON.UI.elSidePanel.classList.add("offcanvas-start");
+    ATON.UI.elSidePanel.id = UI.idOffCanvas;
+}
+
 UI.createPanel=()=>
     {
-    //header
-    //TODO
+    //header todo
 
     //DiscoveryMainContainer
-    var DiscoveryPanel=
-    `
-     <h2>Discovery Diagnostic 3D Layers</h2>
-     <div class="sideBlockMainContainer">
-     
-         Select the discovery method:<br>
-        <div class="columnFlexContainer">
+    
+    var DiscoveryPanel = "";
+    if(APP.DSC.getLayersList().length>0){
+        DiscoveryPanel=
+        `
+        <h2>Discovery Diagnostic 3D Layers</h2>
+        <div class="sideBlockMainContainer">
         
-            <div class="box" id="boxA">
-                <label>
-                    <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
-                      <b>Lens Mode</b>
-                </label>
-                <p>This option allows you to apply a masking lens effect to your images.</p>
+            Select the discovery method:<br>
+            <div class="columnFlexContainer">
+            
+                <div class="box" id="boxA">
+                    <label>
+                        <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
+                        <b>Lens Mode</b>
+                    </label>
+                    <p>This option allows you to apply a masking lens effect to your images.</p>
+                </div>
+                <div class="box" id="boxB">
+                
+                    <label>
+                        <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
+                    <b>Split Mode</b>
+                    </label>
+                    <p>This option enables a split visualizer for comprehensive image analysis.</p>
+                </div>
             </div>
-            <div class="box" id="boxB">
-               
-                <label>
-                    <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
-                   <b>Split Mode</b>
-                </label>
-                <p>This option enables a split visualizer for comprehensive image analysis.</p>
-            </div>
-        </div>
 
-    </div>
-    <div id="discoveryAusiliarPanel"></div>
+        </div>
+        <div id="discoveryAusiliarPanel"></div>
     `;
+    }
 
-
-    var POIsPanel=
-    `
-        <div id="headerPOIsPanel" class="flex_between">
-            <h2>Explore Analysis</h2>
-            <label class="checkbox-label">
-                <span>Visualize all</span>
-                <input type="checkbox" name="terms" class="checkbox-input" onClick="APP.UI.onChangeVisualizeAllAnalysis(this)" checked>
-            </label>
-        </div>
-
-         ${UI.POI_filterPanel}
-         ${UI.POI_ListContainer}
-         
+    var POIsPanel= "";
+    if(APP.POIHandler._L.length>0){
+        POIsPanel=
+        `
+            <div id="headerPOIsPanel" class="flex_between mt-5">
+                <h2>Explore Analysis</h2>
+                <label class="checkbox-label">
+                    <span>Visualize all</span>
+                    <input type="checkbox" name="terms" class="checkbox-input" onClick="APP.UI.onChangeVisualizeAllAnalysis(this)" checked>
+                </label>
+            </div>
         
-    `
+             ${UI.POI_filterPanel}
+             ${UI.POI_ListContainer}  
+            
+        `
+    }
 
-    var sidebar = 
-    `
-     <div class="sidebar left">
-     ${DiscoveryPanel}
-     ${POIsPanel}
-     </div>
-    `
-        $("body").append(sidebar);
-       
-
+    if(DiscoveryPanel=="" && POIsPanel=="") return;
+    
+    var sidebarBody = ATON.UI.createElemementFromHTMLString(`<div>${DiscoveryPanel} ${POIsPanel}</div>`);
+    ATON.UI.showSidePanel({header:"   ",body:sidebarBody});
+   
     //APP Initializations:
     //See all Pois:
     APP.POIHandler.filterReset();
     UI.updatePOIlist(APP.POIHandler.getFilteredList());
-  //  ATON.Nav.requestHome();
-    
+
     //Disable discovery:
-    APP.DSC.disableDiscoveryLayer()
+    APP.DSC.disableDiscoveryLayer();
+
+    UI.CreateMenuBtn();
     }
 
+//Mobile
+UI.CreateMenuBtn=()=>{
+    let btn = ATON.UI.createButton({icon: APP.pathIcons+"burgerMenuIcon.svg"});
+    btn.classList.add("position-absolute", "toggleBtnOffCanvas", "aton-std-bg", "p-2", "mt-2", "ms-2", "rounded-circle");
+    btn.setAttribute("data-bs-toggle","offcanvas");
+    btn.setAttribute("data-bs-target","#"+UI.idOffCanvas);
+    document.body.prepend(btn);
+}
 
 //Lens options:
 UI.lens_options = ()=> {
@@ -104,44 +123,40 @@ UI.lens_options = ()=> {
 
 UI.full_options= ()=>{
 
-    
-    let xSelected = UI.selectedAXIS=="x" ? "checked" : "";
-    let ySelected = UI.selectedAXIS=="y" ? "checked" : "";
-    let zSelected = UI.selectedAXIS=="z" ? "checked" : "";
-    
 
-return `
-Select the active discovery AXIS
- <div class="columnFlexContainer noborder">
-            <div class="box" id="boxA">
+    let axis = ["x","y"]; 
+    if(!APP._b3D) axis.push("z");
+    
+    let axisOptions = ``;
+    axis.forEach(a => {
+   
+        let isSelected = UI.esectedAXIS==a ? "checked" : "";
+        axisOptions+=`<div class="box">
                 <label>
-                    <input onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_Y" value="x" type="radio" name="full_axis" ${xSelected}>
-                      <b>X AXIS</b>
+                    <input onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_${a}" value="${a}" type="radio" name="full_axis" ${isSelected}>
+                      <b>${a.toUpperCase()} AXIS</b>
                 </label>
-            </div>
-            <div class="box" id="boxB">
-               
-                <label>
-                    <input onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_X" value="y" type="radio" name="full_axis" ${ySelected}>
-                   <b>Y AXIS</b>
-                </label>
-            </div>
-               <div class="box" id="boxB">
-               
-                <label>
-                    <input onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_Z" value="z" type="radio" name="full_axis" ${zSelected}>
-                   <b>Z AXIS</b>
-                </label>
-            </div>
-        </div>
-`
+            </div>`
+    });
+
+    console.log(axisOptions)
+    return `
+    Select the active discovery AXIS
+    <div class="columnFlexContainer noborder">${axisOptions}</div>
+    `
 }
 
 //Change VIL, UV discovery layers
 UI.discoveryLayersSelectInput = ()=>{
 
-    var uvSelected = APP.DSC._dlayer =="UVL" ? "selected" : "";
-    var vilSelected = APP.DSC._dlayer =="VIL" ? "selected" : "";
+    let layers =  APP.DSC.getLayersList();
+    let layersOptions = ``;
+    layers.forEach(l => {
+        let isSelected = APP.DSC._dlayer == l ? "selected" : "";
+        layersOptions+=`<option value=${l} ${isSelected}>${l}</option>`
+    });
+
+   
 
     return `<br>
 Select Diagnostic 3DLayers to compare simultaneously:<br>
@@ -160,8 +175,7 @@ Select Diagnostic 3DLayers to compare simultaneously:<br>
                <label for="discoveryLayer"><b> LAYER 2 (discovery)</b><br></label>
                 <div class="selectWrapper">
                     <select name="discoveryLayer" id="discoveryLayerSelectInput" onchange="APP.UI.onChangeDiscoveryLayer(this)" class="selectBox">
-                        <option value="UVL" ${uvSelected}>UV</option>
-                        <option value="VIL" ${vilSelected}>VIL</option>
+                        ${layersOptions}
                     </select>
                 </div>
             </div>
@@ -326,7 +340,7 @@ UI.selectedAXIS = "x";
                     e.checked = false;
                     UI.discoveryMode = null;
                     //CLOSE DISCOVERY MODE TODO
-                    APP.DSC.disableDiscoveryLayer();
+                    APP.DSC.disableDiscoveryLayer(); //tochange: this is breaking something in XR mode
                     ATON.SUI.setSelectorRadius(UI.defaultRadius);
                     return;
                 }
@@ -350,7 +364,7 @@ UI.selectedAXIS = "x";
             }
            APP.DSC.enableDiscoveryLayer();
            //Set layer defaul layer -> UVL
-           var defaultLayer = APP.DSC._dlayer? APP.DSC._dlayer : "UVL"
+           var defaultLayer = APP.DSC._dlayer? APP.DSC._dlayer : "UVL" //tochange: Select the first available layer
            APP.DSC.setDiscoveryLayer(defaultLayer);
         }
 
@@ -585,6 +599,7 @@ UI.composeDetail_POI=(id)=>
     if(p.description) content+= `<p>${p.description}</p>`;
     //Compose Techniques Tabs:
     var tabs = UI.composeTecniqueTabs(p);
+ 
     var sidebar = 
     `
      <div id="rightSideBar" class="sidebar right">

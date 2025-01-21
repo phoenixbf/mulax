@@ -10,11 +10,39 @@ input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
 
 /*Sidebar*/
 
+/*btn
+"top-3", "start-3","btn-sm", "rounded-circle"
+*/
+
+.toggleBtnOffCanvas{
+/*width: 50px;
+height: 50px;*/
+background-color:  var(--bs-body-bg);
+
+/*#212529*/
+}
+
+.toggleBtnOffCanvas img{
+    width: 30px;
+    height: 30px;
+    margin:0px;
+}
+
+/*Convert in full centered in mobile:*/
+@media screen and (max-width: 576px) { 
+    .sidebar.right{
+        margin: auto;
+        width: calc( 100% - 16px);
+        max-height: 100%;
+        position: absolute;
+    }
+}
+
 .sidebar {
     
     position: fixed;
-    top: 0;
-    background-color: #333;
+    top: 8px;
+    background-color: var(--bs-body-bg);
     color: white;
     overflow-y: auto;
     padding: 15px;
@@ -26,10 +54,11 @@ input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
     width: 450px;
     height: 100vh;
 }
+
 .right
 {
-    top: 20px!important;
-    right: 20px;
+    margin-top: 8px;
+    right: 8px;
     width: 300px;
     border-radius: 20px;
 }
@@ -66,7 +95,6 @@ input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
 .noborder
 {
     border: none!important;
-
 }
 
 .sideBlockMainContainer
@@ -89,14 +117,6 @@ input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
     width: 50%;
    
     box-sizing: border-box;
-}
-
-#boxA {
-   /* background-color: #e0f7fa;*/
-}
-
-#boxB {
-   /* background-color: #ffecb3;*/
 }
 
 .columnFlexContainer h2 {
