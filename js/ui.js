@@ -84,7 +84,7 @@ UI.createPanel=()=>
 
     if(DiscoveryPanel=="" && POIsPanel=="") return;
     
-    var sidebarBody = ATON.UI.createElemementFromHTMLString(`<div>${DiscoveryPanel} ${POIsPanel}</div>`);
+    var sidebarBody = ATON.UI.createElementFromHTMLString(`<div>${DiscoveryPanel} ${POIsPanel}</div>`);
     ATON.UI.showSidePanel({header:"   ",body:sidebarBody});
    
     //APP Initializations:
