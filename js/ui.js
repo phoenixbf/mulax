@@ -10,6 +10,7 @@ let UI = {}
 
 UI.init=()=>
     {
+     //   ATON.UI.addBasicEvents();
         UI.Custom_ATON_UI_Init();
         ATON.on("APP_POISelect", (id)=>{APP.UI.onClick_POIListsItem(document.getElementById(id))});
         console.log("UI  init")
@@ -19,24 +20,24 @@ UI.init=()=>
 
 
 UI.Custom_ATON_UI_Init=()=>{
-    UI.idOffCanvas = "mainOffCanvas";
-    ATON.UI.init();
-    ATON.UI.elSidePanel.classList.remove("offcanvas-end")
+    //ATON.UI.init();
+
     ATON.UI.elSidePanel.classList.add("offcanvas-start");
+    ATON.UI.elSidePanel.classList.remove("offcanvas-end")
+    UI.idOffCanvas = "mainOffCanvas";
     ATON.UI.elSidePanel.id = UI.idOffCanvas;
 }
 
 UI.createPanel=()=>
     {
     //header todo
-
     //DiscoveryMainContainer
     
     var DiscoveryPanel = "";
     if(APP.DSC.getLayersList().length>0){
         DiscoveryPanel=
         `
-        <h2>Discovery Diagnostic 3D Layers</h2>
+        <h2>Discovery Layers</h2>
         <div class="sideBlockMainContainer">
         
             Select the discovery method:<br>
@@ -559,7 +560,7 @@ UI.returnBulletsFromPOI=(poi)=>
         $(e).addClass("poiListItem_clicked");
         UI.id_POIListItemFocused = e.id;
         
-        UI.hidePOIs();
+       if(!APP._b3D) UI.hidePOIs();
     }
 
     UI.hidePOIs=()=>{APP.POIHandler.filterByCategory("impossibleCategory")}
@@ -588,33 +589,34 @@ UI.composeDetail_POI=(id)=>
     const p = APP.POIHandler.getContent(id);
 
     //Compose POI infos
+    var description = p.description? `<p>${p.description}</p>` : "";
+
     var cat = "";
     if(p.cat=="spot") cat ="Spot Analysis: ";
     if(p.cat=="imaging") cat ="Imaging Analysis: ";
-    var content = `
-    <div class="flex_between">
-    <h2>${cat} ${p.title}</h2>
-    <div class="closeBtn" onClick="APP.UI.onClick_CloseRightSidebar()"></div>
-    </div>`
-    if(p.description) content+= `<p>${p.description}</p>`;
+    
+    var content = ATON.UI.createElementFromHTMLString(`
+    <div>
+        <div class="flex_between align-items-start">
+            <h2>${cat} ${p.title}</h2>
+            <div class="closeBtn" onClick="APP.UI.onClick_CloseRightSidebar()"></div>
+        </div>
+        ${description}
+    </div>`);
+   
     //Compose Techniques Tabs:
-    var tabs = UI.composeTecniqueTabs(p);
- 
-    var sidebar = 
-    `
-     <div id="rightSideBar" class="sidebar right">
-     ${content}
-     ${tabs}
-     </div>
-    `
+    var tabs = UI.composeTechniqueTabs(p);
+    
+    var sidebar = ATON.UI.createElementFromHTMLString(`<div id="rightSideBar" class="sidebar right"></div>`);
+    sidebar.append(content);
+    sidebar.append(tabs);
 
     if($("#rightSideBar")) $("#rightSideBar").remove()
     $("body").append(sidebar);
 
 }
 
-UI.onClick_CloseRightSidebar=()=>
-    {
+UI.onClick_CloseRightSidebar=()=>{
         $("#rightSideBar").remove();
         //style of poi item:
         if($(`#${APP.UI.id_POIListItemFocused}`)){
@@ -622,9 +624,66 @@ UI.onClick_CloseRightSidebar=()=>
         }
         UI.id_POIListItemFocused = null;
         UI.resumePOIs();
-    }
+}
 
-UI.composeTecniqueTabs=(poi)=>
+UI.tecniqueImgItem =(urlImg)=>{
+
+    return ATON.UI.createElementFromHTMLString (`
+        <div class="imgTechContainer">
+            <div class="imgTech_fullScreenBtn" onclick="APP.UI.onFullScreenBtnClicked(event)"></div>
+            <img src=${urlImg} class="imgTech"/>
+        </div>`); 
+}
+
+UI.onFullScreenBtnClicked =(evt)=>{
+
+    console.log("FULLSCREEN CLICKED")
+    console.log(evt);
+    var imgSrc = evt.target.parentNode.querySelector(".imgTech").src;
+    const fullScreenImg = ATON.UI.createElementFromHTMLString(`
+        <div class="imgTech_fullScreenContainer">
+        <img src="${imgSrc}"/>
+        </div>`);
+
+    //UI Hack for fullscreen modal:
+    ATON.UI.elModal.classList.remove("modal-fullscreen-md-down");
+    ATON.UI.elModal.children[0].classList.remove("modal-dialog-centered");
+    ATON.UI.elModal.children[0].classList.add("modal-fullscreen");
+
+    const closeBtn = ATON.UI.createButton({icon: APP.pathIcons+"close-button.svg", onpress:()=>{ATON.UI.hideModal()}});
+    ATON.UI.showModal({body:fullScreenImg,footer:closeBtn});
+}
+   
+
+
+UI.composeTechniqueTabs=(poi)=>{
+
+    var _options = {items:[]};
+
+    for (const [key, t] of Object.entries(poi.tecs)){
+        const urlImg = `${APP.getCurrentItemFolder()}pois/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
+        
+        const _title = UI.techniqueInfos[key].technique;
+        //const _icon = ATON.UI.createElementFromHTMLString( UI.underlineTechniqueItem(key,false));
+       // const _icon = APP.pathIcons+"burgerMenuIcon.svg" //test
+        /*const _title = ATON.UI.createElementFromHTMLString(`<div>
+            ${UI.techniqueInfos[key].technique}
+            ${UI.underlineTechniqueItem(key,false)}
+            </div>`);*/
+
+        _options.items.push({
+            title: _title,
+           // icon:_icon,
+            content:APP.UI.tecniqueImgItem(urlImg)
+        })
+        }
+
+    let _tabs = ATON.UI.createTabsGroup(_options);
+    APP._tabs = _tabs;
+    return _tabs;
+}
+
+UI._composeTechniqueTabs=(poi)=> ///OLD
 {
     var tabLinks =  `<div class="tab">`;
     var tabContents = ``;
@@ -642,13 +701,15 @@ UI.composeTecniqueTabs=(poi)=>
             </button>`;
             tabContents += `
             <div id=${idTab} class="tabcontent">
-            <img src=${urlImg} class="imgTech"/>
+            ${APP.UI.tecniqueImgItem(urlImg)}
             </div>`
         }
     tabLinks+="</div>";
     var tabs = tabLinks+tabContents;
     return  tabs;
 }
+
+
 
 UI.openTab=(evt, idTab)=> {
     console.log("id is: "+ idTab)
