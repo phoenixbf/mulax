@@ -66,11 +66,11 @@ POIHandler.realize = (id, pos, rad, content)=>{
     A.restoreDefaultMaterial();
 
 	A.onHover = ()=>{
-		A.setScale(rad*1.5);
+		//A.setScale(rad*1.5);
 	};
 
 	A.onLeave = ()=>{
-		A.setScale(rad);
+		//A.setScale(rad);
 	};
 
 	A.userData.mulax = content;

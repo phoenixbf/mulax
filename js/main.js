@@ -30,8 +30,10 @@ APP.cdata = undefined;
 // You can place here UI setup (HTML), events handling, etc.
 APP.setup = ()=>{
 
-    ATON.FE.realize(); // Realize the base front-end
-	ATON.FE.addBasicLoaderEvents(); // Add basic events handling
+    //ATON.FE.realize(); // Realize the base front-end
+	//ATON.FE.addBasicLoaderEvents(); // Add basic events handling
+    ATON.realize();
+    ATON.UI.addBasicEvents();
 
 	APP.DSC.init();
 	APP.MH.init();
@@ -583,9 +585,3 @@ APP.update = ()=>{
 	APP.updateItem();
 	APP.POIHandler.update();
 };
-
-
-// Run the App
-window.addEventListener('load', ()=>{
-	APP.run();
-});

@@ -37,8 +37,6 @@
 
     <title>MuLaX</title>
     <link rel="stylesheet" type="text/css" href="/vendors/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/res/css/aton.css">
-    <!--ATON CSS-->
     <link rel="stylesheet" type="text/css" href="/res/css/main.css">
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -52,22 +50,10 @@
 	<script type="module" src="js/main.js" defer></script>
 </head>
 
-<body oncontextmenu="return false;">
-    <!-- Top Toolbar -->
-    <div id="idTopToolbar" class="atonToolbar atonToolbar-top-right"></div>
-    
-    <!-- Main Popup -->
-    <div id="idPopup" class="atonPopupContainer" style="display:none;"></div>
+<body>
+    <div id="toolbar" class="aton-toolbar-top"></div>
 
-    <!-- Loader -->
-    <div id="idLoader" class="atonCenterLoader" style="display:none;"></div>
-
-    <!-- Powered by -->
-    <div id='idPoweredBy' class="atonToolbar atonToolbar-bottom poweredBy" >
-        Powered by <a href="https://osiris.itabc.cnr.it/aton/" target="_blank">ATON</a>
-    </div>
-
-    <div style="position:fixed; top:0px; right:0px;">
-        <video style="width: 150px; height: auto;" id="qr-video"></video>
+    <div class="aton-poweredby" >
+        <a href="https://aton.ispc.cnr.it/site/" target="_blank"><img src="/res/aton-logo.png"></a>
     </div>
 </body>
