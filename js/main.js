@@ -335,7 +335,15 @@ APP.setupEvents = ()=>{
 	ATON.on("AllNodeRequestsCompleted",()=>{
 		APP.DSC.setNode(APP.gItem);
 		APP.DSC.setDirLayers(APP.pathAssetsFolder + APP._currItem + "/");
-		APP.DSC.setDiscoveryLayer("multiband","UVL");
+		
+		let glist = APP.DSC.getLayersGroups();
+		let G = glist[0];
+		if (G){
+			APP.DSC.setDiscoveryGroup(G);
+
+			let L = DSC.getLayersList(G);
+			APP.DSC.setDiscoveryLayer(L[0].pattern);
+		}
 
 		ATON.SUI.setSelectorRadius(0.02);
 		ATON.bounds.getBoundingBox( APP._aabb );

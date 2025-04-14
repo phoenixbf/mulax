@@ -110,10 +110,16 @@ DSC.getLayersGroups = ()=>{
 };
 
 // TODO: check valid in DSC._dLayerList
-DSC.setDiscoveryLayer = (group, layer)=>{
-    DSC._dgroup = group;
+DSC.setDiscoveryLayer = (layer)=>{
     DSC._dlayer = layer;
 
+    console.log("Set layer "+DSC._dlayer);
+    DSC.visitor();
+};
+DSC.setDiscoveryGroup = (group)=>{
+    DSC._dgroup = group;
+
+    console.log("Set group "+DSC._dgroup);
     DSC.visitor();
 };
 
