@@ -319,8 +319,6 @@ APP.setupScene = ()=>{
 
     N.add( M );
 	N.attachToRoot();
-
-	APP.setupSUI();
 };
 
 // Events
@@ -349,6 +347,8 @@ APP.setupEvents = ()=>{
 		ATON.bounds.getBoundingBox( APP._aabb );
 
 		APP.UI.init();
+
+		//APP.setupSUI();
 	});
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeHover");
@@ -568,27 +568,44 @@ APP.updateItem = ()=>{
 //========================================================
 APP.setupSUI = ()=>{
 
-	let btnUVL = new ATON.SUI.Button("sui_layerUVL");
-	btnUVL.setIcon(APP.pathIcons+"uvl.png", true);
-	btnUVL.setText("UVL");
-	btnUVL.setSwitchColor(ATON.MatHub.colors.white);
-	btnUVL.onSelect = ()=>{
-		APP.DSC.setDiscoveryLayer("UVL");
-	};
-	btnUVL.onHover = ()=>{ btnUVL.setScale(1.2) };
-	btnUVL.onLeave = ()=>{ btnUVL.setScale(1) };
+	let btnList = [];
 
-	let btnVIL = new ATON.SUI.Button("sui_layerVIL");
-	btnVIL.setIcon(APP.pathIcons+"vil.png", true);
-	btnVIL.setText("VIL");
-	btnVIL.setSwitchColor(ATON.MatHub.colors.white);
-	btnVIL.onSelect = ()=>{
-		APP.DSC.setDiscoveryLayer("VIL");
-	};
-	btnVIL.onHover = ()=>{ btnVIL.setScale(1.2) };
-	btnVIL.onLeave = ()=>{ btnVIL.setScale(1) };
+	let LL = DSC.getLayersList();
 
-	APP.suiToolbar = ATON.SUI.createToolbar([ btnUVL, btnVIL ]);
+	for (let i in LL){
+		let L = LL[i];
+		let btn = new ATON.SUI.Button("SUI-"+L.pattern, 1.0, 0.7);
+
+		btn.setText(L.name);
+		//btn.setIcon(APP.pathIcons+"uvl.png", true);
+		btn.setSwitchColor(ATON.MatHub.colors.orange);
+		
+		btn.onSelect = ()=>{
+			APP.DSC.setDiscoveryLayer(L.pattern);
+			for (let b in btnList){
+				if (btnList[b] !== btn){
+					btnList[b].switch(false);
+					btnList[b].position.z = 0.005;
+				}
+				else {
+					btnList[b].switch(true);
+					btnList[b].position.z = 0.02;
+				}
+			}
+		};
+		btn.onHover = ()=>{
+			btn.setScale(1.1)
+			ThreeMeshUI.update();
+		};
+		btn.onLeave = ()=>{
+			btn.setScale(1.0)
+			ThreeMeshUI.update();
+		};
+
+		btnList.push(btn);
+	}
+
+	APP.suiToolbar = ATON.SUI.createToolbar( btnList, undefined, undefined, 1.1 );
 	APP.suiToolbar.setPosition(0.0,0.0,0.3).setRotation(-0.7,0.0,0).setScale(0.7).attachToRoot();
 };
 
