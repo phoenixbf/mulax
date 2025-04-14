@@ -218,7 +218,7 @@ APP.loadItem = (item)=>{
 
 	console.log(e)
 
-	if (e.layers) APP.DSC._dLayerList = e.layers;
+	if (e.layers) APP.DSC._dLayers = e.layers;
 
 	let path = APP.pathAssetsFolder + item + "/" + e.url;
 
@@ -335,7 +335,7 @@ APP.setupEvents = ()=>{
 	ATON.on("AllNodeRequestsCompleted",()=>{
 		APP.DSC.setNode(APP.gItem);
 		APP.DSC.setDirLayers(APP.pathAssetsFolder + APP._currItem + "/");
-		APP.DSC.setDiscoveryLayer("UVL");
+		APP.DSC.setDiscoveryLayer("multiband","UVL");
 
 		ATON.SUI.setSelectorRadius(0.02);
 		ATON.bounds.getBoundingBox( APP._aabb );

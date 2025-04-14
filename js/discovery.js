@@ -12,9 +12,12 @@ DSC.SEM_EXT = ".png";
 
 DSC.init = ()=>{
     DSC._dlayer    = undefined;
+    DSC._dgroup    = undefined;
+
     DSC._dirLayers = undefined;
 
-    DSC._dLayerList = [];
+    //DSC._dLayerList = [];
+    APP.DSC._dLayers = undefined;
     
     DSC._node  = undefined;
 
@@ -90,12 +93,25 @@ DSC.setDirLayers = (dir)=>{
     DSC._dirLayers = dir;
 };
 
-DSC.getLayersList = ()=>{
-    return DSC._dLayerList;
+DSC.getLayersList = (group)=>{
+    if (!APP.DSC._dLayers) return undefined;
+    if (!group) return undefined;
+
+    return APP.DSC._dLayers[group];
+
+    //return DSC._dLayerList;
+};
+
+DSC.getLayersGroups = ()=>{
+    let groups = [];
+    for (let g in APP.DSC._dLayers) groups.push(g);
+
+    return groups;
 };
 
 // TODO: check valid in DSC._dLayerList
-DSC.setDiscoveryLayer = (layer)=>{
+DSC.setDiscoveryLayer = (group, layer)=>{
+    DSC._dgroup = group;
     DSC._dlayer = layer;
 
     DSC.visitor();
@@ -248,7 +264,7 @@ DSC.visitor = ()=>{
 			let tex   = o.material.map;
 			let name  = tex.name;
             //let base  = name + ".jpg";
-            let dname = name + "_"+DSC._dlayer + DSC.TEX_EXT;
+            let dname = DSC._dgroup + "/" + name + "_"+DSC._dlayer + DSC.TEX_EXT;
             
             //let semname = name + "_SEM1" + DSC.SEM_EXT;
 
@@ -263,7 +279,7 @@ DSC.visitor = ()=>{
             else UU.wDiscovery.value = 0.0;
 
             let layerpath = DSC._dirLayers + dname;
-            //console.log(layerpath)
+            console.log(layerpath)
 
             ATON.Utils.loadTexture(DSC._dirLayers + dname, t => {
                 t.flipY = false;
