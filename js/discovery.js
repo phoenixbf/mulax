@@ -94,10 +94,13 @@ DSC.setDirLayers = (dir)=>{
 };
 
 DSC.getLayersList = (group)=>{
-    if (!APP.DSC._dLayers) return undefined;
-    if (!group) return undefined;
+    if (!DSC._dLayers) return undefined;
+    if (!group){
+        if (DSC._dgroup) return DSC._dLayers[DSC._dgroup];
+        else return undefined;
+    }
 
-    return APP.DSC._dLayers[group];
+    return DSC._dLayers[group];
 
     //return DSC._dLayerList;
 };
