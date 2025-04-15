@@ -27,7 +27,37 @@ POIHandler.init = ()=>{
 
 POIHandler.clearList = ()=>{
 	POIHandler._gPOIs.removeChildren();
+	ATON.fire("APP_POIListChanged");
 };
+
+POIHandler.getTechniquesList = ()=>{
+	let tecs = {};
+	for (let i in POIHandler._list){
+		let A = POIHandler.getContent(i);
+
+		tecs = {...tecs, ...A.techniques};
+	}
+
+	let list = [];
+	for (let k in tecs) list.push(k)
+	
+	return list;
+};
+
+POIHandler.getCategoriesList = ()=>{
+	let cats = {};
+	for (let i in POIHandler._list){
+		let A = POIHandler.getContent(i);
+
+		if (A.category) cats[A.category] = true;
+	}
+
+	let list = [];
+	for (let k in cats) list.push(k);
+	
+	return list;
+};
+
 
 POIHandler.realize = (id, pos, rad, content)=>{
 	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 1.0);
@@ -38,7 +68,10 @@ POIHandler.realize = (id, pos, rad, content)=>{
 
 	let cat = content.cat;
 	let tecs = "";
-	for (let t in content.tecs) tecs += t;
+	for (let t in content.tecs){
+		tecs += t;
+		A.userData
+	}
 
 	console.log(cat, tecs)
 
@@ -101,7 +134,9 @@ POIHandler.add = (pos, rad, content)=>{
 	];
 	O[id].rad = rad;
 
-	APP.addToStorage( APP._currItem, O );
+	APP.addToStorage( APP._currItem, O ).then(()=>{
+		ATON.fire("APP_POIListChanged");
+	});
 	
 	return A;
 };
@@ -115,6 +150,8 @@ POIHandler.addFromCurrentQuery = (content)=>{
 
 	content.nor = [n.x,n.y,n.z];
 
+	ATON.fire("APP_POIListChanged");
+
 	return POIHandler.add(p,r, content);
 };
 
@@ -123,6 +160,7 @@ POIHandler.remove = (id)=>{
 	if (!A) return;
 
 	POIHandler._list[id] = null;
+	ATON.fire("APP_POIListChanged");
 };
 
 POIHandler.getContentFromNode = (A)=>{
@@ -146,6 +184,9 @@ POIHandler.loadAll = ( onComplete )=>{
 
 			POIHandler.realize(a, new THREE.Vector3(A.pos[0],A.pos[1],A.pos[2]), A.rad, A.content );
 		}
+
+		ATON.fire("APP_POIListChanged");
+		if (onComplete) onComplete();
 
 		console.log(D)
 	});
