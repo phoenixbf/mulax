@@ -30,7 +30,7 @@ UI.Custom_ATON_UI_Init=()=>{
 
 UI.createPanel=()=>
     {
-    //header todo
+
     //DiscoveryMainContainer
     
     var DiscoveryPanel = "";
@@ -118,20 +118,22 @@ UI.lens_options = ()=> {
             <input type="range" id="slider" class="slider" min="1" max="33" value="${_currentRadius/0.01}" onchange="APP.UI.onChangeSliderDiscoveryLensRadius(this.value)">
         </div>
     </div>
-
 `
 }
 
 UI.full_options= ()=>{
 
-
+    //If 2d mode, only x and y axis are available.
     let axis = ["x","y"]; 
     if(!APP._b3D) axis.push("z");
+    
+    //Start with x axis selected:
+    if(!APP.UI.selectedAXIS) UI.selectedAXIS = axis[0];
     
     let axisOptions = ``;
     axis.forEach(a => {
    
-        let isSelected = UI.esectedAXIS==a ? "checked" : "";
+        let isSelected = UI.selectedAXIS==a ? "checked" : "";
         axisOptions+=`<div class="box">
                 <label>
                     <input onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_${a}" value="${a}" type="radio" name="full_axis" ${isSelected}>
@@ -147,35 +149,58 @@ UI.full_options= ()=>{
     `
 }
 
-//Change VIL, UV discovery layers
+//Double Dropdowns to chose Discover Groups and Layers.
+
+UI.getGroupOptions = ()=>{
+    let groups = APP.DSC.getLayersGroups();
+    let options = ``;
+    groups.forEach(g => {
+        let isSelected = APP.DSC._dgroup == g ? "selected" : "";
+        options+=`<option value=${g} ${isSelected}>${g}</option>`
+    })
+    return options;
+}
+
+UI.getLayersOptions=()=>{
+    let layers =  APP.DSC.getLayersList( APP.DSC._dgroup );
+    let options = ``;
+    layers.forEach(l => {
+        let isSelected = APP.DSC._dlayer == l.pattern ? "selected" : "";
+        options+=`<option value=${l.pattern} ${isSelected}>${l.name}</option>`
+        //name = Human Readable 
+        //pattern =  Suffix of the file name
+    })
+    return options;
+}
+
+UI.updateLayersDropdown=()=>{
+   let layers = UI.getLayersOptions();
+   $("#discoveryLayers_dropDownList").html(layers);
+}
+
 UI.discoveryLayersSelectInput = ()=>{
 
-    let layers =  APP.DSC.getLayersList();
-    let layersOptions = ``;
-    layers.forEach(l => {
-        let isSelected = APP.DSC._dlayer == l ? "selected" : "";
-        layersOptions+=`<option value=${l} ${isSelected}>${l}</option>`
-    });
-
+    let groupsOptions = UI.getGroupOptions();
+    let layersOptions = UI.getLayersOptions();
    
 
     return `<br>
-Select Diagnostic 3DLayers to compare simultaneously:<br>
+Select Diagnostic layer to visualize<br>
  <div class="columnFlexContainer noborder">
 
             <div class="box" id="boxA">
-              <label for="discoveryLayer"><b>LAYER 1 (base)</b><br></label>
+              <label for="discoveryGroup"><b>GROUP</b><br></label>
               <div class="selectWrapper">
-                <select name="discoveryLayer" value="VISIBLE" id="discoveryLayerSelectInput" onchange="APP.UI.onChangeDiscoveryLayer(this)" class="selectBox">
-                <option value="VISIBLE">Visible</option>
+                <select id="discoveryGroups_dropDownList" name="discoveryGroup" onchange="APP.UI.onChangeDiscoveryGroup(this)" class="selectBox">
+                ${groupsOptions}
                 </select>
                 </div>
 
             </div>
             <div class="box" id="boxB">
-               <label for="discoveryLayer"><b> LAYER 2 (discovery)</b><br></label>
+               <label for="discoveryLayer"><b>LAYER</b><br></label>
                 <div class="selectWrapper">
-                    <select name="discoveryLayer" id="discoveryLayerSelectInput" onchange="APP.UI.onChangeDiscoveryLayer(this)" class="selectBox">
+                    <select id="discoveryLayers_dropDownList" name="discoveryLayer" onchange="APP.UI.onChangeDiscoveryLayer(this)" class="selectBox">
                         ${layersOptions}
                     </select>
                 </div>
@@ -335,7 +360,7 @@ UI.selectedAXIS = "x";
         {
             const dMode = e.value; //lens or full
 
-            //Retap for close TODO: if is active..deactive and e.checked = false;
+            //Retap for close
             if(UI.discoveryMode == dMode) {
                     $("#discoveryAusiliarPanel").empty().css("display","none");
                     e.checked = false;
@@ -368,6 +393,18 @@ UI.selectedAXIS = "x";
            var defaultLayer = APP.DSC._dlayer? APP.DSC._dlayer : "UVL" //tochange: Select the first available layer
            APP.DSC.setDiscoveryLayer(defaultLayer);
         }
+
+    UI.onChangeDiscoveryGroup=(e)=>{
+        let g = e.value;
+        console.log("Discovery group Select: " + g);
+        //Set the group:
+        APP.DSC.setDiscoveryGroup(g);
+        //If layers are available, set the first one:
+        let layers = APP.DSC.getLayersList(g);
+        if(layers.length>0) APP.DSC.setDiscoveryLayer(layers[0].pattern);
+
+        UI.updateLayersDropdown();
+    }
 
     UI.onChangeDiscoveryLayer=(e)=>
         {
