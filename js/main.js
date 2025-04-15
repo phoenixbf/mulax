@@ -471,26 +471,26 @@ APP.setupEvents = ()=>{
 		if (k==='a') POIHandler.addFromCurrentQuery({
 			title: "test O",
 			description: "Description of test O",
-			cat: "imaging",
-			tecs: {
-				o : {
+			category: "imaging",
+			techniques: {
+				o: {
 					description: "lorem ipsum",
-					ref: "https://..."		
+					img: "https://..."
 				}
 			}
 		});
 		if (k==='b') POIHandler.addFromCurrentQuery({
 			title: "test OB",
 			description: "Description of test OB",
-			cat: "spot",
-			tecs: {
+			category: "spot",
+			techniques: {
 				o: {
 					description: "lorem ipsum",
-					ref: "https://..."		
+					img: "https://..."		
 				},
 				b: {
 					description: "lorem ipsum",
-					ref: "https://..."		
+					img: "https://..."		
 				}
 			}
 		});
