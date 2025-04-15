@@ -59,7 +59,7 @@ POIHandler.getCategoriesList = ()=>{
 };
 
 
-POIHandler.realize = (id, pos, rad, content)=>{
+POIHandler.realize = (id, pos, eye, rad, content)=>{
 	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 1.0);
 	A.attachTo(POIHandler._gPOIs);
 
@@ -70,7 +70,6 @@ POIHandler.realize = (id, pos, rad, content)=>{
 	let tecs = "";
 	for (let t in content.tecs){
 		tecs += t;
-		A.userData
 	}
 
 	console.log(cat, tecs)
@@ -106,13 +105,14 @@ POIHandler.realize = (id, pos, rad, content)=>{
 		//A.setScale(rad);
 	};
 
-	A.userData.mulax = content;
+	A.userData.content = content;
+	A.userData.eye     = eye;
 
 	POIHandler._list[id] = A;
 	return A;
 };
 
-POIHandler.add = (pos, rad, content)=>{
+POIHandler.add = (pos, eye, rad, content)=>{
 
 	ATON.checkAuth(R => {
 		// TODO: move here
@@ -121,7 +121,7 @@ POIHandler.add = (pos, rad, content)=>{
 	let id = ATON.Utils.generateID("poi");
 	//console.log(id)
 
-	let A = POIHandler.realize(id, pos, rad, content);
+	let A = POIHandler.realize(id, pos, eye, rad, content);
 
 	let O = {};
 	
@@ -132,12 +132,16 @@ POIHandler.add = (pos, rad, content)=>{
 		parseFloat(pos.y.toPrecision(2)),
 		parseFloat(pos.z.toPrecision(2))
 	];
+	O[id].eye = [
+		parseFloat(eye.x.toPrecision(2)),
+		parseFloat(eye.y.toPrecision(2)),
+		parseFloat(eye.z.toPrecision(2))
+	];
 	O[id].rad = rad;
 
-	APP.addToStorage( APP._currItem, O ).then(()=>{
-		ATON.fire("APP_POIListChanged");
-	});
-	
+	APP.addToStorage( APP._currItem, O );
+
+	ATON.fire("APP_POIListChanged");
 	return A;
 };
 
@@ -146,13 +150,18 @@ POIHandler.addFromCurrentQuery = (content)=>{
 
 	let p = ATON._queryDataScene.p;
 	let r = ATON.SUI._selectorRad;
-	let n = ATON._queryDataScene.n;
+	//let n = ATON._queryDataScene.n;
 
-	content.nor = [n.x,n.y,n.z];
+	//content.nor = [n.x,n.y,n.z];
+	
+	//let d = ATON.Nav.getCurrentDirection().clone();
+	//d.negate();
+
+	let e = ATON.Nav.getCurrentEyeLocation();
 
 	ATON.fire("APP_POIListChanged");
 
-	return POIHandler.add(p,r, content);
+	return POIHandler.add(p,e,r, content);
 };
 
 POIHandler.remove = (id)=>{
@@ -164,7 +173,7 @@ POIHandler.remove = (id)=>{
 };
 
 POIHandler.getContentFromNode = (A)=>{
-	return A.userData.mulax;
+	return A.userData.content;
 };
 
 POIHandler.getContent = (id)=>{
@@ -172,6 +181,10 @@ POIHandler.getContent = (id)=>{
 	if (!A) return undefined;
 
 	return POIHandler.getContentFromNode(A);
+};
+
+POIHandler.getEye = (A)=>{
+	return A.userData.eye;
 };
 
 POIHandler.loadAll = ( onComplete )=>{
@@ -182,7 +195,11 @@ POIHandler.loadAll = ( onComplete )=>{
 		for (let a in D){
 			let A = D[a];
 
-			POIHandler.realize(a, new THREE.Vector3(A.pos[0],A.pos[1],A.pos[2]), A.rad, A.content );
+			let pos = new THREE.Vector3(A.pos[0],A.pos[1],A.pos[2]);
+			let eye = undefined;
+			if (A.eye) eye = new THREE.Vector3(A.eye[0],A.eye[1],A.eye[2]);
+
+			POIHandler.realize(a, pos, eye, A.rad, A.content );
 		}
 
 		ATON.fire("APP_POIListChanged");
@@ -262,7 +279,13 @@ POIHandler.highlight = (id, bPOV)=>{
 		}
 	}
 
-	if (A && bPOV) ATON.Nav.requestPOVbyNode(A, 0.5 );
+	//if (A && bPOV) ATON.Nav.requestPOVbyNode(A, 0.5 );
+	if (A && bPOV){
+		let E = POIHandler.getEye(A);
+
+		if (E) ATON.Nav.requestPOV( new ATON.POV().setPosition(E).setTarget(A.position), 0.5);
+		else ATON.Nav.requestPOVbyNode(A, 0.5 );
+	}
 };
 
 POIHandler.update = ()=>{
