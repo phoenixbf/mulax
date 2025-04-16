@@ -572,6 +572,7 @@ UI.createPOI_ListItem=(key,poi)=>
 UI.returnBulletsFromPOI=(poi)=>
 {
     var _t = `<div class="tecsContainer">`;
+    if(poi.techniques==undefined) return _t+"</div>";
     for (const [key, p] of Object.entries(poi.techniques)) {
        _t+=UI.underlineTechniqueItem(key,false);
         }
@@ -702,6 +703,8 @@ UI.onFullScreenBtnClicked =(evt)=>{
 
 UI.composeTechniqueTabs=(poi)=>{
 
+    if(!poi.techniques) return "";
+    
     var _options = {items:[]};
 
     for (const [key, t] of Object.entries(poi.techniques)){
@@ -728,31 +731,6 @@ UI.composeTechniqueTabs=(poi)=>{
     return _tabs;
 }
 
-UI._composeTechniqueTabs=(poi)=> ///OLD
-{
-    var tabLinks =  `<div class="tab">`;
-    var tabContents = ``;
-   
-    for (const [key, t] of Object.entries(poi.techniques))
-        {
-            const idTab = key + "_tab";
-            const urlImg = `${APP.getCurrentItemFolder()}pois/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
-            console.log(urlImg);
-            tabLinks+=`<button class="tablinks" onclick="APP.UI.openTab(event, '${idTab}')">
-            <div>
-            ${UI.techniqueInfos[key].technique}
-            ${UI.underlineTechniqueItem(key,false)}
-            </div>
-            </button>`;
-            tabContents += `
-            <div id=${idTab} class="tabcontent">
-            ${APP.UI.tecniqueImgItem(urlImg)}
-            </div>`
-        }
-    tabLinks+="</div>";
-    var tabs = tabLinks+tabContents;
-    return  tabs;
-}
 
 
 
