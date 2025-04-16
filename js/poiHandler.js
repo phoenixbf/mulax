@@ -66,9 +66,9 @@ POIHandler.realize = (id, pos, eye, rad, content)=>{
 	A.setPosition(pos);
 	A.setScale(rad);
 
-	let cat = content.cat;
+	let cat = content.category;
 	let tecs = "";
-	for (let t in content.tecs){
+	for (let t in content.techniques){
 		tecs += t;
 	}
 
@@ -218,7 +218,7 @@ POIHandler.filterByTechnique = (t, bPOV)=>{
 		let A = POIHandler._list[id];
 		let C = POIHandler.getContent(id);
 
-		if (C.tecs[t] || t === undefined){
+		if (C.techniques[t] || t === undefined){
 			A.show();
 			POIHandler._filteredAABB.expandByObject(A);
 			POIHandler._filteredList[id] = C;
@@ -242,7 +242,7 @@ POIHandler.filterByCategory = (c, bPOV)=>{
 		let A = POIHandler._list[id];
 		let C = POIHandler.getContent(id);
 
-		if (C.cat === c || c === undefined){
+		if (C.category === c || c === undefined){
 			A.show();
 			POIHandler._filteredAABB.expandByObject(A);
 			POIHandler._filteredList[id] = C;

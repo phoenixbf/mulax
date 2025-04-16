@@ -18,7 +18,6 @@ UI.init=()=>
         return UI;
     }
 
-
 UI.Custom_ATON_UI_Init=()=>{
     //ATON.UI.init();
 
@@ -28,11 +27,11 @@ UI.Custom_ATON_UI_Init=()=>{
     ATON.UI.elSidePanel.id = UI.idOffCanvas;
 }
 
-UI.createPanel=()=>
-    {
+// MULAX PANEL:
+UI.createPanel=()=>{
 
-    //DiscoveryMainContainer
-    
+    // Discovery Panel
+
     var DiscoveryPanel = "";
     if(APP.DSC.getLayersList().length>0){
         DiscoveryPanel=
@@ -65,6 +64,7 @@ UI.createPanel=()=>
     `;
     }
 
+    // Explore Analysis Panel
     var POIsPanel= "";
     if(APP.POIHandler._L.length>0){
         POIsPanel=
@@ -77,7 +77,7 @@ UI.createPanel=()=>
                 </label>
             </div>
         
-             ${UI.POI_filterPanel}
+             ${UI.POI_filterPanel()}
              ${UI.POI_ListContainer}  
             
         `
@@ -95,7 +95,7 @@ UI.createPanel=()=>
 
     //Disable discovery:
     APP.DSC.disableDiscoveryLayer();
-
+    //For toggle OFFCanvas:
     UI.CreateMenuBtn();
     }
 
@@ -107,6 +107,8 @@ UI.CreateMenuBtn=()=>{
     btn.setAttribute("data-bs-target","#"+UI.idOffCanvas);
     document.body.prepend(btn);
 }
+
+//DISCOVERY UTILITES:
 
 //Lens options:
 UI.lens_options = ()=> {
@@ -149,7 +151,7 @@ UI.full_options= ()=>{
     `
 }
 
-//Double Dropdowns to chose Discover Groups and Layers.
+//Double Dropdowns to chose Discover Groups and Layers:
 
 UI.getGroupOptions = ()=>{
     let groups = APP.DSC.getLayersGroups();
@@ -210,7 +212,7 @@ Select Diagnostic layer to visualize<br>
     `
 } 
 
-//IMAGING ANALYSIS POIs:
+//EXPLORE ANALYSIS UTILITES:
 
 UI.techniqueInfos =
 {
@@ -231,103 +233,99 @@ UI.underlineTechniqueItem=(t,bStampTechnique=true)=>{
     </div>`
 }
 
-/*
-UI.bulletTechniqueItem=(t)=>
-    {
-      return `<div class="bulletTechnique" style="background-color: ${UI.techniqueInfos[t].color};"></div>`
-    }
-*/
 
-UI.spot_techniquesFilters = ()=> //POIs SPOT techniques: MICRO FORS XRF
-    {       
-        /*
-        let rSelected =  UI.selectedTechnique=="r"? "checked" : "";
-        let bSelected =  UI.selectedTechnique=="b"? "checked" : "";
-        let oSelected =  UI.selectedTechnique=="o"? "checked" : "";
-        let allSelected = UI.selectedTechnique==null? "checked" : "";
-        */
+
+UI.getTechniquesListByCategory = (catTarget) => {
+	let tecs = {};
+
+	for (let i in APP.POIHandler._list) {
+		let A = APP.POIHandler.getContent(i);
+
+		if (A.category === catTarget && A.techniques) {
+			tecs = { ...tecs, ...A.techniques };
+		}
+	}
+
+	let list = [];
+	for (let k in tecs) list.push(k);
+
+	return list;
+};
+
+
+
+UI.getTechniquesFiltersByCategory=(cat)=>{
+
+    let techniques = [];
+    
+    techniques = UI.getTechniquesListByCategory(cat); // e.g. for spot: ["r","o","b"], for imaging: ["y","p"]
+    console.log("for category: " + cat + " techniques are: ");
+    console.log(techniques);
+
+    //Create the filter buttons dinamically:
+    let _techniques = ``;
+    techniques.forEach(t => {
+
+        let _techItem = `
+        <label class="radioTechniqueItem">
+            <input type="radio" name="technique" value="${t}" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
+            ${UI.underlineTechniqueItem(t)} 
+        </label>`;
         
-    return `
+        _techniques+= _techItem;
+    })
+    let techniquesFiltersContainer = `
     <div id="spot_TechinquesFilters">
-        <br>
-        Filter by techniques<br>
+        <br> Filter by techniques <br>
     
             <div class="flex_between">
                     <span class="radiosTechinquesContainer"> 
-                        <label class="radioTechniqueItem">
-                           <input type="radio" name="technique" value="r" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
-                           ${UI.underlineTechniqueItem("r")} 
-                           
-                        </label>
-                        
-                        <label class="radioTechniqueItem"> 
-                            <input type="radio" name="technique" value="b" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
-                            ${UI.underlineTechniqueItem("b")} 
-                        </label>                        
-                        <label class="radioTechniqueItem"> 
-                            <input type="radio" name="technique" value="o" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" >
-                            ${UI.underlineTechniqueItem("o")}
-                        </label>
+                          ${_techniques}
                     </span>
-                
-                <label>Visualize all <input type="radio" name="technique" value="all" data-cat="spot" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
+                <label>Visualize all <input type="radio" name="technique" value="all" data-cat="${cat}" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
             </div>
      </div>
     `
+
+    return techniquesFiltersContainer;
 }
 
 
-UI.imaging_techniquesFilters = ()=> //POIs imaging techniques: UV VIL
-{ 
-    /*
-    let pSelected =  UI.selectedTechnique=="p"? "checked" : "";
-    let ySelected =  UI.selectedTechnique=="y"? "checked" : "";
-    let allSelected = UI.selectedTechnique==null? "checked" : "";
-    */
-return `
-    <div id="spot_TechinquesFilters">
-    <br>
-        Filter by techniques<br>
-        <div class="flex_between">
-            <span class="radiosTechinquesContainer"> 
-                 <label class="radioTechniqueItem">
-                    <input type="radio" name="technique" value="p" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
-                    ${UI.underlineTechniqueItem("p")}
-                </label>
-                 <label class="radioTechniqueItem">
-                    <input type="radio" name="technique" value="y" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
-                    ${UI.underlineTechniqueItem("y")}
-                </label>
-            </span>
-            <label> Visualize all  <input type="radio" name="technique" value="all" data-cat="imaging" checked onclick="APP.UI.onchangeTechniqueFilteredBtn(this)"></label>
-        </div>
-    </div>
-`
-} 
+//Panel for CATEGORY AND TECHNIQUES FILTERS
+UI.POI_filterPanel=()=>{
 
-UI.POI_filterPanel= //categories SPOT / IMAGING
-`
+//TO CHANGE WITH DINAMIC CATEGORIES! 
+let cats = APP.POIHandler.getCategoriesList() //e.g. ["spot","imaging"];
+
+//At the beginning, for the initialization of POI_filterPanel, set as pre-selected category the first one ("spot" in statue case).
+if(cats.length > 0) UI.selectedCat = cats[0];
+
+
+const getCatFilter=(cat)=>{
+    let isSelected = UI.selectedCat==cat ? "checked" : "";
+    console.log(cat  + " is selected: " + isSelected)
+    return `<div class="box">
+                <label>
+                    <input onclick="APP.UI.onClickCategoryFilter(this)" id="${cat}_cat" value="${cat}" type="radio" name="categoryPOI" ${isSelected}>
+                    <b>${cat.toUpperCase()}</b>
+                </label>
+            </div>`
+}
+
+console.log("SELECTED CAT IS: " + UI.selectedCat)
+let currentTechniquesFilter = UI.getTechniquesFiltersByCategory(UI.selectedCat);
+
+let catFilters = `
  <div id="POI_FilterPanel" class="sideBlockMainContainer">
-   
-    Filter by category:<br>
+  Filter by category:<br>
     <div class="columnFlexContainer">
-        <div class="box" id="boxA">
-            <label>
-                <input onclick="APP.UI.onClickCategoryFilter(this)" id="spot_cat" value="spot" type="radio" name="categoryPOI"  checked>
-                    <b>SPOT</b>
-            </label>
-        </div>
-        <div class="box" id="boxB">
-            <label>
-                <input onclick="APP.UI.onClickCategoryFilter(this)" id="imaging_cat" value="imaging" type="radio" name="categoryPOI">
-                <b>IMAGING</b>
-            </label>
-        </div>
+        ${cats.map(c=>getCatFilter(c)).join("")}
     </div>
+    <div id="ausiliaryPOIsFiltersPanel">${currentTechniquesFilter}</div>
+</div>`;
 
-    <div id="ausiliaryPOIsFiltersPanel">${UI.spot_techniquesFilters()}</div>
-</div>
-`
+return catFilters;
+}
 
 
 UI.POI_ListContainer=
@@ -356,84 +354,90 @@ UI.POI_ListContainer=
 UI.discoveryMode = null;
 UI.defaultRadius = 0.02;
 UI.selectedAXIS = "x";
-    UI.onclickDiscoveryBtn=(e)=>
-        {
-            const dMode = e.value; //lens or full
+    
+UI.onclickDiscoveryBtn=(e)=>{
 
-            //Retap for close
-            if(UI.discoveryMode == dMode) {
-                    $("#discoveryAusiliarPanel").empty().css("display","none");
-                    e.checked = false;
-                    UI.discoveryMode = null;
-                    //CLOSE DISCOVERY MODE TODO
-                    APP.DSC.disableDiscoveryLayer(); //tochange: this is breaking something in XR mode
-                    ATON.SUI.setSelectorRadius(UI.defaultRadius);
-                    return;
-                }
-           UI.discoveryMode = dMode;
-           console.log(e.value)
-           let ausiliaryContent =  UI[e.value+"_options"]() + UI.discoveryLayersSelectInput();
-           console.log(ausiliaryContent)
-           window.ausiliaryContent = ausiliaryContent
-           $("#discoveryAusiliarPanel").html(ausiliaryContent);
-           $("#discoveryAusiliarPanel").css("display","block");
+    const dMode = e.value; //lens or full
 
-           //MAIN:
-           //set shape and default settings:
-           if(dMode=="lens")
-            {
-                APP.DSC.shape = undefined;
-            }
-           if(dMode=="full")
-            {
-                APP.DSC.shape = UI.selectedAXIS;
-            }
-           APP.DSC.enableDiscoveryLayer();
-           //Set layer defaul layer -> UVL
-           var defaultLayer = APP.DSC._dlayer? APP.DSC._dlayer : "UVL" //tochange: Select the first available layer
-           APP.DSC.setDiscoveryLayer(defaultLayer);
+    //Retap for close
+    if(UI.discoveryMode == dMode) {
+            $("#discoveryAusiliarPanel").empty().css("display","none");
+            e.checked = false;
+            UI.discoveryMode = null;
+            //CLOSE DISCOVERY MODE TODO
+            APP.DSC.disableDiscoveryLayer(); //tochange: this is breaking something in XR mode
+            ATON.SUI.setSelectorRadius(UI.defaultRadius);
+            return;
         }
+    UI.discoveryMode = dMode;
+    console.log(e.value)
+    let ausiliaryContent =  UI[e.value+"_options"]() + UI.discoveryLayersSelectInput();
+    console.log(ausiliaryContent)
+    window.ausiliaryContent = ausiliaryContent
+    $("#discoveryAusiliarPanel").html(ausiliaryContent);
+    $("#discoveryAusiliarPanel").css("display","block");
 
-    UI.onChangeDiscoveryGroup=(e)=>{
-        let g = e.value;
-        console.log("Discovery group Select: " + g);
-        //Set the group:
-        APP.DSC.setDiscoveryGroup(g);
-        //If layers are available, set the first one:
-        let layers = APP.DSC.getLayersList(g);
-        if(layers.length>0) APP.DSC.setDiscoveryLayer(layers[0].pattern);
-
-        UI.updateLayersDropdown();
+    //MAIN:
+    //set shape and default settings:
+    if(dMode=="lens")
+    {
+        APP.DSC.shape = undefined;
     }
+    if(dMode=="full")
+    {
+        APP.DSC.shape = UI.selectedAXIS;
+    }
+    APP.DSC.enableDiscoveryLayer();
+    //Set layer defaul layer -> UVL
+    var defaultLayer = APP.DSC._dlayer? APP.DSC._dlayer : "UVL" //tochange: Select the first available layer
+    APP.DSC.setDiscoveryLayer(defaultLayer);
+}
 
-    UI.onChangeDiscoveryLayer=(e)=>
-        {
-            window.discoverySelected = e;
-            console.log("Discovery layer Select: " + e.value);
-            APP.DSC.setDiscoveryLayer(e.value)
-        }
+UI.onChangeDiscoveryGroup=(e)=>{
+    let g = e.value;
+    console.log("Discovery group Select: " + g);
+    //Set the group:
+    APP.DSC.setDiscoveryGroup(g);
+    //If layers are available, set the first one:
+    let layers = APP.DSC.getLayersList(g);
+    if(layers.length>0) APP.DSC.setDiscoveryLayer(layers[0].pattern);
+
+    UI.updateLayersDropdown();
+}
+
+UI.onChangeDiscoveryLayer=(e)=> {
+    window.discoverySelected = e;
+    console.log("Discovery layer Select: " + e.value);
+    APP.DSC.setDiscoveryLayer(e.value)
+}
 //Lens Mode:
-        UI.onChangeSliderDiscoveryLensRadius=(value)=>
-            {
-                console.log("Daje")
-                if(UI.discoveryMode=="lens") ATON.SUI.setSelectorRadius(value*0.01)
-            }
+UI.onChangeSliderDiscoveryLensRadius=(value)=>{
+        console.log("Daje")
+        if(UI.discoveryMode=="lens") ATON.SUI.setSelectorRadius(value*0.01)
+}
 //Split Mode:
-        UI.onSelectDiscoveryFullbodyAxis=(e)=>
-            {
-                console.log("Discovery Fullbody axis changing ins: " + e.value);
-                UI.selectedAXIS = e.value;
-                APP.DSC.shape = e.value;
-            }
+UI.onSelectDiscoveryFullbodyAxis=(e)=> {
+    console.log("Discovery Fullbody axis changing ins: " + e.value);
+    UI.selectedAXIS = e.value;
+    APP.DSC.shape = e.value;
+}
 
 //POIs functions:
 UI.selectedCat = null; 
+UI.lastSelectedCat = null;
+
 UI.selectedTechnique = null;
-UI.lastSelectedCat = "spot"; //default first category filtered SPOT
+
+
+
+
 UI.lastSelectedTechnique = null;
 
-UI.onChangeVisualizeAllAnalysis=(e)=>
-    {
+UI.onChangeVisualizeAllAnalysis=(e)=>{
+  
+
+        console.log("last category pre-oredered: " + UI.lastSelectedCat);
+
         console.log("Changing visualize all: ");
         console.log(e.checked);
         var _display = e.checked? "none" : "block";
@@ -452,12 +456,13 @@ UI.onChangeVisualizeAllAnalysis=(e)=>
             
             return;
         }
-
+       
         //call previews or default filter settings:
         if(UI.lastSelectedTechnique!=null)
         {
             APP.POIHandler.filterByTechnique(UI.lastSelectedTechnique, true); UI.selectedTechnique = UI.lastSelectedTechnique;
         }
+
         if(UI.lastSelectedCat!=null && UI.lastSelectedTechnique==null)
         {
             APP.POIHandler.filterByCategory(UI.lastSelectedCat,true); UI.selectedCat = UI.lastSelectedCat
@@ -474,14 +479,16 @@ UI.onChangeVisualizeAllAnalysis=(e)=>
         console.log("selected Technique: " + UI.selectedTechnique);
         
      
-    }
+}
 
 
 UI.onClickCategoryFilter=(e)=>
     {
         console.log("CATEGORY FILTER CLICKED")
         console.log(e.value);
-        let ausiliaryContent =  UI[e.value+"_techniquesFilters"]();
+
+       //OLD:  let ausiliaryContent =  UI[e.value+"_techniquesFilters"]();
+        let ausiliaryContent =  UI.getTechniquesFiltersByCategory(e.value);
 
         $("#ausiliaryPOIsFiltersPanel").html(ausiliaryContent);
         $("#ausiliaryPOIsFiltersPanel").css("display","block");
@@ -491,7 +498,7 @@ UI.onClickCategoryFilter=(e)=>
         //MAIN:
         APP.POIHandler.filterByCategory(e.value,true);
         UI.updatePOIlist(APP.POIHandler.getFilteredList())
-    }
+}
 
 UI.onchangeTechniqueFilteredBtn=(e)=>
     {
@@ -565,7 +572,7 @@ UI.createPOI_ListItem=(key,poi)=>
 UI.returnBulletsFromPOI=(poi)=>
 {
     var _t = `<div class="tecsContainer">`;
-    for (const [key, p] of Object.entries(poi.tecs)) {
+    for (const [key, p] of Object.entries(poi.techniques)) {
        _t+=UI.underlineTechniqueItem(key,false);
         }
         _t+="</div>";
@@ -697,8 +704,9 @@ UI.composeTechniqueTabs=(poi)=>{
 
     var _options = {items:[]};
 
-    for (const [key, t] of Object.entries(poi.tecs)){
-        const urlImg = `${APP.getCurrentItemFolder()}pois/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
+    for (const [key, t] of Object.entries(poi.techniques)){
+      //  const urlImg = `${APP.getCurrentItemFolder()}media/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
+      const urlImg =  APP.getCurrentItemFolder()+"media/images/" +poi.img;
         
         const _title = UI.techniqueInfos[key].technique;
         //const _icon = ATON.UI.createElementFromHTMLString( UI.underlineTechniqueItem(key,false));
@@ -725,7 +733,7 @@ UI._composeTechniqueTabs=(poi)=> ///OLD
     var tabLinks =  `<div class="tab">`;
     var tabContents = ``;
    
-    for (const [key, t] of Object.entries(poi.tecs))
+    for (const [key, t] of Object.entries(poi.techniques))
         {
             const idTab = key + "_tab";
             const urlImg = `${APP.getCurrentItemFolder()}pois/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
