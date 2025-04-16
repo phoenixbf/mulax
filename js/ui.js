@@ -706,7 +706,7 @@ UI.composeTechniqueTabs=(poi)=>{
 
     for (const [key, t] of Object.entries(poi.techniques)){
       //  const urlImg = `${APP.getCurrentItemFolder()}media/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
-      const urlImg =  APP.getCurrentItemFolder()+"media/images/" +poi.img;
+      const urlImg =  APP.getCurrentItemFolder()+"media/images/" +t.img;
         
         const _title = UI.techniqueInfos[key].technique;
         //const _icon = ATON.UI.createElementFromHTMLString( UI.underlineTechniqueItem(key,false));
