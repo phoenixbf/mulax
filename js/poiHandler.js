@@ -63,8 +63,10 @@ POIHandler.realize = (id, pos, eye, rad, content)=>{
 	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 1.0);
 	A.attachTo(POIHandler._gPOIs);
 
-	A.setPosition(pos);
+	A.setPosition(eye); //
 	A.setScale(rad);
+
+	A.position.lerpVectors(pos, eye, 0.5);
 
 	let cat = content.category;
 	let tecs = "";
@@ -105,8 +107,32 @@ POIHandler.realize = (id, pos, eye, rad, content)=>{
 		//A.setScale(rad);
 	};
 
+	// Line
+	let gL   = new THREE.BufferGeometry().setFromPoints([pos, A.position]);
+	let line = new THREE.Line( gL, APP._mLine );
+	//line.position.x = -eye.x;
+	//line.position.y = -eye.y;
+	//line.position.z = -eye.z;
+
+	POIHandler._gPOIs.add(line);
+
+
+/*
+	let raylen = pos.distanceTo(eye) / rad;
+
+	gL = new THREE.CylinderGeometry( 0.1,0.1, raylen, 4 );
+	gL.rotateX( -Math.PI / 2 );
+	gL.translate(0,0,-(raylen*0.5));
+
+	let mL = new THREE.Mesh( gL, ATON.MatHub.materials.controllerRay );
+	A.add(mL);
+*/
+
+	// MD
 	A.userData.content = content;
 	A.userData.eye     = eye;
+	A.userData.pos     = pos;
+	A.userData.line    = line;
 
 	POIHandler._list[id] = A;
 	return A;
@@ -220,11 +246,16 @@ POIHandler.filterByTechnique = (t, bPOV)=>{
 
 		if (C.techniques[t] || t === undefined){
 			A.show();
+			A.userData.line.visible = true;
+
 			POIHandler._filteredAABB.expandByObject(A);
 			POIHandler._filteredList[id] = C;
 			matches++;
 		}
-		else A.hide();
+		else {
+			A.hide();
+			A.userData.line.visible = false;
+		}
 	}
 
 	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
@@ -244,11 +275,16 @@ POIHandler.filterByCategory = (c, bPOV)=>{
 
 		if (C.category === c || c === undefined){
 			A.show();
+			A.userData.line.visible = true;
+
 			POIHandler._filteredAABB.expandByObject(A);
 			POIHandler._filteredList[id] = C;
 			matches++;
 		}
-		else A.hide();
+		else {
+			A.hide();
+			A.userData.line.visible = false;
+		}
 	}
 
 	POIHandler._filteredAABB.getBoundingSphere( POIHandler._filteredBS );
@@ -273,17 +309,20 @@ POIHandler.highlight = (id, bPOV)=>{
 		if (s === id){
 			A = S;
 			S.highlight();
+			//S.userData.line.visible = true;
 		}
 		else {
 			S.restoreDefaultMaterial();
+			//S.userData.line.visible = false;
 		}
 	}
 
 	//if (A && bPOV) ATON.Nav.requestPOVbyNode(A, 0.5 );
 	if (A && bPOV){
 		let E = POIHandler.getEye(A);
+		let P = A.userData.pos;
 
-		if (E) ATON.Nav.requestPOV( new ATON.POV().setPosition(E).setTarget(A.position), 0.5);
+		if (E) ATON.Nav.requestPOV( new ATON.POV().setPosition(E).setTarget(P), 0.5);
 		else ATON.Nav.requestPOVbyNode(A, 0.5 );
 	}
 };
@@ -291,6 +330,8 @@ POIHandler.highlight = (id, bPOV)=>{
 POIHandler.update = ()=>{
 	POIHandler._L = Object.values(POIHandler._list);
 	if (POIHandler._L.length < 1) return;
+
+	return;
 
 	POIHandler._occDir.copy(ATON.Nav._vDir);
 	POIHandler._occDir.negate();
@@ -300,9 +341,11 @@ POIHandler.update = ()=>{
 	let S = POIHandler._L[POIHandler._occInd];
 	let rad = 0.02;
 
-	POIHandler._occPos.x = S.position.x + (POIHandler._occDir.x * 0.01);
-	POIHandler._occPos.y = S.position.y + (POIHandler._occDir.y * 0.01);
-	POIHandler._occPos.z = S.position.z + (POIHandler._occDir.z * 0.01);
+	let E = POIHandler.getEye(S);
+
+	POIHandler._occPos.x = E.x + (POIHandler._occDir.x * 0.01);
+	POIHandler._occPos.y = E.y + (POIHandler._occDir.y * 0.01);
+	POIHandler._occPos.z = E.z + (POIHandler._occDir.z * 0.01);
 
 	let h = POIHandler._tracer.trace(POIHandler._occPos, POIHandler._occDir);
 

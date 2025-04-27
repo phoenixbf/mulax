@@ -55,9 +55,11 @@ APP.setup = ()=>{
 
 	//TEST
 	if (APP.params.get("xr")){
-		ATON.FE.uiAddButtonUser("idTopToolbar");
-		ATON.FE.uiAddButtonVR("idTopToolbar");
-		ATON.FE.uiAddButtonAR("idTopToolbar");
+		ATON.UI.get("toolbar").append(
+			ATON.UI.createButtonHome(),
+			ATON.UI.createButtonVR(),
+			ATON.UI.createButtonAR()
+		)
 	}
 
 	if (APP.params.get("qr")) QRC.init();
@@ -285,6 +287,16 @@ APP.setupScene = ()=>{
         depthWrite: false
     });
 */
+	APP._mLine = new THREE.MeshBasicMaterial({
+        color: ATON.MatHub.colors.white,
+        //linewidth: 5,
+        //transparent: true,
+        //depthWrite: false,
+        //opacity: 0.5, 
+        //depthTest: false
+        //flatShading: true
+    });
+
 
 	// Icons
 	APP._matBaseIcon = new THREE.SpriteMaterial({
@@ -292,7 +304,7 @@ APP.setupScene = ()=>{
         transparent: true,
         color: ATON.MatHub.colors.white,
         depthWrite: false, 
-        depthTest: false,
+        //depthTest: false,
         //blending: THREE.AdditiveBlending
 		//sizeAttenuation: false
     });
@@ -348,7 +360,7 @@ APP.setupEvents = ()=>{
 
 		APP.UI.init();
 
-		//APP.setupSUI();
+		APP.setupSUI();
 	});
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeHover");
@@ -466,6 +478,17 @@ APP.setupEvents = ()=>{
 			APP.MH.downloadAllEditMasks();
 		}
 
+		if (k==='e'){
+			let eye = ATON.Nav.getCurrentEyeLocation();
+			console.log({
+				eye: [
+					parseFloat(eye.x.toPrecision(2)),
+					parseFloat(eye.y.toPrecision(2)),
+					parseFloat(eye.z.toPrecision(2))
+				]
+			});
+		}
+
 		if (k==='?') ATON.MediaFlow.downloadVideoSnapshot(document.getElementById("qr-video"), "vid.jpg");
 
 		if (k==='a') POIHandler.addFromCurrentQuery({
@@ -581,7 +604,9 @@ APP.setupSUI = ()=>{
 		btn.setSwitchColor(ATON.MatHub.colors.orange);
 		
 		btn.onSelect = ()=>{
+			APP.DSC.enableDiscoveryLayer();
 			APP.DSC.setDiscoveryLayer(L.pattern);
+
 			for (let b in btnList){
 				if (btnList[b] !== btn){
 					btnList[b].switch(false);
@@ -601,7 +626,11 @@ APP.setupSUI = ()=>{
 			btn.setScale(1.0)
 			ThreeMeshUI.update();
 		};
-
+/*
+		let mm = new THREE.Mesh( ATON.Utils.geomUnitSphere, ATON.MatHub.getMaterial("defUI"));
+		mm.scale.setScalar(0.1)
+		btn.add(mm)
+*/
 		btnList.push(btn);
 	}
 
