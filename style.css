@@ -175,6 +175,11 @@ background-color:  var(--bs-body-bg);
     vertical-align: middle;
 }
 
+#slider{
+    background-color: #cfcfcf;
+    border-radius: 20px;
+}
+
 
 /*Select custom styles*/
 .selectWrapper{
@@ -200,6 +205,7 @@ background-color:  var(--bs-body-bg);
 .radiosTechinquesContainer
 {
     display: flex;
+    gap:10px;
 }
 
 .radioTechniqueItem
@@ -345,6 +351,40 @@ p {
     border: 1px solid #ccc;
     border-top: none;
   }
+
+
+
+  /*Customize Tabs Placeholder*/
+/* General Tabs Styling */
+.r_tab::after,
+.o_tab::after,
+.b_tab::after {
+    content: "";
+    display: block;
+    width: 30px;
+    height: 8px;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Specific Colors */
+.r_tab::after {
+    background-color: #a80101;
+}
+
+.o_tab::after {
+    background-color: #c05702;
+}
+
+.b_tab::after {
+    background-color: #006172;
+}
+
+
+
+
 
   .imgTechContainer{
     margin-top: 7px; /* to fix after bootstrap migration*/

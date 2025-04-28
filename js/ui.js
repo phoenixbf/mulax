@@ -39,13 +39,13 @@ UI.createPanel=()=>{
         <h2>Discovery Layers</h2>
         <div class="sideBlockMainContainer">
         
-            Select the discovery method:<br>
+            <b>Select the discovery method</b>:<br>
             <div class="columnFlexContainer">
             
                 <div class="box" id="boxA">
                     <label>
                         <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
-                        <b>Lens Mode</b>
+                        Lens Mode
                     </label>
                     <p>This option allows you to apply a masking lens effect to your images.</p>
                 </div>
@@ -53,7 +53,7 @@ UI.createPanel=()=>{
                 
                     <label>
                         <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
-                    <b>Split Mode</b>
+                    Split Mode
                     </label>
                     <p>This option enables a split visualizer for comprehensive image analysis.</p>
                 </div>
@@ -139,14 +139,14 @@ UI.full_options= ()=>{
         axisOptions+=`<div class="box">
                 <label>
                     <input onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_${a}" value="${a}" type="radio" name="full_axis" ${isSelected}>
-                      <b>${a.toUpperCase()} AXIS</b>
+                      ${a.toUpperCase()} AXIS
                 </label>
             </div>`
     });
 
     console.log(axisOptions)
     return `
-    Select the active discovery AXIS
+    <b>Select the active discovery AXIS:</b>
     <div class="columnFlexContainer noborder">${axisOptions}</div>
     `
 }
@@ -276,7 +276,7 @@ UI.getTechniquesFiltersByCategory=(cat)=>{
     })
     let techniquesFiltersContainer = `
     <div id="spot_TechinquesFilters">
-        <br> Filter by techniques <br>
+        <br><b> Filter by techniques: </b><br>
     
             <div class="flex_between">
                     <span class="radiosTechinquesContainer"> 
@@ -307,7 +307,7 @@ const getCatFilter=(cat)=>{
     return `<div class="box">
                 <label>
                     <input onclick="APP.UI.onClickCategoryFilter(this)" id="${cat}_cat" value="${cat}" type="radio" name="categoryPOI" ${isSelected}>
-                    <b>${cat.toUpperCase()}</b>
+                    ${cat.toUpperCase()}
                 </label>
             </div>`
 }
@@ -317,7 +317,7 @@ let currentTechniquesFilter = UI.getTechniquesFiltersByCategory(UI.selectedCat);
 
 let catFilters = `
  <div id="POI_FilterPanel" class="sideBlockMainContainer">
-  Filter by category:<br>
+  <b>Filter by category:</b><br>
     <div class="columnFlexContainer">
         ${cats.map(c=>getCatFilter(c)).join("")}
     </div>
@@ -749,4 +749,25 @@ UI.openTab=(evt, idTab)=> {
     evt.currentTarget.className += " active";
   }
     
+
+
+UI.fixTabStyle=()=>{
+    
+    // Find all button elements with BOTH classes 'nav-link' and 'aton-tab'
+    const buttons = document.querySelectorAll('button.nav-link.aton-tab');
+  
+    buttons.forEach(button => {
+      const text = button.textContent.trim().toLowerCase(); // Get and lowercase the text inside
+  
+      if (text === 'microscope') {
+        button.classList.add('r_tab');
+      } else if (text === 'xrf') {
+        button.classList.add('o_tab');
+      } else if (text === 'fors') {
+        button.classList.add('b_tab');
+      }
+    });
+  }
+  
+
 export default UI;
