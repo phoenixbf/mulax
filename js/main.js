@@ -412,20 +412,32 @@ APP.setupEvents = ()=>{
 	});
 
 	ATON.on("XRmode",()=>{
+		APP.anchorSUIToolbar("item");
+		APP.suiToolbar.show();
+
+/*
 		window.setTimeout(()=>{
 			APP.DSC.enableDiscoveryLayer();
 			console.log("XR mode");
 		}, 3000);
-
+*/
 	});
 
     ATON.on("XRselectStart", (c)=>{
+/*
         if (c === ATON.XR.HAND_L){
 			if (APP.DSC._dlayer === "UVL") APP.DSC.setDiscoveryLayer("VIL");
 			else APP.DSC.setDiscoveryLayer("UVL");
 			console.log(APP.DSC._dlayer)	
 		}
+*/
     });
+
+    ATON.on("XRcontrollerConnected", (c)=>{
+		if (c === ATON.XR.HAND_L){
+			if (ATON.XR._sessionType !== "immersive-ar") APP.anchorSUIToolbar();
+		}
+	});
 
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
@@ -590,6 +602,7 @@ APP.updateItem = ()=>{
 // SUI
 //========================================================
 APP.setupSUI = ()=>{
+	if (APP.suiToolbar) return;
 
 	let btnList = [];
 
@@ -604,7 +617,8 @@ APP.setupSUI = ()=>{
 		btn.setSwitchColor(ATON.MatHub.colors.orange);
 		
 		btn.onSelect = ()=>{
-			APP.DSC.enableDiscoveryLayer();
+			//APP.DSC.enableDiscoveryLayer();
+			APP.DSC._bDiscovery = true;
 			APP.DSC.setDiscoveryLayer(L.pattern);
 
 			for (let b in btnList){
@@ -621,6 +635,8 @@ APP.setupSUI = ()=>{
 		btn.onHover = ()=>{
 			btn.setScale(1.1)
 			ThreeMeshUI.update();
+
+			ATON.AudioHub.playOnceGlobally(APP.basePath + "res/audio/dsc-layer.mp3");
 		};
 		btn.onLeave = ()=>{
 			btn.setScale(1.0)
@@ -634,8 +650,83 @@ APP.setupSUI = ()=>{
 		btnList.push(btn);
 	}
 
+	// Lens
+	let btnLens = new ATON.SUI.Button("SUI-DSC-Lens");
+	btnLens.setIcon(APP.pathIcons+"dsc-lens.png", true);
+	btnLens.setSwitchColor(ATON.MatHub.colors.orange);
+
+	btnLens.onSelect = ()=>{
+		APP.DSC.shape = "sphere";
+	};
+	btnLens.onHover = ()=>{
+		btnLens.setScale(1.1)
+		ThreeMeshUI.update();
+		ATON.AudioHub.playOnceGlobally(APP.basePath + "res/audio/dsc-shape.wav");
+	};
+	btnLens.onLeave = ()=>{
+		btnLens.setScale(1.0)
+		ThreeMeshUI.update();
+	};
+
+	btnList.push(btnLens);
+
+	// Split Y
+	let btnSplitY = new ATON.SUI.Button("SUI-DSC-SplitY");
+	btnSplitY.setIcon(APP.pathIcons+"dsc-split-y.png", true);
+	btnSplitY.setSwitchColor(ATON.MatHub.colors.orange);
+
+	btnSplitY.onSelect = ()=>{
+		APP.DSC.shape = "y";
+	};
+	btnSplitY.onHover = ()=>{
+		btnSplitY.setScale(1.1)
+		ThreeMeshUI.update();
+		ATON.AudioHub.playOnceGlobally(APP.basePath + "res/audio/dsc-shape.wav");
+	};
+	btnSplitY.onLeave = ()=>{
+		btnSplitY.setScale(1.0)
+		ThreeMeshUI.update();
+	};
+
+	btnList.push(btnSplitY);
+
+	// Split X
+	let btnSplitX = new ATON.SUI.Button("SUI-DSC-SplitX");
+	btnSplitX.setIcon(APP.pathIcons+"dsc-split-x.png", true);
+	btnSplitX.setSwitchColor(ATON.MatHub.colors.orange);
+
+	btnSplitX.onSelect = ()=>{
+		APP.DSC.shape = "x";
+	};
+	btnSplitX.onHover = ()=>{
+		btnSplitX.setScale(1.1)
+		ThreeMeshUI.update();
+		ATON.AudioHub.playOnceGlobally(APP.basePath + "res/audio/dsc-shape.wav");
+	};
+	btnSplitX.onLeave = ()=>{
+		btnSplitX.setScale(1.0)
+		ThreeMeshUI.update();
+	};
+
+	btnList.push(btnSplitX);
+
 	APP.suiToolbar = ATON.SUI.createToolbar( btnList, undefined, undefined, 1.1 );
-	APP.suiToolbar.setPosition(0.0,0.0,0.3).setRotation(-0.7,0.0,0).setScale(0.7).attachToRoot();
+	APP.suiToolbar.hide();
+	APP.anchorSUIToolbar("item");
+};
+
+APP.anchorSUIToolbar = (a)=>{
+	if (!APP.suiToolbar) return;
+
+	if (a==="item"){
+		APP.suiToolbar.setPosition(0.0,0.0,0.3).setRotation(-0.7,0.0,0).setScale(0.7);
+		APP.suiToolbar.attachToRoot();
+	}
+	else {
+		let pi2 = (Math.PI * 0.5);
+		APP.suiToolbar.setPosition(-0.1,0,0.1).setRotation(-pi2,-pi2,pi2).setScale(0.5);
+		ATON.XR.controller1.add(APP.suiToolbar);
+	}
 };
 
 // Update
