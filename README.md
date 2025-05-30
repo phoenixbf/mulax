@@ -11,7 +11,7 @@ For the last step (3) in order to inspect and access items (with associated laye
 
 ```
 {
-    "assetsFolder": "<user>/items/",
+    "assetsFolder": "public/folder/with/items/",
 
     "items":{
         "sample":{
@@ -22,4 +22,28 @@ For the last step (3) in order to inspect and access items (with associated laye
 
 ```
 
-URLs refer to ATON data collections, thus MuLaX for will resolve `sample` entry in `data/collections/<user>/items/sample/statue.gltf`
+"assetsFolder" can be a reference to a local ATON collection (eg.: "perceive/items/") or a public folder. MuLaX for will resolve items URLs like this: `sample` entry in `<assetsFolder>/sample/statue.gltf`.
+To indicate layers and groups, the "layers" attribute can be added (for instance to `sample` item):
+
+```
+    "sample":{
+        "url":"statue.gltf",
+
+        "layers":{
+            "group_A":[
+                {
+                    "name": "human-readable-name-for-this-layer",
+                    "pattern": "UVL"
+                },
+                {
+                    "name": "human-readable-name-for-this-layer",
+                    "pattern": "VIL"
+                }
+            ]
+        }
+    }
+```
+
+Each entry in `layers` represent a group (with a corresponding sub-folder under the item folder, in this case `<assetsFolder>/sample/group_A` ).
+Each group is a list of layers, with a human-readable `name` and a `pattern` representing the postfix MuLaX will use to fetch corresponding image data from the folder.
+
