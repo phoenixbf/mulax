@@ -142,12 +142,20 @@ background-color:  var(--bs-body-bg);
 
 #discoveryAusiliarPanel
 {
-    
+ /*   
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    padding: 10px;*/
+    display:none;
+}
+
+#discoverySelectionLayerPanel{
+
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #ccc;
     padding: 10px;
-    
     display:none;
 }
 
@@ -156,7 +164,7 @@ background-color:  var(--bs-body-bg);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     margin-top: 10px;
 }
 

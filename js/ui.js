@@ -12,6 +12,11 @@ UI.init=()=>
     {
      //   ATON.UI.addBasicEvents();
         UI.Custom_ATON_UI_Init();
+        UI.techniqueInfos = APP.cdata.techniques;
+        console.log("UI TECHNIQUES: ");
+        console.log(APP.cdata);
+        console.log(UI.techniqueInfos);
+
         ATON.on("APP_POISelect", (id)=>{APP.UI.onClick_POIListsItem(document.getElementById(id))});
         console.log("UI  init")
         UI.createPanel();
@@ -39,7 +44,7 @@ UI.createPanel=()=>{
         <h2>Discovery Layers</h2>
         <div class="sideBlockMainContainer">
         
-            <b>Select the discovery method</b>:<br>
+            <b>Select the discovery method</b><br>
             <div class="columnFlexContainer">
             
                 <div class="box" id="boxA">
@@ -59,8 +64,9 @@ UI.createPanel=()=>{
                 </div>
             </div>
 
-        </div>
         <div id="discoveryAusiliarPanel"></div>
+        </div>
+        <div id="discoverySelectionLayerPanel"></div>
     `;
     }
 
@@ -114,6 +120,7 @@ UI.CreateMenuBtn=()=>{
 UI.lens_options = ()=> {
     var _currentRadius = ATON.SUI.getSelectorRadius();
     return `
+    <b>Select the radius for the discover Lens</b>
     <div class="centered-container">
         <div class="flex-sliderContainer">
             <label for="slider" class="label-text">Radius:</label>
@@ -153,45 +160,66 @@ UI.full_options= ()=>{
 
 //Double Dropdowns to chose Discover Groups and Layers:
 
-UI.getGroupOptions = ()=>{
+UI.getGroupOptions = (sel=null)=>{
     let groups = APP.DSC.getLayersGroups();
     let options = ``;
     groups.forEach(g => {
-        let isSelected = APP.DSC._dgroup == g ? "selected" : "";
+        let isSelected = "";
+        if(sel) isSelected = sel == g ? "selected" : "";
+        //if(APP.UI.discoveryLayerSelectionMethod=="standard") isSelected = APP.DSC._dgroup == g ? "selected" : "";
+       // if(APP.UI.discoveryLayerSelectionMethod=="custom") isSelected = APP.DSC._dgroup == g ? "selected" : "";
+
         options+=`<option value=${g} ${isSelected}>${g}</option>`
     })
     return options;
 }
 
-UI.getLayersOptions=()=>{
-    let layers =  APP.DSC.getLayersList( APP.DSC._dgroup );
-    let options = ``;
+UI.getLayersOptions=(options = null)=>{
+
+    let groupTarget = APP.DSC._dgroup;
+    let selectedLayer = APP.DSC._dlayer;
+
+    if(options){
+        if(options.group && options.group!="null") groupTarget = options.group;
+        if(options.layer && options.layer!="null") selectedLayer = options.layer;
+    }
+    console.log(options)
+    let layers =  APP.DSC.getLayersList( groupTarget ); 
+    let _options = ``;
     layers.forEach(l => {
-        let isSelected = APP.DSC._dlayer == l.pattern ? "selected" : "";
-        options+=`<option value=${l.pattern} ${isSelected}>${l.name}</option>`
+        console.log("Layer: " + l.pattern + " - " + l.name);
+
+        let isSelected = "";
+        if(selectedLayer) isSelected = selectedLayer == l.pattern ? "selected" : "";
+    // if(APP.UI.discoveryLayerSelectionMethod=="standard") isSelected = APP.DSC._dlayer == l.pattern ? "selected" : "";
+        _options+=`<option value=${l.pattern} ${isSelected}>${l.name}</option>`
         //name = Human Readable 
         //pattern =  Suffix of the file name
     })
-    return options;
+    return _options;
 }
 
-UI.updateLayersDropdown=()=>{
-   let layers = UI.getLayersOptions();
+UI.updateLayersDropdown=(options = null)=>{
+   let layers = UI.getLayersOptions( options );
+   console.log("Layers updated");
+   console.log(layers);
    $("#discoveryLayers_dropDownList").html(layers);
 }
 
-UI.discoveryLayersSelectInput = ()=>{
+UI.discoveryLayersSelectInput = (options=null)=>{
 
-    let groupsOptions = UI.getGroupOptions();
-    let layersOptions = UI.getLayersOptions();
-   
+    let selectedGroup = options? options.group : null;
+    let selectedLayer = options? options.layer : null;
 
-    return `<br>
-Select Diagnostic layer to visualize<br>
+    let groupsOptions = UI.getGroupOptions(selectedGroup);
+    let layersOptions = UI.getLayersOptions({group: selectedGroup, layer: selectedLayer});
+
+    return `
+ <b>Select Diagnostic layer to visualize</b><br>
  <div class="columnFlexContainer noborder">
 
             <div class="box" id="boxA">
-              <label for="discoveryGroup"><b>GROUP</b><br></label>
+              <label for="discoveryGroup">GROUP<br></label>
               <div class="selectWrapper">
                 <select id="discoveryGroups_dropDownList" name="discoveryGroup" onchange="APP.UI.onChangeDiscoveryGroup(this)" class="selectBox">
                 ${groupsOptions}
@@ -200,7 +228,7 @@ Select Diagnostic layer to visualize<br>
 
             </div>
             <div class="box" id="boxB">
-               <label for="discoveryLayer"><b>LAYER</b><br></label>
+               <label for="discoveryLayer">LAYER<br></label>
                 <div class="selectWrapper">
                     <select id="discoveryLayers_dropDownList" name="discoveryLayer" onchange="APP.UI.onChangeDiscoveryLayer(this)" class="selectBox">
                         ${layersOptions}
@@ -212,20 +240,9 @@ Select Diagnostic layer to visualize<br>
     `
 } 
 
-//EXPLORE ANALYSIS UTILITES:
-
-UI.techniqueInfos =
-{
-         "r":{technique:"Microscope",color:"#a80101",cat:"spot"},
-         "o":{technique:"FORS",color:"#c05702",cat:"spot"},
-         "b":{technique:"XRF",color:"#006172",cat:"spot"},
-         "y":{technique:"VIL",color:"#e2c055",cat:"imaging"},
-         "p":{technique:"UV",color:"#6d23cf",cat:"imaging"}
-}
-
-
 UI.underlineTechniqueItem=(t,bStampTechnique=true)=>{   
-    var _name = bStampTechnique? UI.techniqueInfos[t].technique : "";
+  
+    var _name = bStampTechnique? UI.techniqueInfos[t].label : "";
     return `
     <div>
        ${_name}
@@ -276,7 +293,7 @@ UI.getTechniquesFiltersByCategory=(cat)=>{
     })
     let techniquesFiltersContainer = `
     <div id="spot_TechinquesFilters">
-        <br><b> Filter by techniques: </b><br>
+        <br><b> Filter by techniques</b><br>
     
             <div class="flex_between">
                     <span class="radiosTechinquesContainer"> 
@@ -317,7 +334,7 @@ let currentTechniquesFilter = UI.getTechniquesFiltersByCategory(UI.selectedCat);
 
 let catFilters = `
  <div id="POI_FilterPanel" class="sideBlockMainContainer">
-  <b>Filter by category:</b><br>
+  <b>Filter by category</b><br>
     <div class="columnFlexContainer">
         ${cats.map(c=>getCatFilter(c)).join("")}
     </div>
@@ -362,6 +379,8 @@ UI.onclickDiscoveryBtn=(e)=>{
     //Retap for close
     if(UI.discoveryMode == dMode) {
             $("#discoveryAusiliarPanel").empty().css("display","none");
+            $("#discoverySelectionLayerPanel").empty().css("display","none");
+            
             e.checked = false;
             UI.discoveryMode = null;
             //CLOSE DISCOVERY MODE TODO
@@ -370,12 +389,15 @@ UI.onclickDiscoveryBtn=(e)=>{
             return;
         }
     UI.discoveryMode = dMode;
-    console.log(e.value)
-    let ausiliaryContent =  UI[e.value+"_options"]() + UI.discoveryLayersSelectInput();
-    console.log(ausiliaryContent)
-    window.ausiliaryContent = ausiliaryContent
+    
+    let ausiliaryContent =  UI[e.value+"_options"]();
     $("#discoveryAusiliarPanel").html(ausiliaryContent);
     $("#discoveryAusiliarPanel").css("display","block");
+
+    let discoverySelectionLayer_PanelContent = UI.discoveryLayer_SelectionPanel();
+
+    $("#discoverySelectionLayerPanel").html(discoverySelectionLayer_PanelContent);
+    $("#discoverySelectionLayerPanel").css("display","block");
 
     //MAIN:
     //set shape and default settings:
@@ -393,7 +415,7 @@ UI.onclickDiscoveryBtn=(e)=>{
     APP.DSC.setDiscoveryLayer(defaultLayer);
 }
 
-UI.onChangeDiscoveryGroup=(e)=>{
+UI.onChangeDiscoveryGroup_standard=(e)=>{
     let g = e.value;
     console.log("Discovery group Select: " + g);
     //Set the group:
@@ -405,14 +427,16 @@ UI.onChangeDiscoveryGroup=(e)=>{
     UI.updateLayersDropdown();
 }
 
-UI.onChangeDiscoveryLayer=(e)=> {
-    window.discoverySelected = e;
-    console.log("Discovery layer Select: " + e.value);
-    APP.DSC.setDiscoveryLayer(e.value)
-}
+//Standard Discovery Layer Selection:
+UI.onChangeDiscoveryLayer_standard=(e)=> { APP.DSC.setDiscoveryLayer(e.value) }
+
+//Custom Discovery Layer Selection:
+//TO DO
+
+
+
 //Lens Mode:
 UI.onChangeSliderDiscoveryLensRadius=(value)=>{
-        console.log("Daje")
         if(UI.discoveryMode=="lens") ATON.SUI.setSelectorRadius(value*0.01)
 }
 //Split Mode:
@@ -698,8 +722,6 @@ UI.onFullScreenBtnClicked =(evt)=>{
     const closeBtn = ATON.UI.createButton({icon: APP.pathIcons+"close-button.svg", onpress:()=>{ATON.UI.hideModal()}});
     ATON.UI.showModal({body:fullScreenImg,footer:closeBtn});
 }
-   
-
 
 UI.composeTechniqueTabs=(poi)=>{
 
@@ -711,11 +733,11 @@ UI.composeTechniqueTabs=(poi)=>{
       //  const urlImg = `${APP.getCurrentItemFolder()}media/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
       const urlImg =  APP.getCurrentItemFolder()+"media/images/" +t.img;
         
-        const _title = UI.techniqueInfos[key].technique;
+        const _title = UI.techniqueInfos[key].label;
         //const _icon = ATON.UI.createElementFromHTMLString( UI.underlineTechniqueItem(key,false));
        // const _icon = APP.pathIcons+"burgerMenuIcon.svg" //test
         /*const _title = ATON.UI.createElementFromHTMLString(`<div>
-            ${UI.techniqueInfos[key].technique}
+            ${UI.techniqueInfos[key].label}
             ${UI.underlineTechniqueItem(key,false)}
             </div>`);*/
 
@@ -769,5 +791,180 @@ UI.fixTabStyle=()=>{
     });
   }
   
+
+//Discovery Layer Selection Method
+
+UI.discoveryLayerSelectionMethod = "standard"; //default is standard, custom is split mode
+UI.discoveryLayer_SelectionPanel=()=>{
+    //Check if custom layers are available:
+    let hasCustomLayers =  APP.cdata.items[APP._currItem].customLayers==true;
+    if(!hasCustomLayers) {return discoveryPanelSelection_Standard();}
+
+    //If custom layers are available, show the selection panel:
+    let isChecked=(v)=>{
+        if(UI.discoveryLayerSelectionMethod==v) return "checked";
+        return "";
+    }
+    let content = "";
+
+    //Header
+    content = `
+    <b>Apply the discovery content</b>
+      <div id="discoverySelectionLayerPanelHeader" class="columnFlexContainer mb-4">
+                <div class="box" id="boxA">
+                    <label>
+                    <input onclick="APP.UI.onclickDiscoverySelectionOptionBtn(this)" id="discoverySelection_standard" value="standard" type="radio" name="discoverySelection" ${isChecked("standard")}>
+                    Select layer
+                    </label>
+                   
+                </div>
+                <div class="box" id="boxB">
+                
+                    <label>
+                        <input onclick="APP.UI.onclickDiscoverySelectionOptionBtn(this)" id="discoverySelection_custom" value="custom" type="radio" name="discoverySelection" ${isChecked("custom")}>
+                    Create layer
+                    </label>
+                    
+                </div>
+            </div>
+    `
+   
+    let showed = "";
+    let v = UI.discoveryLayerSelectionMethod;
+    if(v=="standard") showed = UI.discoveryPanelSelection_Standard();
+    else if(v=="custom") showed = UI.discoveryPanelSelection_Custom();
+
+    content += `<div id="discoverySelectionLayerPanelBody">${showed}</div>`;
+
+    return content;
+}
+
+UI.onclickDiscoverySelectionOptionBtn=(e)=>{
+    let v = e.value;
+    console.log("Discovery Selection option: " + v);
+    UI.discoveryLayerSelectionMethod = v;
+    UI.updateDiscoverySelectionMethodUI(v);
+}
+
+UI.updateDiscoverySelectionMethodUI=(v)=>{
+    let content = "";
+    if(v=="standard") content = UI.discoveryPanelSelection_Standard();
+    else if(v=="custom") content = UI.discoveryPanelSelection_Custom();
+
+    UI.idTargetContent = "discoverySelectionLayerPanelBody";
+    $(`#${UI.idTargetContent}`).html(content);
+}
+
+UI.discoveryPanelSelection_Standard=()=>{
+    
+    //Set globla handler for discovery layers:
+    APP.UI.onChangeDiscoveryLayer = APP.UI.onChangeDiscoveryLayer_standard;
+    APP.UI.onChangeDiscoveryGroup = APP.UI.onChangeDiscoveryGroup_standard;
+
+    let c = UI.discoveryLayersSelectInput();
+    // discoveryGroups_dropDownList
+    return c;
+}
+
+UI.discoveryPanelSelection_Custom=()=>{
+    let csources = UI.rgbSources;
+    let r = csources.r || null;
+    let g = csources.g || null;
+    let b = csources.b || null;
+    
+    const createChannelRow = (channel, colorClass, label) => {
+        let group = channel && channel.group ? channel.group : null;
+        let source = channel && channel.source ? channel.source : null;
+        let dataGroupAttr = group ? `data-group="${group}"` : `data-group=null`;
+        let dataSourceAttr = source ? `data-source="${source}"` : `data-source=null`;
+        let displayClass = source ? '' : 'form-text';
+        let displayText = source ? group+"/"+source : 'No source selected';
+
+        return `
+        <div class="d-flex align-items-center mb-2">
+            <div class="me-2 ${colorClass} text-white px-2 rounded">${label}</div>
+            <div ${dataGroupAttr} ${dataSourceAttr} id="${label.toLowerCase()}_channelSource" class="flex-grow-1 ${displayClass}">${displayText}</div>
+            <button class="btn btn-sm btn-outline-primary" onclick='APP.UI.onRGBBtnClicked("${label.toLowerCase()}")'>Edit</button>
+        </div>`;
+    };
+    
+    let c = "<b>Customize RGB channels to compose layer</b><br>";
+    c += `
+    <div class="container">
+        ${createChannelRow(r, 'bg-danger', 'R')}
+        ${createChannelRow(g, 'bg-success', 'G')}
+        ${createChannelRow(b, 'bg-primary', 'B')}
+    </div>`;
+
+    return c;
+}
+
+
+UI.rgbSources = {"r":null, "g":null, "b":null}; //default sources for RGB channels
+UI.rgbCurrentEditing = {}; //current source selected for editing;
+
+UI.onRGBBtnClicked=(c)=>{
+    
+    let layer = document.getElementById(c+"_channelSource").dataset.source;
+    let group = document.getElementById(c+"_channelSource").dataset.group;
+    if(layer==null) layer = null;
+    if(group==null) group = null;
+
+    console.log("RGB Channel: " + c + " source: " + layer);
+    
+    let selectionModalContent = ATON.UI.createElementFromHTMLString("<div></div>");
+    
+    APP.UI.onChangeDiscoveryLayer = APP.UI.onChangeDiscoveryLayer_custom;
+    APP.UI.onChangeDiscoveryGroup = APP.UI.onChangeDiscoveryGroup_custom;
+    
+    selectionModalContent.innerHTML = UI.discoveryLayersSelectInput({layer,group});
+    
+    ATON.UI.showModal({
+        header:"Selecting for "+c,
+        body: selectionModalContent,
+        footer: ATON.UI.createElementFromHTMLString(`<button class="btn btn-primary" onclick="APP.UI.onConfermDiscoveryCustomLayerModal()" data-bs-dismiss="modal">Apply</button>`)}
+    );
+    
+    UI.rgbCurrentEditing = {
+        channel: c,
+        group: document.getElementById("discoveryGroups_dropDownList").value,
+        source: document.getElementById("discoveryLayers_dropDownList").value
+    };
+}
+
+UI.onChangeDiscoveryLayer_custom=(e)=>{
+    console.log("RGB Layer selected: " + e.value + " for channel: " + UI.rgbCurrentEditing.channel);
+     UI.rgbCurrentEditing.source = e.value;
+}
+
+UI.onChangeDiscoveryGroup_custom=(e)=>{
+    let g = e.value;
+    console.log("Discovery group Select: " + g);
+    UI.rgbCurrentEditing.group = g;
+    UI.updateLayersDropdown({group:g});  
+}
+
+UI.onConfermDiscoveryCustomLayerModal=()=>{
+    console.log("editing:");
+    console.log( UI.rgbCurrentEditing );
+    
+    let value = UI.rgbCurrentEditing.source;
+    let group = UI.rgbCurrentEditing.group;
+    
+    let item = document.getElementById(UI.rgbCurrentEditing.channel+"_channelSource");
+    item.innerHTML = group+"/"+value;
+
+    if(value) item.classList.remove("form-text");
+    else item.classList.add("form-text");
+
+    item.dataset.source = value;
+    item.dataset.group = group;
+    
+    UI.rgbSources[UI.rgbCurrentEditing.channel] = { group, source: value};
+    APP.UI.rgbCurrentEditing = {};
+
+    //Update the discovery layer TODO
+}
+
 
 export default UI;
