@@ -798,7 +798,7 @@ UI.discoveryLayerSelectionMethod = "standard"; //default is standard, custom is 
 UI.discoveryLayer_SelectionPanel=()=>{
     //Check if custom layers are available:
     let hasCustomLayers =  APP.cdata.items[APP._currItem].customLayers==true;
-    if(!hasCustomLayers) {return discoveryPanelSelection_Standard();}
+    if(!hasCustomLayers) {return APP.UI.discoveryPanelSelection_Standard();}
 
     //If custom layers are available, show the selection panel:
     let isChecked=(v)=>{
