@@ -38,7 +38,9 @@ UI.createPanel=()=>{
     // Discovery Panel
 
     var DiscoveryPanel = "";
-    if(APP.DSC.getLayersList().length>0){
+    let _layers = APP.DSC.getLayersList();
+    if(_layers && _layers.length>0){
+
         DiscoveryPanel=
         `
         <h2>Discovery Layers</h2>
@@ -103,7 +105,7 @@ UI.createPanel=()=>{
     APP.DSC.disableDiscoveryLayer();
     //For toggle OFFCanvas:
     UI.CreateMenuBtn();
-    }
+}
 
 //Mobile
 UI.CreateMenuBtn=()=>{
