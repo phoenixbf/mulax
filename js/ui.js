@@ -343,6 +343,8 @@ let catFilters = `
     <div id="ausiliaryPOIsFiltersPanel">${currentTechniquesFilter}</div>
 </div>`;
 
+UI.selectedCat = null; //reset selected category after the first initialization
+
 return catFilters;
 }
 
@@ -471,7 +473,7 @@ UI.onChangeVisualizeAllAnalysis=(e)=>{
            
         if(e.checked)
         {
-            UI.lastSelectedCat =  UI.selectedCat
+            UI.lastSelectedCat = UI.selectedCat
             UI.lastSelectedTechnique = UI.selectedTechnique
             
             APP.POIHandler.filterByCategory(undefined, true);
@@ -493,9 +495,15 @@ UI.onChangeVisualizeAllAnalysis=(e)=>{
         {
             APP.POIHandler.filterByCategory(UI.lastSelectedCat,true); UI.selectedCat = UI.lastSelectedCat
         }
+
         else if(UI.lastSelectedCat==null && UI.lastSelectedTechnique==null)
         {
-            APP.POIHandler.filterReset();
+            //At beginning, selectedCat (and lastSelectedCat) are null, so it will be set to the first category available.
+            let cats = APP.POIHandler.getCategoriesList();
+            if(cats.length > 0) UI.selectedCat = cats[0];
+            UI.lastSelectedCat = UI.selectedCat; 
+            //APP.POIHandler.filterReset();
+             APP.POIHandler.filterByCategory(UI.lastSelectedCat,true);
         }
         
         UI.updatePOIlist(APP.POIHandler.getFilteredList());
