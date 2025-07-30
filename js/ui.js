@@ -136,7 +136,7 @@ UI.full_options= ()=>{
 
     //If 2d mode, only x and y axis are available.
     let axis = ["x","y"]; 
-    if(!APP._b3D) axis.push("z");
+    if(APP._b3D) axis.push("z");
     
     //Start with x axis selected:
     if(!APP.UI.selectedAXIS) UI.selectedAXIS = axis[0];
@@ -639,7 +639,7 @@ UI.returnBulletsFromPOI=(poi)=>
         $(e).addClass("poiListItem_clicked");
         UI.id_POIListItemFocused = e.id;
         
-       if(!APP._b3D) UI.hidePOIs();
+       if(APP._b3D) UI.hidePOIs();
     }
 
     UI.hidePOIs=()=>{APP.POIHandler.filterByCategory("impossibleCategory")}

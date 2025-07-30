@@ -23,6 +23,8 @@ POIHandler.init = ()=>{
 	POIHandler._occDir = new THREE.Vector3();
 	POIHandler._occPos = new THREE.Vector3();
 	POIHandler._occInd = 0;
+
+	POIHandler._stdPOIscale = 1.5;
 };
 
 POIHandler.clearList = ()=>{
@@ -60,13 +62,22 @@ POIHandler.getCategoriesList = ()=>{
 
 
 POIHandler.realize = (id, pos, eye, rad, content)=>{
-	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 1.0);
+	let r = 1.0;
+	if (!APP._b3D) r *= 0.2;
+	
+	const amp2D = 1.1;
+
+	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), r);
 	A.attachTo(POIHandler._gPOIs);
 
 	A.setPosition(eye); //
 	A.setScale(rad);
 
 	A.position.lerpVectors(pos, eye, 0.5);
+	if (!APP._b3D){
+		A.position.x *= amp2D;
+		A.position.y *= amp2D;
+	}
 
 	let cat = content.category;
 	let tecs = "";
@@ -87,12 +98,14 @@ POIHandler.realize = (id, pos, eye, rad, content)=>{
 	}
 
 	let iconCat = new THREE.Sprite(APP._matsIconCat[cat]);
-	iconCat.scale.setScalar(1.5);
+	iconCat.scale.setScalar(POIHandler._stdPOIscale);
+	if (!APP._b3D) iconCat.scale.setScalar(POIHandler._stdPOIscale*0.2);
 	iconCat.renderOrder = 10;
 	A.add(iconCat);
 
 	let iconTecs = new THREE.Sprite(APP._matsIconTechniques[tecs]);
-	iconTecs.scale.setScalar(1.5);
+	iconTecs.scale.setScalar(POIHandler._stdPOIscale);
+	if (!APP._b3D) iconTecs.scale.setScalar(POIHandler._stdPOIscale*0.2);
 	iconTecs.renderOrder = 8;
 	A.add(iconTecs);
 

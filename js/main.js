@@ -75,7 +75,7 @@ APP.loadConfig = ()=>{
 
 		if (APP.cdata.assetsFolder) APP.pathAssetsFolder = ATON.PATH_COLLECTION + APP.cdata.assetsFolder;
 
-        ATON.fireEvent("APP_ConfigLoaded");
+        ATON.fire("APP_ConfigLoaded");
     });
 };
 
@@ -154,7 +154,7 @@ APP.querySemMasks = ()=>{
 	}
 
     if (smq === undefined){
-        if (APP._semCurrMask !== undefined) ATON.fireEvent("APP_SemMaskLeave", APP._semCurrMask);
+        if (APP._semCurrMask !== undefined) ATON.fire("APP_SemMaskLeave", APP._semCurrMask);
         APP._semCurrMask = undefined;
 
         // ._uniforms.tSMask.value = 0;
@@ -162,6 +162,26 @@ APP.querySemMasks = ()=>{
         return;
     }
 
+};
+
+// 2D nav constrainer
+APP.navConstrainer2D = (pov)=>{
+	if (ATON.XR.isPresenting()) return;
+
+	let xlim = 0.7;
+	let ylim = 0.8;
+
+	if (pov.pos.x < -xlim) pov.pos.x = -xlim;
+	if (pov.pos.x > xlim)  pov.pos.x = xlim;
+
+	if (pov.pos.y < -ylim) pov.pos.y = -ylim;
+	if (pov.pos.y > ylim)  pov.pos.y = ylim;
+
+	let h = pov.pos.y;
+	let x = pov.pos.x;
+
+	pov.target.y = h;
+	pov.target.x = x;
 };
 
 APP.realizeItemFromImage = (path)=>{
@@ -208,7 +228,8 @@ APP.realizeItemFromImage = (path)=>{
 	APP.gItem.scale.setScalar(0.5);
 	APP.gItem.position.y += (size*0.3);
 
-	ATON.Nav.setHomePOV( new ATON.POV().setPosition(0,size,2) );
+	let h = yratio*0.25;
+	ATON.Nav.setHomePOV( new ATON.POV().setPosition(0.0, h, 1.5).setTarget(0.0, h, 0.0) );
 };
 
 APP.loadItem = (item)=>{
@@ -227,12 +248,14 @@ APP.loadItem = (item)=>{
 	// 2D item
 	if (ATON.Utils.isImage(path)){
 		APP.realizeItemFromImage(path);
-		APP._b3D = true;
+		APP._b3D = false;
+		ATON.Nav.applyPOVconstraints = APP.navConstrainer2D;
 	}
 	// 3D item
 	else {
 		APP.gItem.load(path);
-		APP._b3D = false;
+		APP._b3D = true;
+		ATON.Nav.applyPOVconstraints = (p)=>{};
 	}
 
 	if (e.scale) APP.gItem.setScale(e.scale);
@@ -380,7 +403,7 @@ APP.setupEvents = ()=>{
         
 		//$('canvas').css({ cursor: 'crosshair' });
         //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.hide();
-		ATON.fireEvent("APP_POIHover",semid);
+		ATON.fire("APP_POIHover",semid);
     });
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeLeave");
@@ -397,7 +420,7 @@ APP.setupEvents = ()=>{
 
         //$('canvas').css({ cursor: 'grab' });
         //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.show();
-		ATON.fireEvent("APP_POILeave",semid);
+		ATON.fire("APP_POILeave",semid);
     });
 
 	ATON.on("Tap", (e)=>{
@@ -406,7 +429,7 @@ APP.setupEvents = ()=>{
 		}
 
 		if (ATON._hoveredSemNode){
-			ATON.fireEvent("APP_POISelect",ATON._hoveredSemNode);
+			ATON.fire("APP_POISelect",ATON._hoveredSemNode);
 			console.log("Selected POI "+ATON._hoveredSemNode);
 		}
 	});
