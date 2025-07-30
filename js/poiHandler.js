@@ -7,6 +7,8 @@ import Tracer from "./tracer.js";
 
 let POIHandler = {};
 
+POIHandler.STD_POI_RAD = 0.03;
+
 POIHandler.init = ()=>{
     POIHandler._list = {};
 
@@ -61,23 +63,30 @@ POIHandler.getCategoriesList = ()=>{
 };
 
 
-POIHandler.realize = (id, pos, eye, rad, content)=>{
-	let r = 1.0;
-	if (!APP._b3D) r *= 0.2;
-	
-	const amp2D = 1.1;
+POIHandler.realize = (id, pos, eye, /*rad,*/ content)=>{
+	const amp2D = 1.5;
 
-	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), r);
+	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 0.7);
 	A.attachTo(POIHandler._gPOIs);
 
-	A.setPosition(eye); //
-	A.setScale(rad);
+	A.setPosition(eye);
+
+	let r = POIHandler.STD_POI_RAD; // (APP._b3D)? POIHandler.STD_POI_RAD : POIHandler.STD_POI_RAD;
+	A.setScale(r);
 
 	A.position.lerpVectors(pos, eye, 0.5);
+
 	if (!APP._b3D){
-		A.position.x *= amp2D;
-		A.position.y *= amp2D;
+		let yc = APP.gItem.position.y;
+		let xc = APP.gItem.position.x;
+
+		let dx = xc - A.position.x;
+		let dy = yc - A.position.y;
+
+		A.position.x -= (dx*0.3);
+		A.position.y -= (dy*0.3);
 	}
+
 
 	let cat = content.category;
 	let tecs = "";
@@ -98,14 +107,14 @@ POIHandler.realize = (id, pos, eye, rad, content)=>{
 	}
 
 	let iconCat = new THREE.Sprite(APP._matsIconCat[cat]);
-	iconCat.scale.setScalar(POIHandler._stdPOIscale);
-	if (!APP._b3D) iconCat.scale.setScalar(POIHandler._stdPOIscale*0.2);
+	//iconCat.scale.setScalar(POIHandler._stdPOIscale);
+	//if (!APP._b3D) iconCat.scale.setScalar(POIHandler._stdPOIscale*0.2);
 	iconCat.renderOrder = 10;
 	A.add(iconCat);
 
 	let iconTecs = new THREE.Sprite(APP._matsIconTechniques[tecs]);
-	iconTecs.scale.setScalar(POIHandler._stdPOIscale);
-	if (!APP._b3D) iconTecs.scale.setScalar(POIHandler._stdPOIscale*0.2);
+	//iconTecs.scale.setScalar(POIHandler._stdPOIscale);
+	//if (!APP._b3D) iconTecs.scale.setScalar(POIHandler._stdPOIscale*0.2);
 	iconTecs.renderOrder = 8;
 	A.add(iconTecs);
 
@@ -151,7 +160,7 @@ POIHandler.realize = (id, pos, eye, rad, content)=>{
 	return A;
 };
 
-POIHandler.add = (pos, eye, rad, content)=>{
+POIHandler.add = (pos, eye, content)=>{
 
 	ATON.checkAuth(R => {
 		// TODO: move here
@@ -160,7 +169,7 @@ POIHandler.add = (pos, eye, rad, content)=>{
 	let id = ATON.Utils.generateID("poi");
 	//console.log(id)
 
-	let A = POIHandler.realize(id, pos, eye, rad, content);
+	let A = POIHandler.realize(id, pos, eye, content);
 
 	let O = {};
 	
@@ -176,7 +185,7 @@ POIHandler.add = (pos, eye, rad, content)=>{
 		parseFloat(eye.y.toPrecision(2)),
 		parseFloat(eye.z.toPrecision(2))
 	];
-	O[id].rad = rad;
+	//O[id].rad = rad;
 
 	APP.addToStorage( APP._currItem, O );
 
@@ -188,7 +197,7 @@ POIHandler.addFromCurrentQuery = (content)=>{
 	if (!ATON._queryDataScene) return undefined;
 
 	let p = ATON._queryDataScene.p;
-	let r = ATON.SUI._selectorRad;
+	let r = POIHandler.STD_POI_RAD; //ATON.SUI._selectorRad;
 	//let n = ATON._queryDataScene.n;
 
 	//content.nor = [n.x,n.y,n.z];
@@ -238,7 +247,7 @@ POIHandler.loadAll = ( onComplete )=>{
 			let eye = undefined;
 			if (A.eye) eye = new THREE.Vector3(A.eye[0],A.eye[1],A.eye[2]);
 
-			POIHandler.realize(a, pos, eye, A.rad, A.content );
+			POIHandler.realize(a, pos, eye,/* A.rad,*/ A.content );
 		}
 
 		ATON.fire("APP_POIListChanged");
