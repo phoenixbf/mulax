@@ -747,8 +747,8 @@ APP.anchorSUIToolbar = (a)=>{
 	}
 	else {
 		let pi2 = (Math.PI * 0.5);
-		APP.suiToolbar.setPosition(-0.1,0,0.1).setRotation(-pi2,-pi2,pi2).setScale(0.5);
-		ATON.XR.controller1.add(APP.suiToolbar);
+		APP.suiToolbar.setPosition(-0.1,0,0.1).setRotation(-pi2,0.0,pi2).setScale(0.5);
+		ATON.XR.getSecondaryController().add(APP.suiToolbar);
 	}
 };
 
