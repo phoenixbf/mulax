@@ -54,13 +54,13 @@ APP.setup = ()=>{
 	APP.loadConfig();
 
 	//TEST
-	if (APP.params.get("xr")){
+	//if (APP.params.get("xr")){
 		ATON.UI.get("toolbar").append(
-			ATON.UI.createButtonHome(),
 			ATON.UI.createButtonVR(),
-			ATON.UI.createButtonAR()
+			ATON.UI.createButtonAR(),
+			ATON.UI.createButtonHome()
 		)
-	}
+	//}
 
 	if (APP.params.get("qr")) QRC.init();
 };
