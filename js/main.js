@@ -63,6 +63,8 @@ APP.setup = ()=>{
 	//}
 
 	if (APP.params.get("qr")) QRC.init();
+
+	ATON.MatHub.materials.selector.uniforms.tint.value = ATON.MatHub.colors.white;
 };
 
 // Config
