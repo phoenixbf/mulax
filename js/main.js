@@ -19,8 +19,8 @@ APP.POIHandler = POIHandler;
 APP.UI = UI;
 
 
-
-APP.pathConfigFile   = APP.basePath + "config/config.json";
+APP.pathConfig       = APP.basePath + "config/";
+APP.pathConfigFile   = APP.pathConfig + "config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
 APP.pathIcons        = APP.basePath + "res/icons/"; 
 
@@ -56,6 +56,7 @@ APP.setup = ()=>{
 	//TEST
 	//if (APP.params.get("xr")){
 		ATON.UI.get("toolbar").append(
+			ATON.UI.createButtonBack(),
 			ATON.UI.createButtonVR(),
 			ATON.UI.createButtonAR(),
 			ATON.UI.createButtonHome()
@@ -336,6 +337,9 @@ APP.setupScene = ()=>{
 
 	APP._matsIconCat = {};
 	APP._matsIconTechniques = {};
+	APP._matIconTechnique = APP._matBaseIcon.clone();
+	APP._matIconTechnique.map = ATON.Utils.textureLoader.load(APP.pathIcons + "tec.png");
+
 
 	// ground
 	let g = new THREE.PlaneGeometry( 1,1 );
@@ -358,13 +362,58 @@ APP.setupScene = ()=>{
 	N.attachToRoot();
 };
 
+// UI Welcome
+// 					Based on the open-source ATON framework by CNR ISPC, it allows interactive and immersive discovery of analytical/color data layers, interactive annotation system for spot-analyses (microscope, X-ray fluorescence, etc.) or imaging (Visible-induced Luminescence, Ultraviolet-induced Visible Luminescence, etc.) and more advanced features. MuLaX is accessible on every device – from smartphones up to XR devices – embracing modern web standards, formats and large open ecosystems to maximize interoperability and reuse.
+APP.popupWelcome = ()=>{
+	ATON.UI.showModal({
+		header: "MuLaX",
+		body: ATON.UI.createContainer({
+			style: "text-align:center",
+			items: [
+				ATON.UI.createElementFromHTMLString(`
+					<p style='text-align:justify'>
+					<b>MuLaX</b> - designed and developed under the PERCEIVE project - offers users new ways to access, discover and examine diagnostic processes on multi-layered collections, directly online.<br><br>
+					</p>`
+				),
+				ATON.UI.createContainer({
+					//style: "display: block;",
+					items: [
+						ATON.UI.createCard({
+							title: "Bikini Venus",
+							cover: APP.pathConfig + "m-bikini.jpg",
+							url: APP.basePath + "?m=bikini",
+							useblurtint: true
+							//size: "small"
+						}),
+						ATON.UI.createCard({
+							title: "The Scream (E. Munch)",
+							cover: APP.pathConfig + "m-munch.jpg",
+							url: APP.basePath + "?m=munch",
+							useblurtint: true
+							//size: "small"
+						}),
+						ATON.UI.createCard({
+							title: "Road in Provence (P. Cezanne)",
+							cover: APP.pathConfig + "m-cezanne.jpg",
+							url: APP.basePath + "?m=cezanne",
+							useblurtint: true
+							//size: "small"
+						}),
+					]
+				})
+			]
+		})
+	});
+};
+
 // Events
 APP.setupEvents = ()=>{
 	let zero = new THREE.Vector4(0,0,0,0);
 
     ATON.on("APP_ConfigLoaded", ()=>{
 		let item = APP.params.get("m");
-        APP.loadItem(item);
+		if (item) APP.loadItem(item);
+		else APP.popupWelcome();
     });
 
 	ATON.on("AllNodeRequestsCompleted",()=>{
