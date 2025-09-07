@@ -399,6 +399,13 @@ APP.popupWelcome = ()=>{
 							useblurtint: true
 							//size: "small"
 						}),
+						ATON.UI.createCard({
+							title: "Use your device",
+							cover: APP.pathConfig + "mulax-qr.png",
+							onactivate: ()=>{},
+							useblurtint: true
+							//size: "small"
+						}),
 					]
 				})
 			]
