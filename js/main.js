@@ -452,10 +452,9 @@ APP.setupEvents = ()=>{
 		let C = POIHandler.getContentFromNode(S);
 		if (!C) return;
 
-		if (ATON.XR._bPresenting){
-			ATON.FE.showSemLabel(C.title);
-			ATON.FE._bSem = true;
-		}
+		//if (ATON.XR._bPresenting){
+			ATON.UI.showSemLabel(C.title);
+		//}
 
 		S.highlight();
         
@@ -469,10 +468,9 @@ APP.setupEvents = ()=>{
         let S = ATON.getSemanticNode(semid);
         if (!S) return;
 
-		if (ATON.XR._bPresenting){
-			ATON.FE.hideSemLabel();
-			ATON.FE._bSem = false;
-		}
+		//if (ATON.XR._bPresenting){
+			ATON.UI.hideSemLabel();
+		//}
 
         S.restoreDefaultMaterial();
 
@@ -737,6 +735,7 @@ APP.setupSUI = ()=>{
 	btnLens.setSwitchColor(ATON.MatHub.colors.orange);
 
 	btnLens.onSelect = ()=>{
+		APP.DSC.enableDiscoveryLayer();
 		APP.DSC.shape = "sphere";
 	};
 	btnLens.onHover = ()=>{
@@ -757,6 +756,7 @@ APP.setupSUI = ()=>{
 	btnSplitY.setSwitchColor(ATON.MatHub.colors.orange);
 
 	btnSplitY.onSelect = ()=>{
+		APP.DSC.enableDiscoveryLayer();
 		APP.DSC.shape = "y";
 	};
 	btnSplitY.onHover = ()=>{
@@ -777,6 +777,7 @@ APP.setupSUI = ()=>{
 	btnSplitX.setSwitchColor(ATON.MatHub.colors.orange);
 
 	btnSplitX.onSelect = ()=>{
+		APP.DSC.enableDiscoveryLayer();
 		APP.DSC.shape = "x";
 	};
 	btnSplitX.onHover = ()=>{
