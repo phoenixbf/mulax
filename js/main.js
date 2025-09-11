@@ -491,15 +491,15 @@ APP.setupEvents = ()=>{
 	});
 
 	ATON.on("XRmode",()=>{
-/*
+
 		if (ATON.XR._sessionType === "immersive-ar"){
 			APP.anchorSUIToolbar("item");
-			ATON.SUI.setSelectorRadius(0.02);
+			ATON.SUI.setSelectorRadius(0.03);
 		}
 		else {
 			//APP.anchorSUIToolbar();
 		}
-*/		
+	
 		APP.suiToolbar.show();
 
 
@@ -523,8 +523,7 @@ APP.setupEvents = ()=>{
 
     ATON.on("XRcontrollerConnected", (c)=>{
 		if (c === ATON.XR.HAND_L){
-			//if (ATON.XR._sessionType !== "immersive-ar") 
-				APP.anchorSUIToolbar();
+			if (ATON.XR._sessionType !== "immersive-ar") APP.anchorSUIToolbar();
 		}
 	});
 
