@@ -34,11 +34,12 @@ DSC.init = ()=>{
 };
 
 DSC.applyShape = ()=>{
+/*
     if (APP.isARActive()){
         DSC.shapeParams.loc.copy(ATON.Nav._currPOV.pos);
         return;
     }
-
+*/
     if (!DSC.shape) return;
     if (DSC.shape==="sphere") return;
 
