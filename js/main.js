@@ -491,7 +491,15 @@ APP.setupEvents = ()=>{
 	});
 
 	ATON.on("XRmode",()=>{
-		APP.anchorSUIToolbar("item");
+
+		if (ATON.XR._sessionType === "immersive-ar"){
+			APP.anchorSUIToolbar("item");
+			ATON.SUI.setSelectorRadius(0.02);
+		}
+		else {
+			APP.anchorSUIToolbar();
+		}
+		
 		APP.suiToolbar.show();
 
 /*
@@ -511,13 +519,13 @@ APP.setupEvents = ()=>{
 		}
 */
     });
-
+/*
     ATON.on("XRcontrollerConnected", (c)=>{
 		if (c === ATON.XR.HAND_L){
 			if (ATON.XR._sessionType !== "immersive-ar") APP.anchorSUIToolbar();
 		}
 	});
-
+*/
 	ATON.on("KeyPress", k =>{
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
