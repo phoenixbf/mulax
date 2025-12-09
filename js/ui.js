@@ -41,53 +41,62 @@ UI.createPanel=()=>{
     let _layers = APP.DSC.getLayersList();
     if(_layers && _layers.length>0){
 
+        let switchDiscovery = UI.createDiscoverySwitch();
         DiscoveryPanel=
-        `
-        <h2>Discovery Layers</h2>
-        <div class="sideBlockMainContainer">
-        
-            <b>Select the discovery method</b><br>
-            <div class="columnFlexContainer">
-            
-                <div class="box" id="boxA">
-                    <label>
-                        <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
-                        Lens Mode
-                    </label>
-                    <p>This option allows you to apply a masking lens effect to your images.</p>
-                </div>
-                <div class="box" id="boxB">
-                
-                    <label>
-                        <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
-                    Split Mode
-                    </label>
-                    <p>This option enables a split visualizer for comprehensive image analysis.</p>
-                </div>
-            </div>
-
-        <div id="discoveryAusiliarPanel"></div>
+        `<div id="headerDiscoveryPanel" class="flex_between mt-5">
+                <h2>Discovery Layers</h2>
+                ${switchDiscovery}    
         </div>
-        <div id="discoverySelectionLayerPanel"></div>
+
+        <div id="DiscoveryPanelContainer">
+            <div class="sideBlockMainContainer">
+            
+                <b>Select the discovery method</b><br>
+                <div class="columnFlexContainer">
+                
+                    <div class="box" id="boxA">
+                        <label>
+                            <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
+                            Lens Mode
+                        </label>
+                        <p>This option allows you to apply a masking lens effect to your images.</p>
+                    </div>
+                    <div class="box" id="boxB">
+                    
+                        <label>
+                            <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
+                        Split Mode
+                        </label>
+                        <p>This option enables a split visualizer for comprehensive image analysis.</p>
+                    </div>
+                </div>
+
+                <div id="discoveryAusiliarPanel"></div>
+            </div>
+            <div id="discoverySelectionLayerPanel"></div>
+        </div>
     `;
     }
 
     // Explore Analysis Panel
     var POIsPanel= "";
     if(APP.POIHandler._L.length>0){
+
+        let switchExploreAnalysis = UI.createExploreAnalysisSwitch();
         POIsPanel=
         `
             <div id="headerPOIsPanel" class="flex_between mt-5">
                 <h2>Explore Analysis</h2>
-                <label class="checkbox-label">
-                    <span>Visualize all</span>
-                    <input type="checkbox" name="terms" class="checkbox-input" onClick="APP.UI.onChangeVisualizeAllAnalysis(this)" checked>
-                </label>
+                ${switchExploreAnalysis}    
             </div>
-        
+            <div id="POIsPanelContainer">
+            <label class="checkbox-label">
+                <span>Visualize all</span>
+                <input id="visualizeAllCheckbox" type="checkbox" name="terms" class="checkbox-input" onClick="APP.UI.onChangeVisualizeAllAnalysis(this)" checked>
+            </label>
              ${UI.POI_filterPanel()}
              ${UI.POI_ListContainer}  
-            
+            </div>
         `
     }
 
@@ -105,6 +114,91 @@ UI.createPanel=()=>{
     APP.DSC.disableDiscoveryLayer();
     //For toggle OFFCanvas:
     UI.CreateMenuBtn();
+}
+
+
+//Global Switches:
+
+UI.onExploreAnalysisSwitchChanged = (event) => {
+    let state = event.target.checked;
+    console.log("state is: " + state);
+    let panel = $("#POIsPanelContainer");
+    
+    if(!state) {
+        APP.POIHandler.filterByCategory('xxxxxxxx',false);
+        //Update UI styles:
+        panel.css("opacity","0.5");
+        panel.css("pointer-events","none");
+    }
+    else{
+        const prevVisualizeAllState = ()=>{
+           let visAll = false;
+           if( UI.selectedTechnique == null && UI.selectedCat == null) visAll = true;
+           return visAll;
+        }
+        const v = prevVisualizeAllState();
+        console.log("Previous visualize all state: " + v);
+        UI.onChangeVisualizeAllAnalysis({checked:v});
+        //Update UI styles:
+        panel.css("opacity","1");
+        panel.css("pointer-events","auto");
+    }
+}
+
+UI.createExploreAnalysisSwitch=()=>{
+    return UI.createSwitch("exploreAnalysisSwitch","","APP.UI.onExploreAnalysisSwitchChanged",true);
+}
+
+
+UI.onDiscoverySwitchChanged = (event) => {
+
+
+    let state = event.target.checked;
+    console.log("state is: " + state);
+    UI.toggleDiscoveryPanel(state);
+    if(!state) {
+        APP.DSC.disableDiscoveryLayer();
+    }
+    else{
+        if(UI.discoveryMode==null){
+            document.getElementById("Lens_discovery").click(); //default to lens mode
+        }
+        APP.DSC.enableDiscoveryLayer();
+    }
+}
+
+UI.forceDiscoverySwitchState=(state)=>{
+    let switchElement = document.getElementById("discoverySwitch");
+    if(switchElement) switchElement.checked = state;
+}
+
+UI.toggleDiscoveryPanel=(state)=>{
+    let panel = $("#DiscoveryPanelContainer");
+    if(!state) {
+        //Update UI styles:
+        panel.css("opacity","0.5");
+        panel.css("pointer-events","none");
+    }
+    else{
+        //Update UI styles:
+        panel.css("opacity","1");
+        panel.css("pointer-events","auto");
+    }
+}
+UI.createDiscoverySwitch=()=>{
+    let state = false;
+    return UI.createSwitch("discoverySwitch","","APP.UI.onDiscoverySwitchChanged",state);
+}
+
+UI.createSwitch = (id, labelText, onChangeFunctionName, initialState = true) => {
+    let switchHTML = `
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="${id}" ${initialState ? 'checked' : ''} onchange="${onChangeFunctionName}(event)">
+            <label class="form-check-label" for="${id}">${labelText}</label>
+        </div>
+    `;
+
+    return switchHTML;
 }
 
 //Mobile
@@ -378,9 +472,11 @@ UI.selectedAXIS = "x";
     
 UI.onclickDiscoveryBtn=(e)=>{
 
-    const dMode = e.value; //lens or full
+    const dMode = e.value; //lens or full   
+    UI.forceDiscoverySwitchState(true);
 
     //Retap for close
+    /*
     if(UI.discoveryMode == dMode) {
             $("#discoveryAusiliarPanel").empty().css("display","none");
             $("#discoverySelectionLayerPanel").empty().css("display","none");
@@ -391,7 +487,8 @@ UI.onclickDiscoveryBtn=(e)=>{
             APP.DSC.disableDiscoveryLayer(); //tochange: this is breaking something in XR mode
             ATON.SUI.setSelectorRadius(UI.defaultRadius);
             return;
-        }
+    }*/
+
     UI.discoveryMode = dMode;
     
     let ausiliaryContent =  UI[e.value+"_options"]();
@@ -433,9 +530,6 @@ UI.onChangeDiscoveryGroup_standard=(e)=>{
 
 //Standard Discovery Layer Selection:
 UI.onChangeDiscoveryLayer_standard=(e)=> { APP.DSC.setDiscoveryLayer(e.value) }
-
-//Custom Discovery Layer Selection:
-//TO DO
 
 
 
@@ -528,6 +622,7 @@ UI.onClickCategoryFilter=(e)=>
         $("#ausiliaryPOIsFiltersPanel").css("display","block");
 
         UI.selectedCat = e.value;
+        UI.lastSelectedCat = e.value;
 
         //MAIN:
         APP.POIHandler.filterByCategory(e.value,true);
@@ -539,10 +634,14 @@ UI.onchangeTechniqueFilteredBtn=(e)=>
         console.log('%c is clicked:'+ e.value, 'background: #222; color: #bada55');
 
         UI.selectedTechnique = e.value;
+        UI.lastSelectedTechnique = e.value;
         if(e.value=="all")
             {
                 UI.selectedTechnique=null;
-                if(UI.selectedCat==null){UI.selectedCat = e.datasets.cat}
+                UI.lastSelectedTechnique = null;
+                if(UI.selectedCat==null){
+                    UI.selectedCat = e.datasets.cat;
+                }
                 APP.POIHandler.filterByCategory(UI.selectedCat,true);
                 UI.updatePOIlist(APP.POIHandler.getFilteredList());
                 return;
