@@ -804,7 +804,10 @@ UI.onClick_CloseRightSidebar=()=>{
         UI.resumePOIs();
 }
 
-UI.tecniqueImgItem =(urlImg)=>{
+UI.tecniqueContentItem =(urlImg, plot=null)=>{
+
+    console.log("PLOT IS: " + plot);
+    if(plot) {APP.UI.currentPlot = plot} else APP.UI.currentPlot = null;
 
     return ATON.UI.createElementFromHTMLString (`
         <div class="imgTechContainer">
@@ -813,22 +816,36 @@ UI.tecniqueImgItem =(urlImg)=>{
         </div>`); 
 }
 
-UI.onFullScreenBtnClicked =(evt)=>{
-
-    console.log("FULLSCREEN CLICKED")
+UI.onFullScreenBtnClicked = (evt)=>{
+    
     console.log(evt);
+    const closeBtn = ATON.UI.createButton({icon: APP.pathIcons+"close-button.svg", onpress:()=>{ATON.UI.hideModal()}});
+    
+    //Plot content:
+    if(APP.UI.currentPlot){
+        
+        const fullScreenImg = ATON.UI.createElementFromHTMLString(`
+        <div class="imgTech_fullScreenContainer">
+        PLOT HERE: ${APP.UI.currentPlot}
+        </div>`);
+
+        ATON.UI.showModal({body:fullScreenImg,footer:closeBtn});
+
+        return;
+    }
+
+    //Static image:
     var imgSrc = evt.target.parentNode.querySelector(".imgTech").src;
     const fullScreenImg = ATON.UI.createElementFromHTMLString(`
         <div class="imgTech_fullScreenContainer">
         <img src="${imgSrc}"/>
         </div>`);
-
-    //UI Hack for fullscreen modal:
-    ATON.UI.elModal.classList.remove("modal-fullscreen-md-down");
-    ATON.UI.elModal.children[0].classList.remove("modal-dialog-centered");
-    ATON.UI.elModal.children[0].classList.add("modal-fullscreen");
-
-    const closeBtn = ATON.UI.createButton({icon: APP.pathIcons+"close-button.svg", onpress:()=>{ATON.UI.hideModal()}});
+        
+        //UI Hack for fullscreen modal:
+        ATON.UI.elModal.classList.remove("modal-fullscreen-md-down");
+        ATON.UI.elModal.children[0].classList.remove("modal-dialog-centered");
+        ATON.UI.elModal.children[0].classList.add("modal-fullscreen");
+        
     ATON.UI.showModal({body:fullScreenImg,footer:closeBtn});
 }
 
@@ -838,13 +855,24 @@ UI.composeTechniqueTabs=(poi)=>{
     
     var _options = {items:[]};
 
+
+    const getContentFromTechnique = (t)=>{
+        if(t.img){
+            const urlImg =  APP.getCurrentItemFolder()+"media/images/" +t.img;
+            return APP.UI.tecniqueContentItem(urlImg);
+        }
+        if(t.plot){
+            const urlImg = APP.pathIcons+"plot_placeholder.png";
+            return APP.UI.tecniqueContentItem(urlImg, t.plot);
+        }
+    };
+
     for (const [key, t] of Object.entries(poi.techniques)){
-      //  const urlImg = `${APP.getCurrentItemFolder()}media/${poi.title}/${UI.techniqueInfos[key].technique.toLowerCase()}/${poi.title}.png`;
       const urlImg =  APP.getCurrentItemFolder()+"media/images/" +t.img;
         
         const _title = UI.techniqueInfos[key].label;
         //const _icon = ATON.UI.createElementFromHTMLString( UI.underlineTechniqueItem(key,false));
-       // const _icon = APP.pathIcons+"burgerMenuIcon.svg" //test
+        //const _icon = APP.pathIcons+"burgerMenuIcon.svg" //test
         /*const _title = ATON.UI.createElementFromHTMLString(`<div>
             ${UI.techniqueInfos[key].label}
             ${UI.underlineTechniqueItem(key,false)}
@@ -852,8 +880,8 @@ UI.composeTechniqueTabs=(poi)=>{
 
         _options.items.push({
             title: _title,
-           // icon:_icon,
-            content:APP.UI.tecniqueImgItem(urlImg)
+            // icon:_icon,
+            content: getContentFromTechnique(t)
         })
         }
 
@@ -1074,6 +1102,182 @@ UI.onConfermDiscoveryCustomLayerModal=()=>{
 
     //Update the discovery layer TODO
 }
+
+//Open form submission of new POI
+UI.openNewPOIForm = () => {
+    let selectedCategory = null;
+    let selectedTechnique = null;
+    let elTechniqueWrapper = null;
+
+    // Get categories list
+    const categories = APP.POIHandler.getCategoriesList();
+
+    // Create form elements
+    const elForm = ATON.UI.createContainer({ classes: "container" });
+
+    // Title input (required)
+    const elTitle = ATON.UI.createInputText({
+        label: "Title",
+        placeholder: "Enter POI title"
+    });
+    const elTitleInput = ATON.UI.getComponent(elTitle, "input");
+    elTitleInput.required = true;
+
+    // Description input (optional)
+    const elDescription = ATON.UI.createInputText({
+        label: "Description",
+        placeholder: "Enter description (optional)"
+    });
+
+    // Plot input (optional)
+    const elPlot = ATON.UI.createInputText({
+        label: "Plot",
+        placeholder: "Enter plot (optional)"
+    });
+
+    // Category select (required)
+    const categoryItems = categories.map(cat => ({
+        title: cat,
+        value: cat
+    }));
+
+    const elCategory = ATON.UI.createSelect({
+        label: "Category",
+        title: "Select category",
+        items: categoryItems,
+        onselect: (value) => {
+            selectedCategory = value;
+            // Update techniques list when category changes
+            updateTechniquesList(value);
+            // Clear selected technique when category changes
+            selectedTechnique = null;
+        }
+    });
+
+    // Technique select (required) - initially empty
+    let elTechnique = ATON.UI.createSelect({
+        label: "Technique",
+        title: "Select technique",
+        items: [],
+        onselect: (value) => {
+            selectedTechnique = value;
+        }
+    });
+
+    // Function to update techniques list based on selected category
+    const updateTechniquesList = (category) => {
+        const techniques = UI.getTechniquesListByCategory(category);
+        const techniqueItems = techniques.map(tech => ({
+            title: tech,
+            value: tech
+        }));
+
+        // Replace technique select with updated one
+        const newElTechnique = ATON.UI.createSelect({
+            label: "Technique",
+            title: "Select technique",
+            items: techniqueItems,
+            onselect: (value) => {
+                selectedTechnique = value;
+            }
+        });
+
+        // Replace in wrapper
+        const newWrapper = ATON.UI.elem("<div class='mb-3'></div>");
+        newWrapper.appendChild(newElTechnique);
+        
+        elForm.replaceChild(newWrapper, elTechniqueWrapper);
+        elTechniqueWrapper = newWrapper;
+        elTechnique = newElTechnique;
+    };
+
+    // Append all form elements with spacing
+    const elTitleWrapper = ATON.UI.elem("<div class='mb-3'></div>");
+    elTitleWrapper.appendChild(elTitle);
+
+    const elDescWrapper = ATON.UI.elem("<div class='mb-3'></div>");
+    elDescWrapper.appendChild(elDescription);
+
+    const elPlotWrapper = ATON.UI.elem("<div class='mb-3'></div>");
+    elPlotWrapper.appendChild(elPlot);
+
+    const elCategoryWrapper = ATON.UI.elem("<div class='mb-3'></div>");
+    elCategoryWrapper.appendChild(elCategory);
+
+    elTechniqueWrapper = ATON.UI.elem("<div class='mb-3'></div>");
+    elTechniqueWrapper.appendChild(elTechnique);
+
+    elForm.append(
+        elTitleWrapper,
+        elDescWrapper,
+        elPlotWrapper,
+        elCategoryWrapper,
+        elTechniqueWrapper
+    );
+
+    // Create footer with buttons
+    const elFooter = ATON.UI.createContainer({ classes: "d-flex gap-2 justify-content-end" });
+
+    const elCancelBtn = ATON.UI.createButton({
+        text: "Cancel",
+        variant: "secondary",
+        onpress: () => {
+            ATON.UI.hideModal();
+        }
+    });
+
+    const elSubmitBtn = ATON.UI.createButton({
+        text: "Create POI",
+        variant: "primary",
+        onpress: () => {
+            // Validate required fields
+            const title = elTitleInput.value.trim();
+            
+            if (!title) {
+                alert("Title is required");
+                return;
+            }
+
+            if (!selectedCategory) {
+                alert("Category is required");
+                return;
+            }
+
+            if (!selectedTechnique) {
+                alert("Technique is required");
+                return;
+            }
+
+            // Get optional fields
+            const description = ATON.UI.getComponent(elDescription, "input").value.trim();
+            const plot = ATON.UI.getComponent(elPlot, "input").value.trim();
+
+            // Prepare POI data
+            const poiData = {
+                title: title,
+                category: selectedCategory,
+                technique: selectedTechnique,
+                description: description || undefined,
+                plot: plot || undefined
+            };
+
+            // TODO: Submit POI data
+            console.log("New POI data:", poiData);
+            
+            // Close modal
+            ATON.UI.hideModal();
+        }
+    });
+
+    elFooter.append(elCancelBtn, elSubmitBtn);
+
+    // Show modal with form
+    ATON.UI.showModal({
+        header: "Create New POI",
+        body: elForm,
+        footer: elFooter
+    });
+};
 
 
 export default UI;
