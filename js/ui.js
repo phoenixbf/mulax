@@ -1370,7 +1370,10 @@ UI.openNewPOIForm = () => {
             console.log("New POI data:", poiData);
 
             APP.POIHandler.addFromCurrentQuery( poiData );
+            
             //FIXME: refresh POI List
+            APP.POIHandler.filterReset();
+            UI.updatePOIlist(APP.POIHandler.getFilteredList());
 
             ATON.UI.hideModal();
         }
