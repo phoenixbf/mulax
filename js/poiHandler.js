@@ -8,11 +8,12 @@ import Tracer from "./tracer.js";
 let POIHandler = {};
 
 POIHandler.STD_POI_RAD = 0.03;
+POIHandler.STD_POI_TRIGGER_S = 0.5;
 
 POIHandler.init = ()=>{
     POIHandler._list = {};
 
-	POIHandler._gPOIs = ATON.createSemanticNode();
+	POIHandler._gPOIs = ATON.createUINode(); //ATON.createSemanticNode();
 	POIHandler._gPOIs.attachToRoot();
 
 	POIHandler._filteredAABB = new THREE.Box3();
@@ -27,6 +28,8 @@ POIHandler.init = ()=>{
 	POIHandler._occInd = 0;
 
 	POIHandler._stdPOIscale = 1.5;
+
+	POIHandler._ipos = new THREE.Vector3();
 };
 
 POIHandler.clearList = ()=>{
@@ -35,6 +38,12 @@ POIHandler.clearList = ()=>{
 };
 
 POIHandler.getTechniquesList = ()=>{
+	let list = [];
+	for (let k in APP.cdata.techniques) list.push(k)
+	
+	return list;
+
+	/*
 	let tecs = {};
 	for (let i in POIHandler._list){
 		let A = POIHandler.getContent(i);
@@ -46,9 +55,21 @@ POIHandler.getTechniquesList = ()=>{
 	for (let k in tecs) list.push(k)
 	
 	return list;
+*/
+};
+
+POIHandler.getTechniquesListByCategory = (cat)=>{
+	let list = [];
+	for (let k in APP.cdata.techniques){
+		if (APP.cdata.techniques[k].cat === cat) list.push(k);
+	}
+	
+	return list;
 };
 
 POIHandler.getCategoriesList = ()=>{
+	return APP.cdata.categories;
+/*
 	let cats = {};
 	for (let i in POIHandler._list){
 		let A = POIHandler.getContent(i);
@@ -60,14 +81,29 @@ POIHandler.getCategoriesList = ()=>{
 	for (let k in cats) list.push(k);
 	
 	return list;
+*/
 };
 
 
-POIHandler.realize = (id, pos, eye, /*rad,*/ content)=>{
+POIHandler.realize = (id, pos, eye, content)=>{
 	const amp2D = 1.5;
 
-	let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 0.7);
+	//let A = ATON.SemFactory.createSphere(id, new THREE.Vector3(0,0,0), 0.7);
+	let A = ATON.createUINode(id);
+
+	let gIcon = ATON.createUINode();
+	gIcon.attachTo(A);
+
+	let trigger = new THREE.Mesh( ATON.Utils.geomUnitSphere, ATON.MatHub.materials.invisible);
+	trigger.scale.setScalar(POIHandler.STD_POI_TRIGGER_S);
+	A.add(trigger);
+
 	A.attachTo(POIHandler._gPOIs);
+
+	A.enablePicking();
+
+	//A.setDefaultAndHighlightMaterials(APP._matPOI, APP._matPOIHL);
+	//A.material = APP._matPOI;
 
 	A.setPosition(eye);
 
@@ -75,6 +111,8 @@ POIHandler.realize = (id, pos, eye, /*rad,*/ content)=>{
 	A.setScale(r);
 
 	A.position.lerpVectors(pos, eye, 0.5);
+
+	gIcon.orientToLocation(eye);
 
 	if (!APP._b3D){
 		let yc = APP.gItem.position.y;
@@ -87,46 +125,66 @@ POIHandler.realize = (id, pos, eye, /*rad,*/ content)=>{
 		A.position.y -= (dy*0.3);
 	}
 
-
 	let cat = content.category;
-	let tecs = "";
-	for (let t in content.techniques){
-		tecs += t;
-	}
-
-	console.log(cat, tecs)
 
 	if (!APP._matsIconCat[cat]){
 		APP._matsIconCat[cat] = APP._matBaseIcon.clone();
 		APP._matsIconCat[cat].map = ATON.Utils.textureLoader.load(APP.pathIcons + "categories/" + cat + ".png");
 	}
 
-	if (!APP._matsIconTechniques[tecs]){
-		APP._matsIconTechniques[tecs] = APP._matBaseIcon.clone();
-		APP._matsIconTechniques[tecs].map = ATON.Utils.textureLoader.load(APP.pathIcons + "techniques/" + tecs + ".png");
+	let iconCat = new THREE.Mesh( APP._geomQuad, APP._matsIconCat[cat] );
+
+	//iconCat.position.y = 2.0;
+    iconCat.raycast = ATON.Utils.VOID_CAST;
+
+	iconCat.renderOrder = 10;
+	gIcon.add(iconCat);
+
+	console.log(content)
+
+	let numTecs = Object.values(content.techniques).length;
+	let ic = 0;
+	for (let t in content.techniques){
+		let p = parseFloat( ic/numTecs );
+
+		//let iTec = new THREE.Sprite(APP._matsIconTechniques[t]);
+		let iTec = new THREE.Mesh( APP._geomQuad, APP._matsIconTechniques[t] );
+		iTec.scale.setScalar(1.5);
+
+		let a = Math.PI * numTecs * 0.1;
+		let r = THREE.MathUtils.lerp(a, -a, p);
+		iTec.rotateZ( r );
+
+		iTec.position.z -= ((p*0.05) + 0.05);
+
+		iTec.renderOrder = 10;
+		gIcon.add(iTec);
+
+		ic++;
 	}
 
-	let iconCat = new THREE.Sprite(APP._matsIconCat[cat]);
-	//iconCat.scale.setScalar(POIHandler._stdPOIscale);
-	//if (!APP._b3D) iconCat.scale.setScalar(POIHandler._stdPOIscale*0.2);
-	iconCat.renderOrder = 10;
-	A.add(iconCat);
-
-	let iconTecs = new THREE.Sprite(APP._matsIconTechniques[tecs]);
-	//iconTecs.scale.setScalar(POIHandler._stdPOIscale);
-	//if (!APP._b3D) iconTecs.scale.setScalar(POIHandler._stdPOIscale*0.2);
-	iconTecs.renderOrder = 8;
-	A.add(iconTecs);
-
-	A.setDefaultAndHighlightMaterials(APP._matPOI, APP._matPOIHL);
-    A.restoreDefaultMaterial();
 
 	A.onHover = ()=>{
 		//A.setScale(rad*1.5);
+		
+		ATON.UI.showSemLabel(content.title);
+		ATON.SUI.setInfoNodeText(content.title);
+
+		ATON.SUI.showSelector(false);
+		trigger.material = APP._matPOIHL;
 	};
 
 	A.onLeave = ()=>{
 		//A.setScale(rad);
+		
+		ATON.UI.hideSemLabel();
+		ATON.SUI.showSelector(true);
+
+		trigger.material = ATON.MatHub.materials.invisible;
+	};
+
+	A.onSelect = ()=>{
+		ATON.fire("APP_POISelect", id);
 	};
 
 	// Line
@@ -155,6 +213,8 @@ POIHandler.realize = (id, pos, eye, /*rad,*/ content)=>{
 	A.userData.eye     = eye;
 	A.userData.pos     = pos;
 	A.userData.line    = line;
+	A.userData.trigger = trigger;
+	A.userData.icon    = gIcon;
 
 	POIHandler._list[id] = A;
 	return A;
@@ -197,7 +257,7 @@ POIHandler.addFromCurrentQuery = (content)=>{
 	if (!ATON._queryDataScene) return undefined;
 
 	let p = ATON._queryDataScene.p;
-	let r = POIHandler.STD_POI_RAD; //ATON.SUI._selectorRad;
+	//let r = POIHandler.STD_POI_RAD; //ATON.SUI._selectorRad;
 	//let n = ATON._queryDataScene.n;
 
 	//content.nor = [n.x,n.y,n.z];
@@ -209,7 +269,7 @@ POIHandler.addFromCurrentQuery = (content)=>{
 
 	ATON.fire("APP_POIListChanged");
 
-	return POIHandler.add(p,e,r, content);
+	return POIHandler.add(p,e, content);
 };
 
 POIHandler.remove = (id)=>{
@@ -247,7 +307,7 @@ POIHandler.loadAll = ( onComplete )=>{
 			let eye = undefined;
 			if (A.eye) eye = new THREE.Vector3(A.eye[0],A.eye[1],A.eye[2]);
 
-			POIHandler.realize(a, pos, eye,/* A.rad,*/ A.content );
+			POIHandler.realize(a, pos, eye, A.content );
 		}
 
 		ATON.fire("APP_POIListChanged");
@@ -328,13 +388,15 @@ POIHandler.highlight = (id, bPOV)=>{
 
 	for (let s in POIHandler._list){
 		let S = POIHandler._list[s];
+		let trigger = S.userData.trigger;
+
 		if (s === id){
 			A = S;
-			S.highlight();
+			//S.highlight();
 			//S.userData.line.visible = true;
 		}
 		else {
-			S.restoreDefaultMaterial();
+			//S.restoreDefaultMaterial();
 			//S.userData.line.visible = false;
 		}
 	}
@@ -352,6 +414,33 @@ POIHandler.highlight = (id, bPOV)=>{
 POIHandler.update = ()=>{
 	POIHandler._L = Object.values(POIHandler._list);
 	if (POIHandler._L.length < 1) return;
+
+	const eye = ATON.Nav.getCurrentEyeLocation();
+
+	for (let i in POIHandler._gPOIs.children){
+		let POI = POIHandler._gPOIs.children[i];
+
+		let gIcon = POI.userData.icon;
+		let trigger = POI.userData.trigger;
+
+		if (gIcon){
+			gIcon.orientToCamera();
+			gIcon.getWorldPosition(POIHandler._ipos);
+
+			let d = POIHandler._ipos.distanceToSquared(eye);
+			if (d < 0.1){
+				let s = d/0.1;
+				s = Math.sqrt(s);
+
+				gIcon.setScale(s);
+				trigger.scale.setScalar(s * POIHandler.STD_POI_TRIGGER_S);
+			}
+			else {
+				gIcon.setScale(1.0);
+				trigger.scale.setScalar(POIHandler.STD_POI_TRIGGER_S);
+			}
+		}
+	}
 
 	return;
 

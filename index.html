@@ -44,17 +44,20 @@
     <script type="text/javascript" src="/vendors/vendors.min.js"></script>
     <script type="text/javascript" src="/vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
     
-    <script type="text/javascript" src="thirdparties/chart.min.js"></script>
     <script type="text/javascript" src="/dist/THREE.bundle.js"></script>
+<!-- 
     <script type="text/javascript" src="/dist/ATON.min.js"></script>
+-->
+    <script type="module" src="/src/ATON.js"></script>
+    <script src="./thirdparties/chart.umd.js"></script>
 
-	<script type="module" src="js/main.js" defer></script>
+	<script type="module" src="js/main.js"></script>
 </head>
 
 <body>
     <div id="toolbar" class="aton-toolbar-top" style="right: 0px;"></div>
 
-    <div class="aton-poweredby" >
-        <a href="https://aton.ispc.cnr.it/site/" target="_blank"><img src="/res/aton-logo.png"></a>
+    <div class="aton-poweredby" style="right:0px; left:auto">
+        Powered by <a href="https://aton.ispc.cnr.it/site/" target="_blank">ATON</a>
     </div>
 </body>

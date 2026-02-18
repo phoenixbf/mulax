@@ -66,6 +66,15 @@ APP.setup = ()=>{
 	if (APP.params.get("qr")) QRC.init();
 
 	ATON.MatHub.materials.selector.uniforms.tint.value = ATON.MatHub.colors.white;
+
+/*
+	ATON.ASCII.loadCSV("/collections/perceive/items/munch/plots/MM00514F01yellow1.csv",undefined,(d)=>{
+		let D = []
+		for (let r in d) D.push(d[r]);
+
+		console.log(D)
+	});
+*/
 };
 
 // Config
@@ -268,9 +277,8 @@ APP.loadItem = (item)=>{
 	APP._matGround.needsUpdate = true;
 
 	APP._currItem = item;
-	POIHandler.loadAll(()=>{
-		//
-	});
+
+	APP.POIHandler.loadAll(()=>{});
 };
 
 APP.getCurrentItemFolder = ()=>{
@@ -325,7 +333,7 @@ APP.setupScene = ()=>{
 
 
 	// Icons
-	APP._matBaseIcon = new THREE.SpriteMaterial({
+	APP._matBaseIcon = new THREE.MeshBasicMaterial({ //new THREE.SpriteMaterial({
         //map: new THREE.TextureLoader().load( ... ),
         transparent: true,
         color: ATON.MatHub.colors.white,
@@ -336,9 +344,10 @@ APP.setupScene = ()=>{
     });
 
 	APP._matsIconCat = {};
+	//APP._matsIconTechniques = {};
+	//APP._matIconTechnique = APP._matBaseIcon.clone();
+	//APP._matIconTechnique.map = ATON.Utils.textureLoader.load(APP.pathIcons + "tec.png");
 	APP._matsIconTechniques = {};
-	APP._matIconTechnique = APP._matBaseIcon.clone();
-	APP._matIconTechnique.map = ATON.Utils.textureLoader.load(APP.pathIcons + "tec.png");
 
 
 	// ground
@@ -352,6 +361,8 @@ APP.setupScene = ()=>{
 		//blending: THREE.MultiplyBlending
     });
 
+	APP._geomQuad = new THREE.PlaneGeometry( 1,1 );
+
     let N = ATON.createSceneNode("base").rotateX(-Math.PI * 0.5);
 	N.position.y -= 0.01;
 
@@ -363,7 +374,7 @@ APP.setupScene = ()=>{
 };
 
 // UI Welcome
-// 					Based on the open-source ATON framework by CNR ISPC, it allows interactive and immersive discovery of analytical/color data layers, interactive annotation system for spot-analyses (microscope, X-ray fluorescence, etc.) or imaging (Visible-induced Luminescence, Ultraviolet-induced Visible Luminescence, etc.) and more advanced features. MuLaX is accessible on every device – from smartphones up to XR devices – embracing modern web standards, formats and large open ecosystems to maximize interoperability and reuse.
+// Based on the open-source ATON framework by CNR ISPC, it allows interactive and immersive discovery of analytical/color data layers, interactive annotation system for spot-analyses (microscope, X-ray fluorescence, etc.) or imaging (Visible-induced Luminescence, Ultraviolet-induced Visible Luminescence, etc.) and more advanced features. MuLaX is accessible on every device – from smartphones up to XR devices – embracing modern web standards, formats and large open ecosystems to maximize interoperability and reuse.
 APP.popupWelcome = ()=>{
 	ATON.UI.showModal({
 		header: "MuLaX",
@@ -413,11 +424,23 @@ APP.popupWelcome = ()=>{
 	});
 };
 
+APP.setupTecIcons = ()=>{
+	let TT = APP.cdata.techniques;
+
+	for (let t in TT){
+		APP._matsIconTechniques[t] = APP._matBaseIcon.clone();
+		APP._matsIconTechniques[t].map = ATON.Utils.textureLoader.load(APP.pathIcons + "tec.png");
+		if (TT[t].color) APP._matsIconTechniques[t].color = new THREE.Color( TT[t].color );
+	}
+};
+
 // Events
 APP.setupEvents = ()=>{
 	let zero = new THREE.Vector4(0,0,0,0);
 
     ATON.on("APP_ConfigLoaded", ()=>{
+		APP.setupTecIcons();
+
 		let item = APP.params.get("m");
 		if (item) APP.loadItem(item);
 		else APP.popupWelcome();
@@ -442,9 +465,13 @@ APP.setupEvents = ()=>{
 		APP.UI.init();
 
 		APP.setupSUI();
+
+		// Load POIs
+		//APP.POIHandler.loadAll(()=>{});
 	});
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeHover");
+/*
     ATON.on("SemanticNodeHover", (semid)=>{
         let S = ATON.getSemanticNode(semid);
         if (!S) return;
@@ -456,14 +483,15 @@ APP.setupEvents = ()=>{
 			ATON.UI.showSemLabel(C.title);
 		//}
 
-		S.highlight();
+		//S.highlight();
         
 		//$('canvas').css({ cursor: 'crosshair' });
         //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.hide();
 		ATON.fire("APP_POIHover",semid);
     });
-
+*/
 	ATON.EventHub.clearEventHandlers("SemanticNodeLeave");
+/*
     ATON.on("SemanticNodeLeave", (semid)=>{
         let S = ATON.getSemanticNode(semid);
         if (!S) return;
@@ -472,17 +500,19 @@ APP.setupEvents = ()=>{
 			ATON.UI.hideSemLabel();
 		//}
 
-        S.restoreDefaultMaterial();
+        //S.restoreDefaultMaterial();
 
         //$('canvas').css({ cursor: 'grab' });
         //if (ATON.SUI.gSemIcons) ATON.SUI.gSemIcons.show();
 		ATON.fire("APP_POILeave",semid);
     });
-
+*/
 	ATON.on("Tap", (e)=>{
 		if (ATON._queryDataScene){
 			console.log([ATON._queryDataScene.n.x,ATON._queryDataScene.n.y,ATON._queryDataScene.n.z]);
 		}
+
+		return;
 
 		if (ATON._hoveredSemNode){
 			ATON.fire("APP_POISelect",ATON._hoveredSemNode);
@@ -591,6 +621,10 @@ APP.setupEvents = ()=>{
 
 		if (k==='?') ATON.MediaFlow.downloadVideoSnapshot(document.getElementById("qr-video"), "vid.jpg");
 
+		if (k==='a'){
+			APP.UI.openNewPOIForm();
+		}
+/*
 		if (k==='a') POIHandler.addFromCurrentQuery({
 			title: "test O",
 			description: "Description of test O",
@@ -602,6 +636,7 @@ APP.setupEvents = ()=>{
 				}
 			}
 		});
+
 		if (k==='b') POIHandler.addFromCurrentQuery({
 			title: "test OB",
 			description: "Description of test OB",
@@ -617,6 +652,7 @@ APP.setupEvents = ()=>{
 				}
 			}
 		});
+*/
 	});
 
 /*

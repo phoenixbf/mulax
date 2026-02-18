@@ -389,7 +389,7 @@ UI.getTechniquesFiltersByCategory=(cat)=>{
 
     let techniques = [];
     
-    techniques = UI.getTechniquesListByCategory(cat); // e.g. for spot: ["r","o","b"], for imaging: ["y","p"]
+    techniques = APP.POIHandler.getTechniquesListByCategory(cat); // UI.getTechniquesListByCategory(cat); // e.g. for spot: ["r","o","b"], for imaging: ["y","p"]
     console.log("for category: " + cat + " techniques are: ");
     console.log(techniques);
 
@@ -1152,7 +1152,7 @@ UI.openNewPOIForm = () => {
         elTechniquesSection.innerHTML = "";
         for (const k in techniquesData) delete techniquesData[k]; // clear on category change
 
-        const availableKeys = UI.getTechniquesListByCategory(category);
+        const availableKeys = APP.POIHandler.getTechniquesListByCategory(category); //UI.getTechniquesListByCategory(category);
         if (!availableKeys || availableKeys.length === 0) {
             elTechniquesSection.appendChild(ATON.UI.elem("<p class='text-muted small'>No techniques available for this category.</p>"));
             return;
@@ -1368,7 +1368,10 @@ UI.openNewPOIForm = () => {
             };
 
             console.log("New POI data:", poiData);
-            // TODO: submit poiData
+
+            APP.POIHandler.addFromCurrentQuery( poiData );
+            //FIXME: refresh POI List
+
             ATON.UI.hideModal();
         }
     });
