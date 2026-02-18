@@ -1,7 +1,11 @@
+:root {
+    --accent-color: #00ffd8;
+}
+
 /*OVERRIDE radio style*/
 input[type="radio"]:checked, input[type="checkbox"]:checked
 {
-    background-color: #00ffd8;
+    background-color: var(--accent-color);
 }
 input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
 {
@@ -15,16 +19,41 @@ input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
 */
 
 .toggleBtnOffCanvas{
-/*width: 50px;
-height: 50px;*/
+width: 45px;
+height: 45px;
 background-color:  var(--bs-body-bg);
-
+display: flex;
+align-items: center;
+justify-content: center;
 /*#212529*/
 }
 
 
 #mainOffCanvas{
     background-color: var(--bs-body-bg)!important;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#mainOffCanvas .offcanvas-header {
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bs-body-bg);
+}
+
+#mainOffCanvas .offcanvas-body {
+    flex: 1 1 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#mainOffCanvas .offcanvas-body > div:first-child {
+    flex: 1 1 0;
+    overflow-y: auto;
 }
 
 .toggleBtnOffCanvas img{
@@ -157,6 +186,14 @@ background-color:  var(--bs-body-bg);
     border: 1px solid #ccc;
     padding: 10px;
     display:none;
+}
+
+#discoverySelectionLayerPanel .columnFlexContainer  {
+    flex-wrap: wrap;
+}
+
+#discoverySelectionLayerPanel .columnFlexContainer .box {
+    min-width: 140px;
 }
 
 /*RADIUS SLIDER*/

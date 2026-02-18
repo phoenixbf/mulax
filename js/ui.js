@@ -30,6 +30,23 @@ UI.Custom_ATON_UI_Init=()=>{
     ATON.UI.elSidePanel.classList.remove("offcanvas-end")
     UI.idOffCanvas = "mainOffCanvas";
     ATON.UI.elSidePanel.id = UI.idOffCanvas;
+
+    ATON.on("NavInteraction",b=>{
+        if(b){
+            //Hide offcanvas and corresponding btn:
+            $("#mainOffCanvas").css("display","none");
+            $("#toggleOffCanvasBtn").css("display","none");
+            //Hide right sidebar:
+            $("#rightSideBar").css("display","none");
+        }
+        else{
+            //Show offcanvas and corresponding btn:
+            $("#mainOffCanvas").css("display","flex");
+            $("#toggleOffCanvasBtn").css("display","flex");
+            //Show right sidebar:
+            $("#rightSideBar").css("display","block");
+        }
+    });
 }
 
 // MULAX PANEL:
@@ -207,6 +224,7 @@ UI.CreateMenuBtn=()=>{
     btn.classList.add("position-absolute", "toggleBtnOffCanvas", "aton-std-bg", "p-2", "mt-2", "ms-2", "rounded-circle");
     btn.setAttribute("data-bs-toggle","offcanvas");
     btn.setAttribute("data-bs-target","#"+UI.idOffCanvas);
+    btn.id = "toggleOffCanvasBtn";
     document.body.prepend(btn);
 }
 
