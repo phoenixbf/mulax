@@ -59,10 +59,10 @@ APP.setup = ()=>{
 	//TEST
 	//if (APP.params.get("xr")){
 		ATON.UI.get("toolbar").append(
-			ATON.UI.createButtonBack(),
-			ATON.UI.createButtonVR(),
-			ATON.UI.createButtonAR(),
-			ATON.UI.createButtonHome()
+			ATON.UI.createButtonBack({ classes: "mulax-btn rounded-circle" }),
+			ATON.UI.createButtonVR({ classes: "mulax-btn rounded-circle" }),
+			ATON.UI.createButtonAR({ classes: "mulax-btn rounded-circle" }),
+			ATON.UI.createButtonHome({ classes: "mulax-btn rounded-circle" })
 		)
 	//}
 

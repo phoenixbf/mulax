@@ -481,8 +481,7 @@ p {
     height: 100%;
 }
 
-  .closeBtn
-  {
+.closeBtn {
     background-image: url(./res/icons/close-button.svg);
     width: 35px;
     background-position: center;
@@ -490,5 +489,19 @@ p {
     background-size: contain;
     height: 35px;
     cursor: pointer;
-  }
+}
 
+.mulax-toolbar-top {
+    top: 0px;
+    right: 0px;
+    display: inline-block;
+    position: absolute;
+}
+
+.mulax-btn {
+    background-color: rgba(var(--bs-body-bg-rgb), 0.8);
+}
+
+.mulax-btn:hover {
+    background-color: rgba(var(--bs-body-bg-rgb), 1.0); 
+}
