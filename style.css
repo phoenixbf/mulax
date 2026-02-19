@@ -266,6 +266,12 @@ justify-content: center;
     width: 30px;
     border-radius: 5px;
 }
+
+.underlinedTechniqueContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 /*
 .bulletTechnique
 {

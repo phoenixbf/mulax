@@ -358,7 +358,7 @@ UI.underlineTechniqueItem=(t,bStampTechnique=true)=>{
   
     var _name = bStampTechnique? UI.techniqueInfos[t].label : "";
     return `
-    <div>
+    <div class="underlinedTechniqueContainer">
        ${_name}
        <div class="underlineTechnique" style="background-color: ${UI.techniqueInfos[t].color};"></div>
     </div>`
@@ -366,7 +366,7 @@ UI.underlineTechniqueItem=(t,bStampTechnique=true)=>{
 
 
 
-UI.getTechniquesListByCategory = (catTarget) => {
+UI.getTechniquesListByCategory = (catTarget) => { //NOT USED, DELEGATED TO POIHANDLER.
 	let tecs = {};
 
 	for (let i in APP.POIHandler._list) {
@@ -429,7 +429,7 @@ UI.POI_filterPanel=()=>{
 let cats = APP.POIHandler.getCategoriesList() //e.g. ["spot","imaging"];
 
 //At the beginning, for the initialization of POI_filterPanel, set as pre-selected category the first one ("spot" in statue case).
-if(cats.length > 0) UI.selectedCat = cats[0];
+if(cats && cats.length > 0) UI.selectedCat = cats[0];
 
 
 const getCatFilter=(cat)=>{
@@ -809,6 +809,20 @@ UI.composeDetail_POI=(id)=>
 
     if($("#rightSideBar")) $("#rightSideBar").remove()
     $("body").append(sidebar);
+    
+    //Customize Tabs elements CONTINUE
+    let classTarget = "_underlined"; 
+    const tabLiTags = document.querySelectorAll('.' + classTarget);
+    tabLiTags.forEach(liTag => {
+        const key = Array.from(liTag.classList).find(cls => cls.includes("_coloured"))?.replace("_coloured","");
+        let underlinedItem = ATON.UI.createElementFromHTMLString(APP.UI.underlineTechniqueItem(key,true));
+        window.xxx = underlinedItem;
+        let button = liTag.querySelector('button');
+        button.textContent = '';
+        button.appendChild(underlinedItem);       
+    });
+
+
 
 }
 
@@ -896,8 +910,10 @@ UI.composeTechniqueTabs=(poi)=>{
             ${UI.underlineTechniqueItem(key,false)}
             </div>`);*/
 
+
         _options.items.push({
             title: _title,
+            classes:  key+"_coloured _underlined", 
             // icon:_icon,
             content: getContentFromTechnique(t)
         })
@@ -907,8 +923,6 @@ UI.composeTechniqueTabs=(poi)=>{
     APP._tabs = _tabs;
     return _tabs;
 }
-
-
 
 
 UI.openTab=(evt, idTab)=> {
@@ -1371,9 +1385,15 @@ UI.openNewPOIForm = () => {
 
             APP.POIHandler.addFromCurrentQuery( poiData );
             
-            //FIXME: refresh POI List
-            APP.POIHandler.filterReset();
-            UI.updatePOIlist(APP.POIHandler.getFilteredList());
+            //Refresh POI List
+            let c = APP.UI.lastSelectedCat || undefined;
+            let t = APP.UI.lastSelectedTechnique || undefined;
+            
+            if(t!=undefined) APP.POIHandler.filterByTechnique( t, false); //Technique filter has priority on category filter, so it is applied before.
+            else if(c!=undefined) APP.POIHandler.filterByCategory( c, false); //Category filter is applied if no technique filter is set.
+            else APP.POIHandler.filterReset(); //If no filter is set, show all POIs (including the new one just added).
+
+            APP.UI.updatePOIlist(APP.POIHandler.getFilteredList());
 
             ATON.UI.hideModal();
         }
