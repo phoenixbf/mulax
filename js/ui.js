@@ -856,12 +856,18 @@ UI.onFullScreenBtnClicked = (evt)=>{
     //Plot content:
     if(APP.UI.currentPlot){
         
+/*
         const fullScreenImg = ATON.UI.createElementFromHTMLString(`
         <div class="imgTech_fullScreenContainer">
         PLOT HERE: ${APP.UI.currentPlot}
         </div>`);
-
-        ATON.UI.showModal({body:fullScreenImg,footer:closeBtn});
+*/
+        APP.Plotter.generateFromCSV(APP.UI.currentPlot, (elPlot)=>{
+            ATON.UI.showModal({
+                body: elPlot,
+                footer: closeBtn
+            });
+        });
 
         return;
     }

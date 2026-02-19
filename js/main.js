@@ -7,6 +7,7 @@ import DSC from "./discovery.js";
 import MH from "./masksHandler.js";
 import POIHandler from "./poiHandler.js";
 import UI from "./ui.js";
+import Plotter from "./plotter.js";
 
 //import QRC from "./controller-QR.js";
 
@@ -17,12 +18,13 @@ APP.DSC = DSC;
 APP.MH  = MH;
 APP.POIHandler = POIHandler;
 APP.UI = UI;
+APP.Plotter = Plotter;
 
 
 APP.pathConfig       = APP.basePath + "config/";
 APP.pathConfigFile   = APP.pathConfig + "config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
-APP.pathIcons        = APP.basePath + "res/icons/"; 
+APP.pathIcons        = APP.basePath + "res/icons/";
 
 APP.cdata = undefined;
 
@@ -38,6 +40,7 @@ APP.setup = ()=>{
 	APP.DSC.init();
 	APP.MH.init();
 	APP.POIHandler.init();
+	APP.Plotter.init();
 	
 	APP._currItem  = undefined;
 	APP._currAtlas = undefined;
@@ -301,7 +304,7 @@ APP.setupScene = ()=>{
     APP._matPOIHL.uniforms.opacity.value = 0.4;
 */
 
-	APP._matPOI = ATON.MatHub.materials.fullyTransparent.clone();
+	APP._matPOI = ATON.MatHub.materials.invisible.clone();
 
 	APP._matPOIHL = ATON.MatHub.materials.defUI.clone();
 	APP._matPOIHL.uniforms.tint.value    = ATON.MatHub.colors.white;
@@ -323,6 +326,7 @@ APP.setupScene = ()=>{
 */
 	APP._mLine = new THREE.MeshBasicMaterial({
         color: ATON.MatHub.colors.white,
+		toneMapped: false,
         //linewidth: 5,
         //transparent: true,
         //depthWrite: false,
@@ -337,7 +341,8 @@ APP.setupScene = ()=>{
         //map: new THREE.TextureLoader().load( ... ),
         transparent: true,
         color: ATON.MatHub.colors.white,
-        depthWrite: false, 
+        depthWrite: false,
+		toneMapped: false,
         //depthTest: false,
         //blending: THREE.AdditiveBlending
 		//sizeAttenuation: false
@@ -429,7 +434,12 @@ APP.setupTecIcons = ()=>{
 
 	for (let t in TT){
 		APP._matsIconTechniques[t] = APP._matBaseIcon.clone();
-		APP._matsIconTechniques[t].map = ATON.Utils.textureLoader.load(APP.pathIcons + "tec.png");
+		
+		ATON.Utils.textureLoader.load(APP.pathIcons + "tec.png", tex => {
+			tex.colorSpace = ATON._stdEncoding;
+			APP._matsIconTechniques[t].map = tex;
+		});
+
 		if (TT[t].color) APP._matsIconTechniques[t].color = new THREE.Color( TT[t].color );
 	}
 };
