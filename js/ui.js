@@ -38,6 +38,7 @@ UI.Custom_ATON_UI_Init=()=>{
             $("#toggleOffCanvasBtn").css("display","none");
             //Hide right sidebar:
             $("#rightSideBar").css("display","none");
+            ATON.UI.hideElement("toolbar");
         }
         else{
             //Show offcanvas and corresponding btn:
@@ -45,6 +46,7 @@ UI.Custom_ATON_UI_Init=()=>{
             $("#toggleOffCanvasBtn").css("display","flex");
             //Show right sidebar:
             $("#rightSideBar").css("display","block");
+            ATON.UI.showElement("toolbar");
         }
     });
 }
