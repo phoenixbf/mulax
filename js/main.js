@@ -56,15 +56,13 @@ APP.setup = ()=>{
 
 	APP.loadConfig();
 
-	//TEST
-	//if (APP.params.get("xr")){
-		ATON.UI.get("toolbar").append(
-			ATON.UI.createButtonBack({ classes: "mulax-btn rounded-circle" }),
-			ATON.UI.createButtonVR({ classes: "mulax-btn rounded-circle" }),
-			ATON.UI.createButtonAR({ classes: "mulax-btn rounded-circle" }),
-			ATON.UI.createButtonHome({ classes: "mulax-btn rounded-circle" })
-		)
-	//}
+	// Toolbar
+	ATON.UI.get("toolbar").append(
+		ATON.UI.createButtonBack({ classes: "mulax-btn rounded-circle" }),
+		ATON.UI.createButtonVR({ classes: "mulax-btn rounded-circle" }),
+		ATON.UI.createButtonAR({ classes: "mulax-btn rounded-circle" }),
+		ATON.UI.createButtonHome({ classes: "mulax-btn rounded-circle" })
+	)
 
 	if (APP.params.get("qr")) QRC.init();
 

@@ -7,7 +7,7 @@
 let Plotter = {};
 
 Plotter.init = ()=>{
-
+    //Chart.defaults.backgroundColor = '#FFFFFF';
 };
 
 Plotter.isNumber = (value)=>{
@@ -64,6 +64,18 @@ Plotter.generateFromData = (plotname, data)=>{
 
     console.log(D)
 
+    const plugin = {
+        id: 'customCanvasBackgroundColor',
+        beforeDraw: (chart, args, options) => {
+            const {ctx} = chart;
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = options.color || '#99ffff';
+            ctx.fillRect(0, 0, chart.width, chart.height);
+            ctx.restore();
+        }
+    };
+
     let config = {
         type: 'line',
         data: D,
@@ -87,6 +99,9 @@ Plotter.generateFromData = (plotname, data)=>{
                 legend: {
                     position: 'top',
                 },
+                customCanvasBackgroundColor: {
+                    color: 'white',
+                }
 /*
                 title: {
                     display: true,
@@ -95,6 +110,7 @@ Plotter.generateFromData = (plotname, data)=>{
 */
             }
         },
+        plugins: [plugin],
     };
 
     let elPlot = document.createElement("canvas");
