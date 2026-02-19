@@ -492,8 +492,8 @@ p {
 }
 
 .mulax-toolbar-top {
-    top: 0px;
-    right: 0px;
+    top: 6px;
+    right: 6px;
     display: inline-block;
     position: absolute;
 }
