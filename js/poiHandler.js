@@ -178,7 +178,7 @@ POIHandler.realize = (id, pos, eye, content)=>{
 		//A.setScale(rad);
 		
 		ATON.UI.hideSemLabel();
-		ATON.SUI.showSelector(true);
+		//ATON.SUI.showSelector(true);
 
 		trigger.material = ATON.MatHub.materials.invisible;
 	};

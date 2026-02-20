@@ -26,6 +26,8 @@ APP.pathConfigFile   = APP.pathConfig + "config.json";
 APP.pathAssetsFolder = APP.basePath + "assets/";
 APP.pathIcons        = APP.basePath + "res/icons/";
 
+APP.STD_BGCOL = new THREE.Color(0.5,0.5,0.5);
+
 APP.cdata = undefined;
 
 // APP.setup() is required for web-app initialization
@@ -36,6 +38,11 @@ APP.setup = ()=>{
 	//ATON.FE.addBasicLoaderEvents(); // Add basic events handling
     ATON.realize();
     ATON.UI.addBasicEvents();
+
+	// sRGB Color Space
+	ATON.setColorSpace(THREE.SRGBColorSpace);
+
+	ATON.SUI.showSelector(false);
 
 	APP.DSC.init();
 	APP.MH.init();
@@ -288,6 +295,8 @@ APP.getCurrentItemFolder = ()=>{
 };
 
 APP.setupScene = ()=>{
+	ATON.setBackgroundColor(APP.STD_BGCOL);
+
 	APP.gItem = ATON.createSceneNode("item");
 	APP.gItem.attachToRoot();
 
@@ -341,8 +350,11 @@ APP.setupScene = ()=>{
         color: ATON.MatHub.colors.white,
         depthWrite: false,
 		toneMapped: false,
-        //depthTest: false,
+		//premultipliedAlpha: true,
+        
+		//depthTest: false,
         //blending: THREE.AdditiveBlending
+		
 		//sizeAttenuation: false
     });
 
@@ -566,6 +578,8 @@ APP.setupEvents = ()=>{
 	});
 
 	ATON.on("KeyPress", k =>{
+		if (ATON.UI._bModal) return;
+
 		if (k==='.'){
 			//APP.writeEditMaskFromQuery();
 			APP.MH.drawOnEditMaskFromQuery(APP.MH._stdCol, 0.0);
