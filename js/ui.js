@@ -852,6 +852,14 @@ UI.tecniqueContentItem =(urlImg, plot=null)=>{
 
 UI.onFullScreenBtnClicked = (evt)=>{
     
+
+    const setFullScreenModal=()=>{
+        //UI Hack for fullscreen modal:
+        ATON.UI.elModal.classList.remove("modal-fullscreen-md-down");
+        ATON.UI.elModal.children[0].classList.remove("modal-dialog-centered");
+        ATON.UI.elModal.children[0].classList.add("modal-fullscreen");
+    }
+
     console.log(evt);
     const closeBtn = ATON.UI.createButton({icon: APP.pathIcons+"close-button.svg", onpress:()=>{ATON.UI.hideModal()}});
     
@@ -864,6 +872,7 @@ UI.onFullScreenBtnClicked = (evt)=>{
         PLOT HERE: ${APP.UI.currentPlot}
         </div>`);
 */
+        setFullScreenModal();
         APP.Plotter.generateFromCSV(APP.UI.currentPlot, (elPlot)=>{
             ATON.UI.showModal({
                 body: elPlot,
@@ -881,11 +890,8 @@ UI.onFullScreenBtnClicked = (evt)=>{
         <img src="${imgSrc}"/>
         </div>`);
 
-    //UI Hack for fullscreen modal:
-    ATON.UI.elModal.classList.remove("modal-fullscreen-md-down");
-    ATON.UI.elModal.children[0].classList.remove("modal-dialog-centered");
-    ATON.UI.elModal.children[0].classList.add("modal-fullscreen");
-
+   
+    setFullScreenModal();
     ATON.UI.showModal({body:fullScreenImg,footer:closeBtn});
 }
 
