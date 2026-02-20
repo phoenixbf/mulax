@@ -29,6 +29,8 @@ POIHandler.init = ()=>{
 
 	POIHandler._stdPOIscale = 1.5;
 
+	POIHandler._hoveringPOI = false;
+
 	POIHandler._ipos = new THREE.Vector3();
 };
 
@@ -170,7 +172,9 @@ POIHandler.realize = (id, pos, eye, content)=>{
 		ATON.UI.showSemLabel(content.title);
 		ATON.SUI.setInfoNodeText(content.title);
 
-		ATON.SUI.showSelector(false);
+		POIHandler._hoveringPOI = true;
+
+		//ATON.SUI.showSelector(false);
 		trigger.material = APP._matPOIHL;
 	};
 
@@ -179,6 +183,8 @@ POIHandler.realize = (id, pos, eye, content)=>{
 		
 		ATON.UI.hideSemLabel();
 		//ATON.SUI.showSelector(true);
+
+		POIHandler._hoveringPOI = false;
 
 		trigger.material = ATON.MatHub.materials.invisible;
 	};

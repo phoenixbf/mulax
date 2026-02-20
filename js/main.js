@@ -68,7 +68,8 @@ APP.setup = ()=>{
 		ATON.UI.createButtonBack({ classes: "mulax-btn rounded-circle" }),
 		ATON.UI.createButtonVR({ classes: "mulax-btn rounded-circle" }),
 		ATON.UI.createButtonAR({ classes: "mulax-btn rounded-circle" }),
-		ATON.UI.createButtonHome({ classes: "mulax-btn rounded-circle" })
+		ATON.UI.createButtonHome({ classes: "mulax-btn rounded-circle" }),
+		ATON.UI.createButtonFullscreen({ classes: "mulax-btn rounded-circle" })
 	)
 
 	if (APP.params.get("qr")) QRC.init();
@@ -364,6 +365,19 @@ APP.setupScene = ()=>{
 	//APP._matIconTechnique.map = ATON.Utils.textureLoader.load(APP.pathIcons + "tec.png");
 	APP._matsIconTechniques = {};
 
+	// Pointer
+	APP._matPointer = new THREE.SpriteMaterial({
+        map: new THREE.TextureLoader().load(APP.pathIcons + "pointer.png"),
+        transparent: true,
+        //color: ATON.MatHub.colors.white,
+        depthWrite: false,
+		toneMapped: false,
+
+		//depthTest: false,
+        //blending: THREE.AdditiveBlending
+		
+		sizeAttenuation: false
+    });
 
 	// ground
 	let g = new THREE.PlaneGeometry( 1,1 );
@@ -748,6 +762,8 @@ APP.updateItem = ()=>{
 // SUI
 //========================================================
 APP.setupSUI = ()=>{
+	APP.setupSUIPointer();
+
 	if (APP.suiToolbar) return;
 
 	let btnList = [];
@@ -878,9 +894,36 @@ APP.anchorSUIToolbar = (a)=>{
 	}
 };
 
+APP.setupSUIPointer = ()=>{
+	let ps = new THREE.Sprite(APP._matPointer);
+	ps.raycast = ATON.Utils.VOID_CAST;
+	ps.scale.setScalar(0.05);
+	
+	APP._pointer = ATON.createUINode();
+	APP._pointer.add(ps);
+
+	APP._pointer.attachToRoot();
+};
+
+APP.updatePointer = ()=>{
+	if (!APP._pointer) return;
+
+	let eye = ATON.Nav.getCurrentEyeLocation();
+
+	if (ATON._queryDataScene && !POIHandler._hoveringPOI){
+		APP._pointer.show();
+		APP._pointer.position.lerpVectors(ATON._queryDataScene.p, eye, 0.1);
+	}
+	else {
+		APP._pointer.hide();
+	}
+};
+
 // Update
 //========================================================
 APP.update = ()=>{
+	APP.updatePointer();
+
 	APP.updateItem();
 	APP.POIHandler.update();
 };
