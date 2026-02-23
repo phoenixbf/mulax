@@ -62,7 +62,7 @@ UI.createPanel=()=>{
 
         let switchDiscovery = UI.createDiscoverySwitch();
         DiscoveryPanel=
-        `<div id="headerDiscoveryPanel" class="flex_between mt-5">
+        `<div id="headerDiscoveryPanel" class="flex_between">
                 <h2>Discovery Layers</h2>
                 ${switchDiscovery}    
         </div>
@@ -75,7 +75,7 @@ UI.createPanel=()=>{
                 
                     <div class="box" id="boxA">
                         <label>
-                            <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
+                            <input class="customRadio" onclick="APP.UI.onclickDiscoveryBtn(this)" id="Lens_discovery" value="lens" type="radio" name="discoveryMethod">
                             Lens Mode
                         </label>
                         <p>This option allows you to apply a masking lens effect to your images.</p>
@@ -83,7 +83,7 @@ UI.createPanel=()=>{
                     <div class="box" id="boxB">
                     
                         <label>
-                            <input onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
+                            <input class="customRadio" onclick="APP.UI.onclickDiscoveryBtn(this)" id="FullBody_discovery" value="full" type="radio" name="discoveryMethod">
                         Split Mode
                         </label>
                         <p>This option enables a split visualizer for comprehensive image analysis.</p>
@@ -99,7 +99,8 @@ UI.createPanel=()=>{
 
     // Explore Analysis Panel
     var POIsPanel= "";
-    if(APP.POIHandler._L.length>0){
+    
+    if(Object.keys(APP.POIHandler._list).length>0){
 
         let switchExploreAnalysis = UI.createExploreAnalysisSwitch();
         POIsPanel=
@@ -261,7 +262,7 @@ UI.full_options= ()=>{
         let isSelected = UI.selectedAXIS==a ? "checked" : "";
         axisOptions+=`<div class="box">
                 <label>
-                    <input onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_${a}" value="${a}" type="radio" name="full_axis" ${isSelected}>
+                    <input class="customRadio" onclick="APP.UI.onSelectDiscoveryFullbodyAxis(this)" id="fullAxis_${a}" value="${a}" type="radio" name="full_axis" ${isSelected}>
                       ${a.toUpperCase()} AXIS
                 </label>
             </div>`
@@ -401,7 +402,7 @@ UI.getTechniquesFiltersByCategory=(cat)=>{
 
         let _techItem = `
         <label class="radioTechniqueItem">
-            <input type="radio" name="technique" value="${t}" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
+            <input class="customRadio" type="radio" name="technique" value="${t}" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)">
             ${UI.underlineTechniqueItem(t)} 
         </label>`;
         
@@ -415,7 +416,7 @@ UI.getTechniquesFiltersByCategory=(cat)=>{
                     <span class="radiosTechinquesContainer"> 
                           ${_techniques}
                     </span>
-                <label>Visualize all <input type="radio" name="technique" value="all" data-cat="${cat}" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
+                <label>Visualize all <input class="customRadio" type="radio" name="technique" value="all" data-cat="${cat}" onclick="APP.UI.onchangeTechniqueFilteredBtn(this)" checked></label>
             </div>
      </div>
     `
@@ -439,7 +440,7 @@ const getCatFilter=(cat)=>{
     console.log(cat  + " is selected: " + isSelected)
     return `<div class="box">
                 <label>
-                    <input onclick="APP.UI.onClickCategoryFilter(this)" id="${cat}_cat" value="${cat}" type="radio" name="categoryPOI" ${isSelected}>
+                    <input class="customRadio" onclick="APP.UI.onClickCategoryFilter(this)" id="${cat}_cat" value="${cat}" type="radio" name="categoryPOI" ${isSelected}>
                     ${cat.toUpperCase()}
                 </label>
             </div>`
@@ -1395,21 +1396,8 @@ UI.openNewPOIForm = () => {
                 techniques: techniquesData
             };
 
-            console.log("New POI data:", poiData);
-
             APP.POIHandler.addFromCurrentQuery( poiData );
-            
-            //Refresh POI List
-            let c = APP.UI.lastSelectedCat || undefined;
-            let t = APP.UI.lastSelectedTechnique || undefined;
-            
-            if(t!=undefined) APP.POIHandler.filterByTechnique( t, false); //Technique filter has priority on category filter, so it is applied before.
-            else if(c!=undefined) APP.POIHandler.filterByCategory( c, false); //Category filter is applied if no technique filter is set.
-            else APP.POIHandler.filterReset(); //If no filter is set, show all POIs (including the new one just added).
-
-            APP.UI.updatePOIlist(APP.POIHandler.getFilteredList());
-
-            ATON.UI.hideModal();
+            //Wait for "APP_POIListChanged" event to update the UI and close Modal.
         }
     });
 
@@ -1420,6 +1408,28 @@ UI.openNewPOIForm = () => {
         body: elForm,
         footer: elFooter
     });
+
+
+    
+  ATON.on("APP_POIListChanged",()=>{
+                //if the length is 1, it means that the POI just added is the first one in the list, so we need to create the panel for the first time.
+                let isFirstPOI = Object.keys(APP.POIHandler._list).length === 1; 
+                if(isFirstPOI) APP.UI.createPanel();
+            else{
+                //Refresh POI List
+                let c = APP.UI.lastSelectedCat || undefined;
+                let t = APP.UI.lastSelectedTechnique || undefined;
+                
+                if(t!=undefined) APP.POIHandler.filterByTechnique( t, false); //Technique filter has priority on category filter, so it is applied before.
+                else if(c!=undefined) APP.POIHandler.filterByCategory( c, false); //Category filter is applied if no technique filter is set.
+                else APP.POIHandler.filterReset(); //If no filter is set, show all POIs (including the new one just added).
+
+                APP.UI.updatePOIlist(APP.POIHandler.getFilteredList());
+            }
+             ATON.UI.hideModal();
+             
+            });
+
 };
 
 

@@ -1,15 +1,39 @@
 :root {
-    --accent-color: #00ffd8;
+    --accent-color: #4db9cc;
 }
 
 /*OVERRIDE radio style*/
-input[type="radio"]:checked, input[type="checkbox"]:checked
-{
-    background-color: var(--accent-color);
+
+.customRadio input[type="radio"],
+input[type="checkbox"] {
+  background-color: var(--accent-color)!important;
 }
-input[type="radio"]:not(:checked),  input[type="checkbox"]:not(:checked)
-{
-    background-color: transparent;
+
+.customRadio input[type="radio"]:not(:checked),
+input[type="checkbox"]:not(:checked) {
+ background-color: transparent!important;
+}
+
+input[type="checkbox"].checkbox-input {
+    accent-color: var(--accent-color);
+}
+
+input[type="checkbox"].checkbox-input:checked {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    --bs-form-check-input-checked-bg-color: var(--accent-color);
+    --bs-form-check-input-checked-border-color: var(--accent-color);
+}
+
+input[type="radio"].customRadio {
+    accent-color: var(--accent-color);
+}
+
+input[type="radio"].customRadio:checked {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    --bs-form-check-input-checked-bg-color: var(--accent-color);
+    --bs-form-check-input-checked-border-color: var(--accent-color);
 }
 
 /*Sidebar*/
