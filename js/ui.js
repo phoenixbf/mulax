@@ -1284,11 +1284,11 @@ UI.openNewPOIForm = () => {
             const elToggle = ATON.UI.elem(`
                 <div class="d-flex gap-3 align-items-center mb-2">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="mediaType_${rowId}" id="imgRadio_${rowId}" value="img" checked>
+                        <input class="customRadio form-check-input" type="radio" name="mediaType_${rowId}" id="imgRadio_${rowId}" value="img" checked>
                         <label class="form-check-label" for="imgRadio_${rowId}">Image</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="mediaType_${rowId}" id="plotRadio_${rowId}" value="plot">
+                        <input class="customRadio form-check-input" type="radio" name="mediaType_${rowId}" id="plotRadio_${rowId}" value="plot">
                         <label class="form-check-label" for="plotRadio_${rowId}">Plot</label>
                     </div>
                 </div>

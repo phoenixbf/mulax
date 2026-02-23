@@ -1,12 +1,40 @@
 :root {
-    --accent-color: #4db9cc;
+    --aton-colours-accent: #007387;
+
+    --aton-colors-accent:  #007387;
+    --aton-colors-accent-hover:  #11b0cc;
+
+    --aton-colors-accent-rgb: 0, 115, 135;
 }
+
+.btn-primary {
+  --bs-btn-bg: var(--aton-colors-accent);
+  --bs-btn-border-color: var(--aton-colors-accent);
+}
+
+.btn-primary:hover {
+  --bs-btn-hover-bg: var(--aton-colors-accent-hover);
+  --bs-btn-hover-border-color: var(--aton-colors-accent-hover);
+}
+
+.btn-primary:active,
+.btn-primary.active {
+  --bs-btn-active-bg: var(--aton-colors-accent);
+  --bs-btn-active-border-color: var(--aton-colors-accent);
+}
+
+.btn-primary:focus {
+  --bs-btn-focus-bg: var(--aton-colors-accent);
+  --bs-btn-focus-border-color: var(--aton-colors-accent);
+}
+
+
 
 /*OVERRIDE radio style*/
 
 .customRadio input[type="radio"],
 input[type="checkbox"] {
-  background-color: var(--accent-color)!important;
+background-color: var(--aton-colors-accent)!important;
 }
 
 .customRadio input[type="radio"]:not(:checked),
@@ -15,25 +43,25 @@ input[type="checkbox"]:not(:checked) {
 }
 
 input[type="checkbox"].checkbox-input {
-    accent-color: var(--accent-color);
+    accent-color: var(--aton-colours-accent);
 }
 
 input[type="checkbox"].checkbox-input:checked {
-    background-color: var(--accent-color) !important;
-    border-color: var(--accent-color) !important;
-    --bs-form-check-input-checked-bg-color: var(--accent-color);
-    --bs-form-check-input-checked-border-color: var(--accent-color);
+    background-color: var(--aton-colours-accent) !important;
+    border-color: var(--aton-colours-accent) !important;
+    --bs-form-check-input-checked-bg-color: var(--aton-colours-accent);
+    --bs-form-check-input-checked-border-color: var(--aton-colours-accent);
 }
 
 input[type="radio"].customRadio {
-    accent-color: var(--accent-color);
+    accent-color: var(--aton-colours-accent);
 }
 
 input[type="radio"].customRadio:checked {
-    background-color: var(--accent-color) !important;
-    border-color: var(--accent-color) !important;
-    --bs-form-check-input-checked-bg-color: var(--accent-color);
-    --bs-form-check-input-checked-border-color: var(--accent-color);
+    background-color: var(--aton-colours-accent) !important;
+    border-color: var(--aton-colours-accent) !important;
+    --bs-form-check-input-checked-bg-color: var(--aton-colours-accent);
+    --bs-form-check-input-checked-border-color: var(--aton-colours-accent);
 }
 
 /*Sidebar*/
