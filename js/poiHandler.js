@@ -216,8 +216,8 @@ POIHandler.realize = (id, pos, eye, content)=>{
 
 	// MD
 	A.userData.content = content;
-	A.userData.eye     = eye;
-	A.userData.pos     = pos;
+	A.userData.eye     = eye.clone();
+	A.userData.pos     = pos.clone();
 	A.userData.line    = line;
 	A.userData.trigger = trigger;
 	A.userData.icon    = gIcon;
