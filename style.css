@@ -555,5 +555,15 @@ p {
 }
 
 .mulax-btn:hover {
-    background-color: rgba(var(--bs-body-bg-rgb), 1.0); 
+    background-color: var(--aton-colors-accent);
+}
+
+.mulax-btn-main {
+    background-color: black;
+    border: solid 2px black;
+}
+
+.mulax-btn-main:hover {
+    background-color: black;
+    border: solid 2px var(--aton-colors-accent);
 }

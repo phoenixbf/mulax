@@ -63,18 +63,10 @@ APP.setup = ()=>{
 
 	APP.loadConfig();
 
-	// Toolbar
-	ATON.UI.get("toolbar").append(
-		ATON.UI.createButtonBack({ classes: "mulax-btn rounded-circle" }),
-		ATON.UI.createButtonVR({ classes: "mulax-btn rounded-circle" }),
-		ATON.UI.createButtonAR({ classes: "mulax-btn rounded-circle" }),
-		ATON.UI.createButtonHome({ classes: "mulax-btn rounded-circle" }),
-		ATON.UI.createButtonFullscreen({ classes: "mulax-btn rounded-circle" })
-	)
-
 	if (APP.params.get("qr")) QRC.init();
 
 	ATON.MatHub.materials.selector.uniforms.tint.value = ATON.MatHub.colors.white;
+	ATON.setBackgroundColor(APP.STD_BGCOL);
 
 /*
 	ATON.ASCII.loadCSV("/collections/perceive/items/munch/plots/MM00514F01yellow1.csv",undefined,(d)=>{
@@ -296,7 +288,7 @@ APP.getCurrentItemFolder = ()=>{
 };
 
 APP.setupScene = ()=>{
-	ATON.setBackgroundColor(APP.STD_BGCOL);
+	//ATON.setBackgroundColor(APP.STD_BGCOL);
 
 	APP.gItem = ATON.createSceneNode("item");
 	APP.gItem.attachToRoot();
@@ -468,16 +460,39 @@ APP.setupTecIcons = ()=>{
 	}
 };
 
+APP.createMainButton = ()=>{
+	return ATON.UI.createButton({
+			classes: "mulax-btn rounded-circle mulax-btn-main",
+			icon: APP.pathIcons + "i-mulax.png",
+			onpress: APP.popupWelcome
+		});
+};
+
 // Events
 APP.setupEvents = ()=>{
-	let zero = new THREE.Vector4(0,0,0,0);
+	//let zero = new THREE.Vector4(0,0,0,0);
 
     ATON.on("APP_ConfigLoaded", ()=>{
 		APP.setupTecIcons();
 
 		let item = APP.params.get("m");
-		if (item) APP.loadItem(item);
-		else APP.popupWelcome();
+		if (item){
+			APP.loadItem(item);
+
+			// Toolbar
+			ATON.UI.get("toolbar").append(
+				//ATON.UI.createButtonBack({ classes: "mulax-btn rounded-circle" }),
+				ATON.UI.createButtonVR({ classes: "mulax-btn rounded-circle" }),
+				ATON.UI.createButtonAR({ classes: "mulax-btn rounded-circle" }),
+				ATON.UI.createButtonHome({ classes: "mulax-btn rounded-circle" }),
+				ATON.UI.createButtonFullscreen({ classes: "mulax-btn rounded-circle" }),
+				APP.createMainButton()
+			);
+		}
+		else {
+			ATON.UI.get("toolbar").append( APP.createMainButton() );
+			APP.popupWelcome();
+		}
     });
 
 	ATON.on("AllNodeRequestsCompleted",()=>{
