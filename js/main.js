@@ -42,7 +42,7 @@ APP.setup = ()=>{
 	// sRGB Color Space
 	ATON.setColorSpace(THREE.SRGBColorSpace);
 
-	ATON.SUI.showSelector(false);
+	//ATON.SUI.showSelector(false);
 
 	APP.DSC.init();
 	APP.MH.init();
@@ -66,6 +66,7 @@ APP.setup = ()=>{
 	if (APP.params.get("qr")) QRC.init();
 
 	ATON.MatHub.materials.selector.uniforms.tint.value = ATON.MatHub.colors.white;
+	ATON.MatHub.materials.selector.uniforms.opacity.value = -0.3;
 	ATON.setBackgroundColor(APP.STD_BGCOL);
 
 /*
