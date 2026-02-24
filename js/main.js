@@ -27,6 +27,7 @@ APP.pathAssetsFolder = APP.basePath + "assets/";
 APP.pathIcons        = APP.basePath + "res/icons/";
 
 APP.STD_BGCOL = new THREE.Color(0.5,0.5,0.5);
+APP.STD_ACCENTCOL = new THREE.Color("#007387");
 
 APP.cdata = undefined;
 
@@ -784,7 +785,7 @@ APP.setupSUI = ()=>{
 
 	let btnList = [];
 
-	let LL = DSC.getLayersList();
+	let LL = APP.DSC.getLayersList();
 
 	for (let i in LL){
 		let L = LL[i];
@@ -792,7 +793,7 @@ APP.setupSUI = ()=>{
 
 		btn.setText(L.name);
 		//btn.setIcon(APP.pathIcons+"uvl.png", true);
-		btn.setSwitchColor(ATON.MatHub.colors.orange);
+		btn.setSwitchColor( APP.STD_ACCENTCOL );
 		
 		btn.onSelect = ()=>{
 			//APP.DSC.enableDiscoveryLayer();
@@ -831,7 +832,7 @@ APP.setupSUI = ()=>{
 	// Lens
 	let btnLens = new ATON.SUI.Button("SUI-DSC-Lens");
 	btnLens.setIcon(APP.pathIcons+"dsc-lens.png", true);
-	btnLens.setSwitchColor(ATON.MatHub.colors.orange);
+	btnLens.setSwitchColor( APP.STD_ACCENTCOL );
 
 	btnLens.onSelect = ()=>{
 		APP.DSC.enableDiscoveryLayer();
@@ -852,7 +853,7 @@ APP.setupSUI = ()=>{
 	// Split Y
 	let btnSplitY = new ATON.SUI.Button("SUI-DSC-SplitY");
 	btnSplitY.setIcon(APP.pathIcons+"dsc-split-y.png", true);
-	btnSplitY.setSwitchColor(ATON.MatHub.colors.orange);
+	btnSplitY.setSwitchColor( APP.STD_ACCENTCOL );
 
 	btnSplitY.onSelect = ()=>{
 		APP.DSC.enableDiscoveryLayer();
@@ -873,7 +874,7 @@ APP.setupSUI = ()=>{
 	// Split X
 	let btnSplitX = new ATON.SUI.Button("SUI-DSC-SplitX");
 	btnSplitX.setIcon(APP.pathIcons+"dsc-split-x.png", true);
-	btnSplitX.setSwitchColor(ATON.MatHub.colors.orange);
+	btnSplitX.setSwitchColor( APP.STD_ACCENTCOL );
 
 	btnSplitX.onSelect = ()=>{
 		APP.DSC.enableDiscoveryLayer();
