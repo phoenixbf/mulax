@@ -175,7 +175,7 @@ POIHandler.realize = (id, pos, eye, content)=>{
 			});
 
 			spotpanel.setBackdrop(0.5);
-			spotpanel.setScale(2.0);
+			spotpanel.setScale(0.1);
 
 			spotpanel.attachTo(A);
 			
@@ -204,7 +204,9 @@ POIHandler.realize = (id, pos, eye, content)=>{
 		//ATON.SUI.showSelector(false);
 		trigger.material = APP._matPOIHL;
 
-		if (A.userData.spotpanel) A.userData.spotpanel.show();
+		if (A.userData.spotpanel){
+			A.userData.spotpanel.show();
+		}
 	};
 
 	A.onLeave = ()=>{
@@ -217,7 +219,10 @@ POIHandler.realize = (id, pos, eye, content)=>{
 
 		trigger.material = ATON.MatHub.materials.invisible;
 
-		if (A.userData.spotpanel) A.userData.spotpanel.hide();
+		if (A.userData.spotpanel){
+			A.userData.spotpanel.hide();
+			A.userData.spotpanel.setScale(0.1);
+		}
 	};
 
 	A.onSelect = ()=>{
@@ -459,6 +464,7 @@ POIHandler.update = ()=>{
 
 		let gIcon = POI.userData.icon;
 		let trigger = POI.userData.trigger;
+		let spotpanel = POI.userData.spotpanel;
 
 		if (gIcon){
 			gIcon.orientToCamera();
@@ -476,6 +482,16 @@ POIHandler.update = ()=>{
 				gIcon.setScale(1.0);
 				trigger.scale.setScalar(POIHandler.STD_POI_TRIGGER_S);
 			}
+		}
+
+		if (spotpanel){
+			if (POIHandler._hoveringPOI){
+				let s = spotpanel.scale.x;
+				s += 0.1;
+				if (s<=2.0) spotpanel.scale.setScalar(s);
+			}
+			else spotpanel.scale.setScalar(0.1);
+
 		}
 	}
 
