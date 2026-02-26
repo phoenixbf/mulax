@@ -8,6 +8,7 @@ let Plotter = {};
 
 Plotter.init = ()=>{
     //Chart.defaults.backgroundColor = '#FFFFFF';
+    Plotter.color = "#007387";
 };
 
 Plotter.isNumber = (value)=>{
@@ -32,10 +33,15 @@ Plotter.generateFromCSV = (fname, onLoaded)=>{
 	});
 };
 
-Plotter.generateFromData = (plotname, data)=>{
+Plotter.generateFromData = (plotname, data, col)=>{
     let D = {};
 
-    let xlabel,ylabel;
+    let xfield,yfield;
+
+    xfield = Object.keys(data[0])[0];
+    yfield = Object.keys(data[0])[1];
+
+/*
     let dataclean = [];
 
     for (let i=0; i<data.length; i++){
@@ -53,12 +59,14 @@ Plotter.generateFromData = (plotname, data)=>{
     }
 
     console.log(dataclean)
-
-    D.labels = dataclean.map(row => row.Option);
+*/
+    D.labels = data.map(row => row[xfield]), //dataclean.map(row => row.Option);
     D.datasets = [
           {
             label: plotname,
-            data: dataclean.map(row => row.Value)
+            borderColor: Plotter.color,
+            backgroundColor: Plotter.color + "33",
+            data: data.map(row => row[yfield]) //dataclean.map(row => row.Value)
           }
     ];
 
@@ -70,7 +78,7 @@ Plotter.generateFromData = (plotname, data)=>{
             const {ctx} = chart;
             ctx.save();
             ctx.globalCompositeOperation = 'destination-over';
-            ctx.fillStyle = options.color || '#99ffff';
+            ctx.fillStyle = options.color || '#ffffff';
             ctx.fillRect(0, 0, chart.width, chart.height);
             ctx.restore();
         }
@@ -85,13 +93,13 @@ Plotter.generateFromData = (plotname, data)=>{
                 x:{
                     title: {
                         display: true,
-                        text: xlabel
+                        text: xfield
                     }
                 },
                 y:{
                     title: {
                         display: true,
-                        text: ylabel
+                        text: yfield
                     }
                 }
             },
