@@ -107,6 +107,10 @@ POIHandler.realize = (id, pos, eye, content)=>{
 	//A.setDefaultAndHighlightMaterials(APP._matPOI, APP._matPOIHL);
 	//A.material = APP._matPOI;
 
+	let vD = eye.clone();
+	vD.sub(pos);
+	vD.normalize();
+
 	A.setPosition(eye);
 
 	let r = POIHandler.STD_POI_RAD; // (APP._b3D)? POIHandler.STD_POI_RAD : POIHandler.STD_POI_RAD;
@@ -148,6 +152,7 @@ POIHandler.realize = (id, pos, eye, content)=>{
 	let ic = 0;
 	for (let t in content.techniques){
 		let p = parseFloat( ic/numTecs );
+		let T = content.techniques[t];
 
 		//let iTec = new THREE.Sprite(APP._matsIconTechniques[t]);
 		let iTec = new THREE.Mesh( APP._geomQuad, APP._matsIconTechniques[t] );
@@ -161,6 +166,28 @@ POIHandler.realize = (id, pos, eye, content)=>{
 
 		iTec.renderOrder = 10;
 		gIcon.add(iTec);
+
+		// Spot
+		if (APP.cdata.techniques[t] && APP.cdata.techniques[t].cat === "spot" && T.img){
+			let spotpanel = new ATON.SUI.MediaPanel();
+			spotpanel.load( APP.getCurrentItemFolder()+"media/images/" + T.img, ()=>{
+				//
+			});
+
+			spotpanel.setBackdrop(0.5);
+			spotpanel.setScale(2.0);
+
+			spotpanel.attachTo(A);
+			
+			spotpanel.position.x -= (vD.x*0.8);
+			spotpanel.position.y -= (vD.y*0.8);
+			spotpanel.position.z -= (vD.z*0.8);
+
+			spotpanel.orientToLocation(eye);
+			
+			A.userData.spotpanel = spotpanel;
+			spotpanel.hide();
+		}
 
 		ic++;
 	}
@@ -176,6 +203,8 @@ POIHandler.realize = (id, pos, eye, content)=>{
 
 		//ATON.SUI.showSelector(false);
 		trigger.material = APP._matPOIHL;
+
+		if (A.userData.spotpanel) A.userData.spotpanel.show();
 	};
 
 	A.onLeave = ()=>{
@@ -187,6 +216,8 @@ POIHandler.realize = (id, pos, eye, content)=>{
 		POIHandler._hoveringPOI = false;
 
 		trigger.material = ATON.MatHub.materials.invisible;
+
+		if (A.userData.spotpanel) A.userData.spotpanel.hide();
 	};
 
 	A.onSelect = ()=>{
@@ -215,12 +246,12 @@ POIHandler.realize = (id, pos, eye, content)=>{
 */
 
 	// MD
-	A.userData.content = content;
-	A.userData.eye     = eye.clone();
-	A.userData.pos     = pos.clone();
-	A.userData.line    = line;
-	A.userData.trigger = trigger;
-	A.userData.icon    = gIcon;
+	A.userData.content   = content;
+	A.userData.eye       = eye.clone();
+	A.userData.pos       = pos.clone();
+	A.userData.line      = line;
+	A.userData.trigger   = trigger;
+	A.userData.icon      = gIcon;
 
 	POIHandler._list[id] = A;
 	return A;
