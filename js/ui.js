@@ -750,6 +750,8 @@ UI.returnBulletsFromPOI=(poi)=>
     UI.onClick_POIListsItem=(e)=>
     {
         APP.POIHandler.highlight(e.id,true);
+        APP.UI.currentIdPOI = e.id;
+
         UI.composeDetail_POI(e.id);
 
         //Styles:
@@ -819,7 +821,6 @@ UI.composeDetail_POI=(id)=>
     tabLiTags.forEach(liTag => {
         const key = Array.from(liTag.classList).find(cls => cls.includes("_coloured"))?.replace("_coloured","");
         let underlinedItem = ATON.UI.createElementFromHTMLString(APP.UI.underlineTechniqueItem(key,true));
-        window.xxx = underlinedItem;
         let button = liTag.querySelector('button');
         button.textContent = '';
         button.appendChild(underlinedItem);       
@@ -836,19 +837,16 @@ UI.onClick_CloseRightSidebar=()=>{
             $(`#${APP.UI.id_POIListItemFocused}`).removeClass("poiListItem_clicked");
         }
         UI.id_POIListItemFocused = null;
+        UI.currentIdPOI = undefined;
         UI.resumePOIs();
 }
 
 UI.tecniqueContentItem =(urlImg, plot=null)=>{
 
     console.log("PLOT IS: " + plot);
-    if(plot) {APP.UI.currentPlot = plot} else APP.UI.currentPlot = null;
+   // if(plot) {APP.UI.currentPlot = plot} else APP.UI.currentPlot = null;
 
-    return ATON.UI.createElementFromHTMLString (`
-        <div class="imgTechContainer">
-            <div class="imgTech_fullScreenBtn" onclick="APP.UI.onFullScreenBtnClicked(event)"></div>
-            <img src=${urlImg} class="imgTech"/>
-        </div>`); 
+
 }
 
 UI.onFullScreenBtnClicked = (evt)=>{
@@ -865,16 +863,13 @@ UI.onFullScreenBtnClicked = (evt)=>{
     const closeBtn = ATON.UI.createButton({icon: APP.pathIcons+"close-button.svg", onpress:()=>{ATON.UI.hideModal()}});
     
     //Plot content:
-    if(APP.UI.currentPlot){
-        
-/*
-        const fullScreenImg = ATON.UI.createElementFromHTMLString(`
-        <div class="imgTech_fullScreenContainer">
-        PLOT HERE: ${APP.UI.currentPlot}
-        </div>`);
-*/
+    let _id = APP.UI.currentIdPOI;
+    let _t = evt.target.dataset.key;
+    let plot = APP.POIHandler.getContent(_id).techniques[_t].plot;
+    if(plot){
+
         setFullScreenModal();
-        APP.Plotter.generateFromCSV(APP.UI.currentPlot, (elPlot)=>{
+        APP.Plotter.generateFromCSV(plot, (elPlot)=>{
             ATON.UI.showModal({
                 body: elPlot,
                 footer: closeBtn
@@ -903,34 +898,29 @@ UI.composeTechniqueTabs=(poi)=>{
     var _options = {items:[]};
 
 
-    const getContentFromTechnique = (t)=>{
-        if(t.img){
-            const urlImg =  APP.getCurrentItemFolder()+"media/images/" +t.img;
-            return APP.UI.tecniqueContentItem(urlImg);
-        }
-        if(t.plot){
-            const urlImg = APP.pathIcons+"plot_placeholder.png";
-            return APP.UI.tecniqueContentItem(urlImg, t.plot);
-        }
+    const getContentFromTechnique = (key,t)=>{
+        
+        //Compose thumbnail:
+        let urlImg = "";
+        if(t.img) urlImg = APP.getCurrentItemFolder()+"media/images/"+ t.img;
+        if(t.plot) urlImg = APP.pathIcons+"plot_placeholder.png";
+
+        //Compose content:
+            return ATON.UI.createElementFromHTMLString (`
+        <div class="imgTechContainer">
+            <div data-key="${key}" class="imgTech_fullScreenBtn" onclick="APP.UI.onFullScreenBtnClicked(event)"></div>
+            <img src=${urlImg} class="imgTech"/>
+        </div>`); 
     };
 
     for (const [key, t] of Object.entries(poi.techniques)){
-      const urlImg =  APP.getCurrentItemFolder()+"media/images/" +t.img;
         
         const _title = UI.techniqueInfos[key].label;
-        //const _icon = ATON.UI.createElementFromHTMLString( UI.underlineTechniqueItem(key,false));
-        //const _icon = APP.pathIcons+"burgerMenuIcon.svg" //test
-        /*const _title = ATON.UI.createElementFromHTMLString(`<div>
-            ${UI.techniqueInfos[key].label}
-            ${UI.underlineTechniqueItem(key,false)}
-            </div>`);*/
-
 
         _options.items.push({
             title: _title,
-            classes:  key+"_coloured _underlined", 
-            // icon:_icon,
-            content: getContentFromTechnique(t)
+            classes:  key+"_coloured _underlined",
+            content: getContentFromTechnique(key,t)
         })
         }
 
