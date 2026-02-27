@@ -443,8 +443,13 @@ POIHandler.highlight = (id, bPOV)=>{
 		}
 	}
 
-	//if (A && bPOV) ATON.Nav.requestPOVbyNode(A, 0.5 );
-	if (A && bPOV){
+	if (!A) return;
+
+	APP.params.set('poi', id);
+	history.replaceState(null, null, "?" + APP.params.toString());
+
+	//if (bPOV) ATON.Nav.requestPOVbyNode(A, 0.5 );
+	if (bPOV){
 		let E = POIHandler.getEye(A);
 		let P = A.userData.pos;
 
