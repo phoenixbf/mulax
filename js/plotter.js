@@ -23,7 +23,14 @@ Plotter.generateFromCSV = (fname, onLoaded)=>{
 
 	ATON.ASCII.loadCSV(path, undefined, (d)=>{
 		let D = []
-		for (let r in d) D.push(d[r]);
+		for (let r in d){
+            let R = d[r];
+            for (let a in R){
+                //console.log(R[a])
+                if (Plotter.isNumber(R[a])) R[a] = parseFloat(R[a]).toFixed(2);
+            }
+            D.push(d[r]);
+        }
 
 		console.log(D);
 
