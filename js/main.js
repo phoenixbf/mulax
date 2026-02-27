@@ -517,6 +517,12 @@ APP.setupEvents = ()=>{
 
 		APP.setupSUI();
 
+		let poi = APP.params.get("poi");
+		if (poi){
+			//APP.POIHandler.highlight(poi, true);
+			ATON.fire("APP_POISelect", poi);
+		}
+
 		// Load POIs
 		//APP.POIHandler.loadAll(()=>{});
 	});
