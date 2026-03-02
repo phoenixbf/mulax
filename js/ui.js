@@ -412,7 +412,7 @@ UI.getTechniquesFiltersByCategory=(cat)=>{
     <div id="spot_TechinquesFilters">
         <br><b> Filter by techniques</b><br>
     
-            <div class="flex_between">
+            <div class="flex_between_wrap">
                     <span class="radiosTechinquesContainer"> 
                           ${_techniques}
                     </span>

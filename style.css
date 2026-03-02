@@ -39,7 +39,9 @@ background-color: var(--aton-colors-accent)!important;
 
 .customRadio input[type="radio"]:not(:checked),
 input[type="checkbox"]:not(:checked) {
- background-color: transparent!important;
+
+ /*background-color: transparent!important;*/
+ background-color: #00000052!important;
 }
 
 input[type="checkbox"].checkbox-input {
@@ -82,7 +84,8 @@ justify-content: center;
 
 
 #mainOffCanvas{
-    background-color: var(--bs-body-bg)!important;
+    /*background-color: var(--bs-body-bg)!important;*/
+    background-color: rgba(var(--bs-body-bg-rgb), 0.9) !important;;
     max-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -93,7 +96,7 @@ justify-content: center;
     position: sticky;
     top: 0;
     z-index: 1;
-    background-color: var(--bs-body-bg);
+    /*background-color: var(--bs-body-bg);*/
 }
 
 #mainOffCanvas .offcanvas-body {
@@ -299,6 +302,16 @@ justify-content: center;
     justify-content: space-between;
     align-items: center;
 }
+
+.flex_between_wrap
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap:10px;
+}
+
 .radiosTechinquesContainer
 {
     display: flex;
@@ -352,7 +365,7 @@ justify-content: center;
     border-radius: 20px;
     padding: 5px;
     padding-left:15px;
-    background-color: #2a2a2a;
+    background-color:rgba(var(--bs-body-bg-rgb), 0.7);
     margin-top: 5px;
     margin-bottom: 5px;
     min-height: 30px;
@@ -373,7 +386,7 @@ justify-content: center;
 .poiListItem_hovered
 {
  background-color: rgb(178, 178, 178);
- color: black;
+ color: rgba(var(--bs-body-bg-rgb), 1);
  cursor: pointer;
 }
 
