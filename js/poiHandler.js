@@ -127,8 +127,8 @@ POIHandler.realize = (id, pos, eye, content)=>{
 		let dx = xc - A.position.x;
 		let dy = yc - A.position.y;
 
-		A.position.x -= (dx*0.3);
-		A.position.y -= (dy*0.3);
+		A.position.x -= (dx*0.1);
+		A.position.y -= (dy*0.1);
 	}
 
 	let cat = content.category;

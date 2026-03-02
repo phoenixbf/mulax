@@ -96,6 +96,7 @@ Plotter.generateFromData = (plotname, data, col)=>{
         data: D,
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales:{
                 x:{
                     title: {
