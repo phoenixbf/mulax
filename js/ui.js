@@ -652,6 +652,7 @@ UI.onClickCategoryFilter=(e)=>
 
 UI.onchangeTechniqueFilteredBtn=(e)=>
     {
+        if (!e) return;
         console.log('%c is clicked:'+ e.value, 'background: #222; color: #bada55');
 
         UI.selectedTechnique = e.value;
@@ -736,12 +737,15 @@ UI.returnBulletsFromPOI=(poi)=>
 
     UI.onHover_POIListItem=(e)=>
     {
+        if(!e) return;
+
         $(e).addClass( "poiListItem_hovered");
         APP.POIHandler.highlight(e.id,false);
     }
 
     UI.onOut_POIListItem=(e)=>
     {
+        if(!e) return;
         $(e).removeClass( "poiListItem_hovered");
     }
 
@@ -749,6 +753,7 @@ UI.returnBulletsFromPOI=(poi)=>
 
     UI.onClick_POIListsItem=(e)=>
     {
+        if(!e) return;
         APP.POIHandler.highlight(e.id,true);
         APP.UI.currentIdPOI = e.id;
 
