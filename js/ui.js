@@ -10,7 +10,8 @@ let UI = {initialized:false};
 
 UI.init=()=>
     {
-        if(UI.initialized) return;
+        //if(UI.initialized) return;
+
         UI.Custom_ATON_UI_Init();
         UI.techniqueInfos = APP.cdata.techniques;
         console.log("UI TECHNIQUES: ");

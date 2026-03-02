@@ -215,6 +215,8 @@ APP.realizeItemFromImage = (path)=>{
 	let yratio = 1.0;
 	let size   = 1.0;
 
+	//ATON._assetReqNew(path);
+
 	ATON.Utils.loadTexture(path, (tex) => {
 		if (tex.image){
 			yratio = tex.image.height / tex.image.width;
@@ -237,6 +239,7 @@ APP.realizeItemFromImage = (path)=>{
 		panel.material.needsUpdate = true;
 		
 		ATON._onAllReqsCompleted();
+		//ATON._assetReqComplete(path);
 		ATON._bqScene = true;
 	});
 
@@ -281,7 +284,9 @@ APP.loadItem = (item)=>{
 
 	APP._currItem = item;
 
-	APP.POIHandler.loadAll(()=>{});
+	APP.POIHandler.loadAll(()=>{
+		APP.UI.init();
+	});
 };
 
 APP.getCurrentItemFolder = ()=>{
@@ -515,6 +520,8 @@ APP.setupEvents = ()=>{
 
 		APP.UI.init();
 
+		console.log(APP.POIHandler._list)
+
 		APP.setupSUI();
 
 		let poi = APP.params.get("poi");
@@ -525,6 +532,8 @@ APP.setupEvents = ()=>{
 
 		// Load POIs
 		//APP.POIHandler.loadAll(()=>{});
+
+		console.log("All Loaded.")
 	});
 
 	ATON.EventHub.clearEventHandlers("SemanticNodeHover");
