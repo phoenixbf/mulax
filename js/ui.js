@@ -6,20 +6,22 @@
 
 
 
-let UI = {}
+let UI = {initialized:false};
 
 UI.init=()=>
     {
-     //   ATON.UI.addBasicEvents();
+        if(UI.initialized) return;
         UI.Custom_ATON_UI_Init();
         UI.techniqueInfos = APP.cdata.techniques;
         console.log("UI TECHNIQUES: ");
         console.log(APP.cdata);
         console.log(UI.techniqueInfos);
-
+        
         ATON.on("APP_POISelect", (id)=>{APP.UI.onClick_POIListsItem(document.getElementById(id))});
         console.log("UI  init")
         UI.createPanel();
+        UI.initialized = true;
+        
         return UI;
     }
 
